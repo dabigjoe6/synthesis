@@ -11,16 +11,36 @@ export default class Medium {
     this.page = await this.browser.newPage();
   }
 
-  //TODO: GET OTHER METADATA, LIKE TITLE, DESCRIPTION, TAGS.....WHATEVER YOU CAN GET
   async getPostsMetaData(posts) {
     const result = [];
     
     for await (const post of posts) {
-      const aTag = await post.$('a');
-      const href = await aTag.getProperty('href');
+
+      //Get post URL
+      const urlElement = await post.$('a');
+      const href = await urlElement.getProperty('href');
       const url = await href.jsonValue();
+
+      //Get post title
+      const titleElement = await post.$('h2');
+      const titleInnerHTML = await titleElement.getProperty('innerHTML');
+      const title = await titleInnerHTML.jsonValue();
+
+      //Get description
+      const descriptionElement = await post.$('a > div > p');
+      const descriptionInnerHTML = await descriptionElement.getProperty('innerHTML');
+      const description = await descriptionInnerHTML.jsonValue();
+
+      //Get image
+      const imageElement = await post.$('img');
+      const imageElementSrc = await imageElement.getProperty('src');
+      const image = await imageElementSrc.jsonValue();
+
       result.push({
-        url
+        url,
+        title,
+        description,
+        image
       })
     }
 
