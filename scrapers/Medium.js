@@ -1,75 +1,74 @@
 import puppeteer from "puppeteer";
 import { inifinteScrollToBottom } from "../utility/infiniteScrollToBottom.js";
 export default class Medium {
-  MEDIUM_URL = 'https://medium.com';
+  MEDIUM_URL = "https://medium.com";
 
   constructor(username) {
     this.username = username;
   }
 
   async initPuppeteer() {
-    this.browser = await puppeteer.launch({headless: false});
+    this.browser = await puppeteer.launch({ headless: false });
     this.page = await this.browser.newPage();
   }
 
   async getPostsMetaData(posts) {
+    console.log("Generating metadata from posts");
     const result = [];
-    
     for await (const post of posts) {
-
       //Get post URL
-      const urlElement = await post.$('a');
-      const href = await urlElement.getProperty('href');
-      const url = await href.jsonValue();
+      const urlElement = await post.$("a");
+      const href = urlElement && (await urlElement.getProperty("href"));
+      const url = href && (await href.jsonValue());
 
       //Get post title
-      const titleElement = await post.$('h2');
-      const titleInnerHTML = await titleElement.getProperty('innerHTML');
-      const title = await titleInnerHTML.jsonValue();
+      const titleElement = await post.$("h2");
+      const titleInnerHTML =
+        titleElement && (await titleElement.getProperty("innerHTML"));
+      const title = titleInnerHTML && (await titleInnerHTML.jsonValue());
 
       //Get description
-      const descriptionElement = await post.$('a > div > p');
-      const descriptionInnerHTML = await descriptionElement.getProperty('innerHTML');
-      const description = await descriptionInnerHTML.jsonValue();
+      const descriptionElement = await post.$("a > div > p");
+      const descriptionInnerHTML =
+        descriptionElement &&
+        (await descriptionElement.getProperty("innerHTML"));
+      const description =
+        descriptionInnerHTML && (await descriptionInnerHTML.jsonValue());
 
       //Get image
-      const imageElement = await post.$('img');
-      const imageElementSrc = await imageElement.getProperty('src');
-      const image = await imageElementSrc.jsonValue();
+      const imageElement = await post.$("img");
+      const imageElementSrc =
+        imageElement && (await imageElement.getProperty("src"));
+      const image = imageElementSrc && (await imageElementSrc.jsonValue());
 
       result.push({
         url,
         title,
         description,
-        image
-      })
+        image,
+      });
     }
 
+    console.log("Done generating metadata");
+
     return result;
-  };
+  }
 
   async getAllPosts(authorPage) {
     try {
       await this.initPuppeteer();
-      
+
       console.log("Visiting ", authorPage);
-      await this.page.goto(authorPage, { waitUntil: 'networkidle2'});
+      await this.page.goto(authorPage, { waitUntil: "networkidle2" });
       console.log("Loaded", authorPage);
 
-      console.log("Scrolling to bottom");
       await inifinteScrollToBottom(this.page);
-      console.log("Scrolled to bottom");
 
+      const posts = await this.page.$$("article");
 
-      console.log("Scraping articles");
-      const posts = await this.page.$$('article');
-      console.log("Done scraping articles");
-
-      console.log("Generating metadata")
       const postsMetadata = await this.getPostsMetaData(posts);
 
-      console.log("METADATA", postsMetadata);
-
+      console.log("METADATA", JSON.stringify(postsMetadata), postsMetadata.length);
     } catch (err) {
       console.log("Couldn't get all posts - medium", err);
     }
