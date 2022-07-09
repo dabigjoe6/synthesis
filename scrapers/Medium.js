@@ -1,4 +1,5 @@
 import puppeteer from "puppeteer";
+import { inifinteScrollToBottom } from "../utility/infiniteScrollToBottom.js";
 export default class Medium {
   MEDIUM_URL = 'https://medium.com';
 
@@ -55,7 +56,16 @@ export default class Medium {
       await this.page.goto(authorPage, { waitUntil: 'networkidle2'});
       console.log("Loaded", authorPage);
 
+      console.log("Scrolling to bottom");
+      await inifinteScrollToBottom(this.page);
+      console.log("Scrolled to bottom");
+
+
+      console.log("Scraping articles");
       const posts = await this.page.$$('article');
+      console.log("Done scraping articles");
+
+      console.log("Generating metadata")
       const postsMetadata = await this.getPostsMetaData(posts);
 
       console.log("METADATA", postsMetadata);

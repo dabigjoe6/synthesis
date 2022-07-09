@@ -4,7 +4,7 @@ const main = async () => {
   const mediumScraper = new Medium();
 
   //TODO: PROGRAMMATICALLY DEFINE WHAT AUTHOR IS SCRAPED
-  await mediumScraper.getAllPosts("https://medium.com/@josepholabisi");
+  await mediumScraper.getAllPosts("https://netflixtechblog.medium.com");
 };
 
 main();
