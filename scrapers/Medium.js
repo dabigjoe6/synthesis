@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer";
-import { inifinteScrollToBottom } from "../utility/infiniteScrollToBottom.js";
+import { inifinteScrollToBottom } from "../utilities/infiniteScrollToBottom.js";
 export default class Medium {
   MEDIUM_URL = "https://medium.com";
 
@@ -55,6 +55,7 @@ export default class Medium {
   }
 
   async getAllPosts(authorPage) {
+    //TODO: Handle username that doesn't exist
     try {
       await this.initPuppeteer();
 
@@ -68,7 +69,7 @@ export default class Medium {
 
       const postsMetadata = await this.getPostsMetaData(posts);
 
-      console.log("METADATA", JSON.stringify(postsMetadata), postsMetadata.length);
+      return postsMetadata;
     } catch (err) {
       console.log("Couldn't get all posts - medium", err);
     }
