@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import subscribeRouter from "./subscribe";
+import subscribeRouter from "./subscribe.js";
 
 const routes = Router();
 

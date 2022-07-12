@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer";
-import { inifinteScrollToBottom } from "../utilities/infiniteScrollToBottom.js";
+import { inifinteScrollToBottom } from "../utils/infiniteScrollToBottom.js";
 export default class Medium {
   MEDIUM_URL = "https://medium.com";
 

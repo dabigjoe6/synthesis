@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
-  subscriptions: { type: [Schema.ObjectId], required: false, unique: true },
-  seenResources: { type: [Schema.ObjectId], required: false, unique: true },
+  subscriptions: { type: [Schema.ObjectId], required: false, unique: false },
+  seenResources: { type: [Schema.ObjectId], required: false, unique: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

@@ -1,4 +1,4 @@
-import MediumService from "../services/medium";
+import MediumService from "../services/medium.js";
 
 export const subscribe = async (req, res, next) => {
   try {
@@ -6,7 +6,7 @@ export const subscribe = async (req, res, next) => {
     const { email, author } = req.body;
 
     const mediumService = new MediumService();
-    await mediumService.subsribe(email, author);
+    await mediumService.subscribe(email, author);
 
     return res.status(200).json({
       message: "You are now subscribed to " + author

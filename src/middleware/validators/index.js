@@ -1,7 +1,8 @@
 import Joi from "joi";
 
 const medium = Joi.object({
-  author: Joi.string().url().required(),
+  author: Joi.string().uri().required(),
+  email: Joi.string().email().required()
 });
 
 

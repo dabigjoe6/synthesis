@@ -1,8 +1,9 @@
-import ResourceModel from "../models/resources";
-import AuthorModel from "../models/authors";
-import UserModel from "../models/users";
+import ResourceModel from "../models/resources.js";
+import AuthorModel from "../models/authors.js";
+import UserModel from "../models/users.js";
 import { sources } from "../utils/constants.js";
-import Medium from "../scrapers/Medium";
+import { extractMediumAuthorNameFromURL } from "../utils/medium.js";
+import Medium from "../scrapers/Medium.js";
 
 export default class MediumService {
   constructor() {
@@ -14,34 +15,37 @@ export default class MediumService {
   //TODO: Handle the two URL styles in Medium to avoid duplicate subscribtions on the DB
   // Eg1: https://josepholabisi.medium.com
   // Eg2: https://medium.com/@josepholabisi/
-  subscribe = async (email, author) => {
+  subscribe = async (email, url) => {
     let user = await this.UserModel.findOne({ email }).exec();
 
     if (!user) {
-      user = this.UserModel.create(email);
+      user = this.UserModel.create({ email });
     }
 
     let author = await this.AuthorModel.findOne({
-      $or: [{ name: author, url: author }],
+      $or: [{ name: url, url: url }],
     }).exec();
 
     if (!author) {
-      const name = extractMediumAuthorNameFromURL(author);
+      const name = extractMediumAuthorNameFromURL(url);
       author = await this.AuthorModel.create({
         name,
-        url: author,
+        url: url,
         source: sources.MEDIUM,
       });
 
       //TODO: Should be done using rabbitMQ
       const mediumScraper = new Medium();
-      let posts = await mediumScraper.getAllPosts(author);
+      let posts = await mediumScraper.getAllPosts(url);
 
-      posts = posts.map((post) => ({
-        ...post,
-        source: source.MEDIUM,
-        author: author._id,
-      }));
+      posts =
+        posts &&
+        posts.length > 0 &&
+        posts.map((post) => ({
+          ...post,
+          source: sources.MEDIUM,
+          author: author._id,
+        }));
 
       //Update Resource collection with crawled articles
       await this.ResourceModel.create(posts);
