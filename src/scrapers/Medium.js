@@ -8,8 +8,9 @@ export default class Medium {
   }
 
   async initPuppeteer() {
-    this.browser = await puppeteer.launch({ headless: false });
+    this.browser = await puppeteer.launch({ headless: true });
     this.page = await this.browser.newPage();
+    this.page.setViewport({ width: 1000, height: 9999 });
   }
 
   async getPostsMetaData(posts) {
