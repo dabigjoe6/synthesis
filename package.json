@@ -2,10 +2,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js ",
-    "start": "node index.js"
+    "start": "node index.js",
+    "consumer": "node ./src/utils/subscriptionConsumer.js"
   },
   "type": "module",
   "dependencies": {
+    "@sendgrid/mail": "^7.7.0",
+    "amqplib": "^0.10.0",
     "body-parser": "^1.20.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",

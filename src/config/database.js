@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 
-export const startDb = () => {
-  //   console.log("encode", encodeURIComponent(process.env.DB_USER));
-  const uri = process.env.MONGO_URI;
+export const startDb = (uri) => {
+  if (!uri) {
+    uri = process.env.MONGO_URI;
+  }
   mongoose
     .connect(uri, {
       useNewUrlParser: true,
