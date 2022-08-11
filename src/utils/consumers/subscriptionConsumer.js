@@ -55,7 +55,7 @@ amqp.connect("amqp://localhost", (err0, connection) => {
               author: authorId,
             }));
 
-          console.log("Saving posts to DB");
+          console.log("Saving posts to DB", JSON.stringify(posts[0]));
           //Update Resource collection with crawled articles
           await ResourceModel.create(posts);
 
