@@ -1,5 +1,6 @@
 import { startDb } from "../config/database.js";
 import UserModel from "../models/users.js";
+import sendUserFeed from "./publishers/sendFeedPublisher.js";
 
 const generateUsersFeeds = async () => {
   //TODO: Convert to environment file
@@ -33,6 +34,18 @@ const generateUsersFeeds = async () => {
     },
     {
       $project: {
+        email: 1,
+        digest: 1,
+        at_least_one_digest: { $gt: [{ $size: "$digest" }, 0] },
+      },
+    },
+    {
+      $match: {
+        at_least_one_digest: true,
+      },
+    },
+    {
+      $project: {
         digest: {
           _id: 1,
         },
@@ -40,8 +53,19 @@ const generateUsersFeeds = async () => {
     },
   ]);
 
-  //TODO: call sendFeedPublisher for every user
-};
+  console.log("UserFeeds", JSON.stringify(allUsersFeeds));
 
+  //TODO: call sendFeedPublisher for every user
+  allUsersFeeds.forEach((userFeed) => {
+    if (userFeed.digest.length > 0) {
+      sendUserFeed(
+        userFeed._id,
+        userFeed.digest.map((feed) => feed._id)
+      );
+    }
+  });
+
+  console.log("New feed generated for users successfully");
+};
 
 generateUsersFeeds();

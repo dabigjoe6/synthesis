@@ -1,5 +1,5 @@
-import UserModel from '../models/users';
-import sendUserFeedPublisher from '../utils/publishers/sendFeedPublisher';
+import UserModel from "../models/users.js";
+import sendUserFeedPublisher from "../utils/publishers/sendFeedPublisher.js";
 
 export default class EmailService {
   constructor() {
@@ -8,9 +8,9 @@ export default class EmailService {
 
   sendUserFeed = async (userId, feed) => {
     try {
-      sendUserFeedPublisher(userId, feed)
+      sendUserFeedPublisher(userId, feed);
     } catch (err) {
       throw "Couldn't queue user feed: " + err;
     }
-  }
+  };
 }
