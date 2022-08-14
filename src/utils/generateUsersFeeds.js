@@ -2,6 +2,8 @@ import { startDb } from "../config/database.js";
 import UserModel from "../models/users.js";
 import sendUserFeed from "./publishers/sendFeedPublisher.js";
 
+const NO_OF_POSTS_SENT_TO_USERS = 5;
+
 const generateUsersFeeds = async () => {
   //TODO: Convert to environment file
   startDb(
@@ -49,6 +51,20 @@ const generateUsersFeeds = async () => {
         digest: {
           _id: 1,
         },
+      },
+    },
+    {
+      $unwind: {
+        path: "$digest",
+      },
+    },
+    {
+      $sample: { size: NUMBER_OF_POSTS_SENT_TO_USERS },
+    },
+    {
+      $group: {
+        _id: "$_id",
+        digest: { $push: "$digest" },
       },
     },
   ]);
