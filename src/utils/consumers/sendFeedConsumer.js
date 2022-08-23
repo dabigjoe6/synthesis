@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 import amqp from "amqplib/callback_api.js";
 import Sendgrid from "@sendgrid/mail";
 import mongoose from "mongoose";
@@ -5,9 +6,11 @@ import ResourceModel from "../../models/resources.js";
 import UserModel from "../../models/users.js";
 import { startDb } from "../../config/database.js";
 import generateEmail from "../emails/generateEmail.js";
+import { FEEDS_QUEUE } from "../constants.js";
 
-//TODO: Make amqp url an env virable
-amqp.connect("amqp://localhost", (err0, connection) => {
+dotenv.config({ path: "../../../.env" });
+
+amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
   if (err0) {
     console.log("sendFeedConsumer.js error: ", err0);
     throw err0;
@@ -19,13 +22,9 @@ amqp.connect("amqp://localhost", (err0, connection) => {
       throw err1;
     }
 
-    //TODO: Convert to environment file
-    startDb(
-      "mongodb+srv://olawwwale:zufgeH-tigquf-6zybfa@cluster0.eft2v.mongodb.net/morningbrew?retryWrites=true&w=majority"
-    );
+    startDb(process.env.MONGO_URI);
 
-    //TODO: Make a constant
-    const queue = "feeds";
+    const queue = FEEDS_QUEUE;
 
     channel.assertQueue(queue, {
       durable: true,
@@ -68,11 +67,7 @@ amqp.connect("amqp://localhost", (err0, connection) => {
             try {
               console.log("Sending email to user: " + userEmail);
               const message = generateEmail(resources);
-              console.log("Message", resources, message);
-              //TODO: Change to env file
-              Sendgrid.setApiKey(
-                "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"
-              );
+              Sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
               await Sendgrid.send({
                 to: userEmail,
                 from: "josepholabisi6000@gmail.com",

@@ -2,11 +2,11 @@ import Joi from "joi";
 
 const medium = Joi.object({
   author: Joi.string().uri().required(),
-  email: Joi.string().email().required()
+  email: Joi.string().email().required(),
 });
 
 const Validators = {
-  medium
+  medium,
 };
 
 export const validate = (validator) => {
@@ -27,4 +27,3 @@ export const validate = (validator) => {
     }
   };
 };
-

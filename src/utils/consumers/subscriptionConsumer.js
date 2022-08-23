@@ -1,11 +1,13 @@
+import dotenv from "dotenv";
 import amqp from "amqplib/callback_api.js";
 import Medium from "../../scrapers/Medium.js";
 import ResourceModel from "../../models/resources.js";
 import { startDb } from "../../config/database.js";
-import { sources } from "../constants.js";
+import { sources, SUBSCRIPTIONS_QUEUE } from "../constants.js";
 
-//TODO: Make amqp url an env virable
-amqp.connect("amqp://localhost", (err0, connection) => {
+dotenv.config({ path: '../../../.env'});
+
+amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
   if (err0) {
     console.log("subscriptionConsumer.js error: ", err0);
     throw err0;
@@ -17,14 +19,9 @@ amqp.connect("amqp://localhost", (err0, connection) => {
       throw err1;
     }
 
-    //TODO: Convert to environment file
-    startDb(
-      "mongodb+srv://olawwwale:zufgeH-tigquf-6zybfa@cluster0.eft2v.mongodb.net/morningbrew?retryWrites=true&w=majority"
-    );
+    startDb(process.env.MONGO_URI);
 
-    const queue = "subscriptions";
-
-    channel.assertQueue(queue, {
+    channel.assertQueue(SUBSCRIPTIONS_QUEUE, {
       durable: true,
     });
 

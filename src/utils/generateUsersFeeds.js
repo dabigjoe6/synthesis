@@ -1,14 +1,12 @@
+import dotenv from "dotenv";
 import { startDb } from "../config/database.js";
 import UserModel from "../models/users.js";
 import sendUserFeed from "./publishers/sendFeedPublisher.js";
 
-const NO_OF_POSTS_SENT_TO_USERS = 5;
+dotenv.config({ path: "../../.env" });
 
 const generateUsersFeeds = async () => {
-  //TODO: Convert to environment file
-  startDb(
-    "mongodb+srv://olawwwale:zufgeH-tigquf-6zybfa@cluster0.eft2v.mongodb.net/morningbrew?retryWrites=true&w=majority"
-  );
+  startDb(process.env.MONGO_URI);
   console.log("Generating users feeds");
 
   const allUsersFeeds = await UserModel.aggregate([
@@ -59,7 +57,7 @@ const generateUsersFeeds = async () => {
       },
     },
     {
-      $sample: { size: NUMBER_OF_POSTS_SENT_TO_USERS },
+      $sample: { size: Number(process.env.NO_OF_POSTS_SENT_TO_USERS) },
     },
     {
       $group: {
@@ -71,7 +69,6 @@ const generateUsersFeeds = async () => {
 
   console.log("UserFeeds", JSON.stringify(allUsersFeeds));
 
-  //TODO: call sendFeedPublisher for every user
   allUsersFeeds.forEach((userFeed) => {
     if (userFeed.digest.length > 0) {
       sendUserFeed(

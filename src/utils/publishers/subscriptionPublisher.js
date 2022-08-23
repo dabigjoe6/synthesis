@@ -1,4 +1,5 @@
 import amqp from "amqplib/callback_api.js";
+import { SUBSCRIPTIONS_QUEUE } from "../constants.js";
 
 const subscriptionPublisher = (authorId, url) => {
   amqp.connect("amqp://localhost", (err0, connection) => {
@@ -11,10 +12,9 @@ const subscriptionPublisher = (authorId, url) => {
         throw err1;
       }
 
-      const queue = "subscriptions";
       const msg = authorId + "_" + url;
 
-      channel.assertQueue(queue, {
+      channel.assertQueue(SUBSCRIPTIONS_QUEUE, {
         durable: true,
       });
       channel.sendToQueue(queue, Buffer.from(msg), {
