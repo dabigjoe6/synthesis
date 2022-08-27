@@ -55,22 +55,42 @@ export default class Medium {
     return result;
   }
 
+  // Checks if its a valid medium account
+  async isPagevalid() {
+    const divElements = await this.page.$$("div");
+    let is404 = null;
+    for (const divElement of divElements) {
+      const innerText = await this.page.evaluate(
+        (el) => el.innerText,
+        divElement
+      );
+      if (innerText.toLowerCase().includes("page not found")) {
+        is404 = innerText;
+      }
+    }
+    return !is404;
+  }
+
   async getAllPosts(authorPage) {
-    //TODO: Handle username that doesn't exist
     try {
       await this.initPuppeteer();
 
       console.log("Visiting ", authorPage);
       await this.page.goto(authorPage, { waitUntil: "networkidle2" });
-      console.log("Loaded", authorPage);
 
-      await inifinteScrollToBottom(this.page);
+      if (await this.isPagevalid()) {
+        console.log("Loaded", authorPage);
 
-      const posts = await this.page.$$("article");
+        await inifinteScrollToBottom(this.page);
 
-      const postsMetadata = await this.getPostsMetaData(posts);
+        const posts = await this.page.$$("article");
 
-      return postsMetadata;
+        const postsMetadata = await this.getPostsMetaData(posts);
+
+        return postsMetadata;
+      } else {
+        throw "Could not fetch posts from author: " + authorPage;
+      }
     } catch (err) {
       console.log("Couldn't get all posts - medium", err);
     }
