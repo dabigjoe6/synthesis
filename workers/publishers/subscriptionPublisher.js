@@ -1,5 +1,5 @@
 import amqp from "amqplib/callback_api.js";
-import { SUBSCRIPTIONS_QUEUE } from "../constants.js";
+import { SUBSCRIPTIONS_QUEUE } from "../../src/utils/constants.js";
 
 const subscriptionPublisher = (authorId, url) => {
   amqp.connect("amqp://localhost", (err0, connection) => {

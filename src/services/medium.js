@@ -1,8 +1,8 @@
 import AuthorModel from "../models/authors.js";
 import UserModel from "../models/users.js";
 import { sources } from "../utils/constants.js";
-import { extractMediumAuthorNameFromURL } from "../utils/medium.js";
-import subscriptionPublisher from "../utils/publishers/subscriptionPublisher.js";
+import { extractMediumAuthorNameFromURL } from "../utils/scrapeHelpers.js";
+import subscriptionPublisher from "../../workers/publishers/subscriptionPublisher.js";
 
 export default class MediumService {
   constructor() {

@@ -1,4 +1,4 @@
-const generateEmail = (posts) => {
+const generateEmailTemplate = (posts) => {
   if (posts && posts.length > 0) {
     let postsHTML = "";
     posts.forEach((post) => {
@@ -12,4 +12,4 @@ const generateEmail = (posts) => {
   }
 };
 
-export default generateEmail;
+export default generateEmailTemplate;

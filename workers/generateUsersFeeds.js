@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
-import { startDb } from "../config/database.js";
-import UserModel from "../models/users.js";
+import { startDb } from "../src/config/database.js";
+import UserModel from "../src/models/users.js";
 import sendUserFeed from "./publishers/sendFeedPublisher.js";
 
 dotenv.config({ path: "../../.env" });

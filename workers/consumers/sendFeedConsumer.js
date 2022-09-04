@@ -2,11 +2,11 @@ import dotenv from "dotenv";
 import amqp from "amqplib/callback_api.js";
 import Sendgrid from "@sendgrid/mail";
 import mongoose from "mongoose";
-import ResourceModel from "../../models/resources.js";
-import UserModel from "../../models/users.js";
-import { startDb } from "../../config/database.js";
-import generateEmail from "../emails/generateEmail.js";
-import { FEEDS_QUEUE } from "../constants.js";
+import ResourceModel from "../../src/models/resources.js";
+import UserModel from "../../src/models/users.js";
+import { startDb } from "../../src/config/database.js";
+import generateEmailTemplate from "../../src/utils/generateEmailTemplate.js";
+import { FEEDS_QUEUE } from "../../src/utils/constants.js";
 
 dotenv.config({ path: "../../../.env" });
 
@@ -66,7 +66,7 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
           if (!!userEmail && resources.length > 0) {
             try {
               console.log("Sending email to user: " + userEmail);
-              const message = generateEmail(resources);
+              const message = generateEmailTemplate(resources);
               Sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
               await Sendgrid.send({
                 to: userEmail,
