@@ -2,11 +2,11 @@ import dotenv from "dotenv";
 import amqp from "amqplib/callback_api.js";
 import Sendgrid from "@sendgrid/mail";
 import mongoose from "mongoose";
-import ResourceModel from "../../src/models/resources.js";
-import UserModel from "../../src/models/users.js";
-import { startDb } from "../../src/config/database.js";
-import generateEmailTemplate from "../../src/utils/generateEmailTemplate.js";
-import { FEEDS_QUEUE } from "../../src/utils/constants.js";
+import ResourceModel from "../../models/resources.js";
+import UserModel from "../../models/users.js";
+import { startDb } from "../../config/database.js";
+import generateEmailTemplate from "../../utils/generateEmailTemplate.js";
+import { FEEDS_QUEUE } from "../../utils/constants.js";
 
 dotenv.config({ path: "../../../.env" });
 

@@ -1,5 +1,5 @@
 import amqp from "amqplib/callback_api.js";
-import { FEEDS_QUEUE } from "../constants.js";
+import { FEEDS_QUEUE } from "../../utils/constants.js";
 
 const sendUserFeed = (userId, feed) => {
   amqp.connect("amqp://localhost", (err0, connection) => {

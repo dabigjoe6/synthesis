@@ -3,7 +3,7 @@ import amqp from "amqplib/callback_api.js";
 import Medium from "../../scrapers/Medium.js";
 import ResourceModel from "../../models/resources.js";
 import { startDb } from "../../config/database.js";
-import { sources, SUBSCRIPTIONS_QUEUE } from "../constants.js";
+import { sources, SUBSCRIPTIONS_QUEUE } from "../../utils/constants.js";
 
 dotenv.config({ path: '../../../.env'});
 
