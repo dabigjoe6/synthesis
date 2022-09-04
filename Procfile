@@ -1,3 +1,3 @@
-worker: npm run generate-user-feeds
-worker: npm run send-user-feed
-worker: npm run subscriptions
+generate-user-feeds: npm run generate-user-feeds
+send-user-feed: npm run send-user-feed
+subscriptions: npm run subscriptions
