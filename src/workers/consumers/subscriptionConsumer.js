@@ -5,7 +5,7 @@ import ResourceModel from "../../models/resources.js";
 import { startDb } from "../../config/database.js";
 import { sources, SUBSCRIPTIONS_QUEUE } from "../../utils/constants.js";
 
-dotenv.config({ path: '../../../.env'});
+dotenv.config({ path: "../../../.env" });
 
 amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
   if (err0) {

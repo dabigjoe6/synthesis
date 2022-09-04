@@ -1,8 +1,11 @@
+import dotenv from "dotenv";
 import amqp from "amqplib/callback_api.js";
 import { FEEDS_QUEUE } from "../../utils/constants.js";
 
+dotenv.config({ path: "../../../.env" });
+
 const sendUserFeed = (userId, feed) => {
-  amqp.connect("amqp://localhost", (err0, connection) => {
+  amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
     if (err0) {
       throw err0;
     }
