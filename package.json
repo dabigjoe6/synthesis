@@ -3,7 +3,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js ",
     "start": "node index.js",
-    "consumer": "node ./src/utils/subscriptionConsumer.js"
+    "generate-users-feeds": "node ./src/workers/generateUsersFeeds.js",
+    "send-user-feed": "node ./src/workers/consumers/sendFeedConsumer.js",
+    "subscriptions": "node ./src/workers/consumers/subscriptionConsumer.js"
   },
   "type": "module",
   "dependencies": {
