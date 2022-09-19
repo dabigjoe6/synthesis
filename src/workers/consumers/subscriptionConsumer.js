@@ -59,7 +59,7 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
               author: authorId,
             }));
 
-          console.log("Saving posts to DB", JSON.stringify(posts[0]));
+          console.log("Saving posts to DB");
           //Update Resource collection with crawled articles
           await ResourceModel.create(posts);
 
