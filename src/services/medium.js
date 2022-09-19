@@ -18,7 +18,7 @@ export default class MediumService {
     }
 
     let author = await this.AuthorModel.findOne({
-      $or: [{ name: url, url: url }],
+      url,
     }).exec();
 
     if (!author) {
@@ -39,10 +39,10 @@ export default class MediumService {
       }
     }
 
-    this.UserModel.updateOne(
+    await this.UserModel.updateOne(
       { _id: user._id },
       {
-        $push: { subscriptions: author._id },
+        $addToSet: { subscriptions: author._id },
       }
     );
   };
