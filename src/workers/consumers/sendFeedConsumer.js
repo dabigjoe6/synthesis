@@ -7,8 +7,13 @@ import UserModel from "../../models/users.js";
 import { startDb } from "../../config/database.js";
 import generateEmailTemplate from "../../utils/generateEmailTemplate.js";
 import { FEEDS_QUEUE } from "../../utils/constants.js";
+import { fileURLToPath } from "url";
+import path from 'path';
 
-dotenv.config({ path: "../../../.env" });
+
+const __filename = fileURLToPath(import.meta.url);
+
+dotenv.config({ path: path.resolve(__filename, "../../../../.env") });
 
 amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
   if (err0) {

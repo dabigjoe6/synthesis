@@ -20,7 +20,7 @@ const subscriptionPublisher = (authorId, url) => {
       channel.assertQueue(SUBSCRIPTIONS_QUEUE, {
         durable: true,
       });
-      channel.sendToQueue(queue, Buffer.from(msg), {
+      channel.sendToQueue(SUBSCRIPTIONS_QUEUE, Buffer.from(msg), {
         persistent: true,
       });
 

@@ -1,11 +1,15 @@
 import dotenv from "dotenv";
+import path from "path";
 import amqp from "amqplib/callback_api.js";
 import Medium from "../../scrapers/Medium.js";
 import ResourceModel from "../../models/resources.js";
 import { startDb } from "../../config/database.js";
 import { sources, SUBSCRIPTIONS_QUEUE } from "../../utils/constants.js";
+import { fileURLToPath } from "url";
 
-dotenv.config({ path: "../../../.env" });
+const __filename = fileURLToPath(import.meta.url);
+
+dotenv.config({ path: path.resolve(__filename, "../../../../.env") });
 
 amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
   if (err0) {
@@ -26,10 +30,13 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
     });
 
     channel.prefetch(1);
-    console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
+    console.log(
+      " [*] Waiting for messages in %s. To exit press CTRL+C",
+      SUBSCRIPTIONS_QUEUE
+    );
 
     channel.consume(
-      queue,
+      SUBSCRIPTIONS_QUEUE,
       async (msg) => {
         const mediumScraper = new Medium();
 
