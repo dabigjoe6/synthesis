@@ -14,7 +14,7 @@ export default class MediumService {
     let user = await this.UserModel.findOne({ email }).exec();
 
     if (!user) {
-      user = this.UserModel.create({ email });
+      user = await this.UserModel.create({ email });
     }
 
     let author = await this.AuthorModel.findOne({

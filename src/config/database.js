@@ -8,6 +8,7 @@ export const startDb = (uri) => {
     .connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      autoIndex: false
     })
     .then(() => {
       console.log("Morningbrew Database has connected");
