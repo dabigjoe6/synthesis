@@ -17,3 +17,10 @@ On a weekend, I clicked on several links to articles on the Netflixtechblog on M
 ## Development
 - npm i
 - npm run dev
+
+### .env template
+MONGO_URI=__MONGO_URI__
+DB_PASSWORD=XXXXXXXXXXXXXXXXXXXX
+SENDGRID_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+NO_OF_POSTS_SENT_TO_USERS=1
+RABBITMQ_URL=amqp://localhost
