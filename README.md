@@ -1,5 +1,7 @@
 # morning-brew
 
+https://app.swaggerhub.com/apis/dabigjoe6/Morningbrew/1.0.0
+
 Receive daily email digest of the links to the most important and forgotten articles from your favourite authors on Medium, Twitter, newsletters, and other sources.
 
 ## Motivation
