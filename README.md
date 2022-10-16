@@ -13,10 +13,13 @@ On a weekend, I clicked on several links to articles on the Netflixtechblog on M
 
 ## Prerequisite
 - Setup rabbitmq
+- Setup nodejs
 
 ## Development
-- npm i
-- npm run dev
+```
+npm i
+npm run dev
+```
 
 ### .env template
 ```
