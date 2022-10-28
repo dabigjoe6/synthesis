@@ -5,8 +5,13 @@ const medium = Joi.object({
   email: Joi.string().email().required(),
 });
 
+const getSubscriptions = Joi.object({
+  email: Joi.string().email().required(),
+});
+
 const Validators = {
   medium,
+  getSubscriptions,
 };
 
 export const validate = (validator) => {
