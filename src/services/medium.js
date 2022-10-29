@@ -39,11 +39,15 @@ export default class MediumService {
       }
     }
 
-    await this.UserModel.updateOne(
+    const newUser = await this.UserModel.findOneAndUpdate(
       { _id: user._id },
       {
         $addToSet: { subscriptions: author._id },
+      },
+      {
+        new: true,
       }
     );
+    return newUser.subscriptions;
   };
 }
