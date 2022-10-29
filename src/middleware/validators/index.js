@@ -1,4 +1,7 @@
 import Joi from "joi";
+import JoiObjectId from "joi-objectid";
+
+const joiObjectId = JoiObjectId(Joi);
 
 const medium = Joi.object({
   author: Joi.string().uri().required(),
@@ -9,9 +12,15 @@ const getSubscriptions = Joi.object({
   email: Joi.string().email().required(),
 });
 
+const unsubscribe = Joi.object({
+  email: Joi.string().email().required(),
+  subscriptionIds: Joi.array().items(joiObjectId()).required(),
+});
+
 const Validators = {
   medium,
   getSubscriptions,
+  unsubscribe,
 };
 
 export const validate = (validator) => {

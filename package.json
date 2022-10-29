@@ -17,6 +17,7 @@
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "joi": "^17.6.0",
+    "joi-objectid": "^4.0.2",
     "mongoose": "^6.4.4",
     "nodemon": "^2.0.19",
     "puppeteer": "^15.3.0"

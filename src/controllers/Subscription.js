@@ -15,3 +15,19 @@ export const getSubscriptions = async (req, res, next) => {
     next(err);
   }
 };
+
+export const unsubscribe = async (req, res, next) => {
+  try {
+    const { email, subscriptionIds } = req.body;
+
+    const subscriptionService = new SubscriptionService();
+    await subscriptionService.unsubscribe(email, subscriptionIds);
+
+    return res.status(200).json({
+      message: "Successfully unsubscribed",
+    });
+  } catch (err) {
+    console.error("Couldn't unsubscribe", err);
+    next(err);
+  }
+};

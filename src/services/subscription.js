@@ -43,4 +43,27 @@ export default class SubscriptionService {
       throw ("Failed to get user subscriptions - subscription.js", err);
     }
   };
+
+  unsubscribe = async (email, ids) => {
+    try {
+      let user = await this.UserModel.findOne({ email }).exec();
+
+      if (!user) {
+        throw "Could not find user with email " + email;
+      }
+
+      return await this.UserModel.updateOne(
+        {
+          email: email,
+        },
+        {
+          $pullAll: {
+            subscriptions: ids,
+          },
+        }
+      );
+    } catch (err) {
+      throw ("Failed to remove subscription - subscription.js", err);
+    }
+  };
 }
