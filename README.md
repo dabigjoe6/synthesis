@@ -10,6 +10,9 @@ On a weekend, I clicked on several links to articles on the Netflixtechblog on M
 ## Architecture
 ![Morningbrew - Overview](https://user-images.githubusercontent.com/20970329/196035399-cced71fb-1b7e-4139-a15b-5c23c671a4a7.png)
 
+## Web Client
+https://github.com/dabigjoe6/morning-brew-client
+
 
 ## Prerequisite
 - Setup rabbitmq
@@ -25,7 +28,7 @@ npm run dev
 ```
 MONGO_URI=__MONGO_URI__
 DB_PASSWORD=XXXXXXXXXXXXXXXXXXXX
-SENDGRID_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+SENDGRID_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 NO_OF_POSTS_SENT_TO_USERS=1
 RABBITMQ_URL=amqp://localhost
 ```
