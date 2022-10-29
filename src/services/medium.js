@@ -43,9 +43,6 @@ export default class MediumService {
       { _id: user._id },
       {
         $addToSet: { subscriptions: author._id },
-      },
-      {
-        new: true,
       }
     );
     return newUser.subscriptions;
