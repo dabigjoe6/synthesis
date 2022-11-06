@@ -60,6 +60,7 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
             }));
 
           console.log("Saving posts to DB");
+          console.log("Posts: ", posts);
           //Update Resource collection with crawled articles
           await ResourceModel.create(posts);
 
