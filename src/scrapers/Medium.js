@@ -8,7 +8,10 @@ export default class Medium {
   }
 
   async initPuppeteer() {
-    this.browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+    this.browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox"],
+    });
     this.page = await this.browser.newPage();
     this.page.setViewport({ width: 1000, height: 9999 });
   }
@@ -18,7 +21,8 @@ export default class Medium {
     const result = [];
     for await (const post of posts) {
       //Get post URL
-      const urlElement = await post.$("a");
+      const urlElement = await post.$('a[aria-label="Post Preview Title"]');
+
       const href = urlElement && (await urlElement.getProperty("href"));
       const url = href && (await href.jsonValue());
 
@@ -35,7 +39,7 @@ export default class Medium {
         (await descriptionElement.getProperty("innerHTML"));
       const description =
         descriptionInnerHTML && (await descriptionInnerHTML.jsonValue());
-
+        
       //Get image
       const imageElement = await post.$("img");
       const imageElementSrc =
