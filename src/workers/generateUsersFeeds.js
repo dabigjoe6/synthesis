@@ -3,7 +3,7 @@ import { startDb } from "../config/database.js";
 import UserModel from "../models/users.js";
 import sendUserFeed from "./publishers/sendFeedPublisher.js";
 import { fileURLToPath } from "url";
-import path from 'path';
+import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -14,6 +14,7 @@ const generateUsersFeeds = async () => {
   console.log("Generating users feeds");
 
   const allUsersFeeds = await UserModel.aggregate([
+    // Find all resources from subscribed authors for every user
     {
       $lookup: {
         from: "resources",
@@ -22,6 +23,7 @@ const generateUsersFeeds = async () => {
         as: "digest",
       },
     },
+    // Filter resources that have been previously sent to the user
     {
       $project: {
         email: 1,
@@ -36,6 +38,7 @@ const generateUsersFeeds = async () => {
         },
       },
     },
+    // Filter out users with no feed/digest to send
     {
       $project: {
         email: 1,
@@ -48,25 +51,27 @@ const generateUsersFeeds = async () => {
         at_least_one_digest: true,
       },
     },
+    // Picks a digest at random
+    // TODO: Use slice to get a number of random digest for the user
     {
       $project: {
-        digest: {
-          _id: 1,
-        },
-      },
-    },
-    {
-      $unwind: {
-        path: "$digest",
-      },
-    },
-    {
-      $sample: { size: Number(process.env.NO_OF_POSTS_SENT_TO_USERS) },
-    },
-    {
-      $group: {
-        _id: "$_id",
-        digest: { $push: "$digest" },
+        digest: [
+          {
+            $arrayElemAt: [
+              "$digest",
+              {
+                $mod: [
+                  {
+                    $toLong: "$$NOW",
+                  },
+                  {
+                    $size: "$digest",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       },
     },
   ]);

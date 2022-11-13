@@ -5,6 +5,7 @@
     "dev:server": "nodemon index.js ",
     "dev:send-user-feed": "nodemon ./src/workers/consumers/sendFeedConsumer.js",
     "dev:subscriptions": "nodemon ./src/workers/consumers/subscriptionConsumer.js",
+    "dev:generate-users-feeds": "node ./src/workers/generateUsersFeeds.js",
     "start": "node index.js",
     "generate-users-feeds": "node ./src/workers/generateUsersFeeds.js",
     "send-user-feed": "node ./src/workers/consumers/sendFeedConsumer.js",
