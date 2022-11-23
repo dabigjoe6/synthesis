@@ -6,6 +6,7 @@ import ResourceModel from "../../models/resources.js";
 import { startDb } from "../../config/database.js";
 import { sources, SUBSCRIPTIONS_QUEUE } from "../../utils/constants.js";
 import { fileURLToPath } from "url";
+import { isArray } from "lodash";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -50,22 +51,27 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
           );
           let posts = await mediumScraper.getAllPosts(url);
 
-          posts =
-            posts &&
-            posts.length > 0 &&
-            posts.map((post) => ({
+          if (posts && isArray(posts) && posts.length > 0) {
+            posts = posts.map((post) => ({
               ...post,
               source: sources.MEDIUM,
               author: authorId,
             }));
 
-          console.log("Saving posts to DB");
-          console.log("Posts: ", posts);
-          //Update Resource collection with crawled articles
-          await ResourceModel.create(posts);
+            console.log("Saving posts to DB");
+            console.log("Posts: ", posts);
+            //Update Resource collection with crawled articles
+            await ResourceModel.create(posts);
 
-          console.log("Succesfully saved posts!");
-          channel.ack(msg);
+            console.log("Succesfully saved posts!");
+            channel.ack(msg);
+          } else if (posts.length === 0) {
+            console.warn("Empty posts");
+          } else if (!isArray(posts)) {
+            console.warn("Posts not an array, expecting an array");
+          } else {
+            console.warn("Posts is " + posts);
+          }
         }
       },
       {
