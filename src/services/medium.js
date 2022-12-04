@@ -1,7 +1,10 @@
 import AuthorModel from "../models/authors.js";
 import UserModel from "../models/users.js";
 import { sources } from "../utils/constants.js";
-import { extractMediumAuthorNameFromURL } from "../utils/scrapeHelpers.js";
+import {
+  extractMediumAuthorNameFromURL,
+  parseMediumUrl,
+} from "../utils/scrapeHelpers.js";
 import subscriptionPublisher from "../workers/publishers/subscriptionPublisher.js";
 
 export default class MediumService {
@@ -16,6 +19,10 @@ export default class MediumService {
     if (!user) {
       user = await this.UserModel.create({ email });
     }
+
+    // If URL matches https://josepholabisi.medium.com convert to https://medium.com/@josepholabisi
+    // If URL matches https://medium.com/@josepholabisi leave as is
+    url = parseMediumUrl(url);
 
     let author = await this.AuthorModel.findOne({
       url,

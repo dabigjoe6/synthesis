@@ -6,7 +6,9 @@ import ResourceModel from "../../models/resources.js";
 import { startDb } from "../../config/database.js";
 import { sources, SUBSCRIPTIONS_QUEUE } from "../../utils/constants.js";
 import { fileURLToPath } from "url";
-import { isArray } from "lodash";
+import lodash from "lodash";
+
+const { isArray } = lodash;
 
 const __filename = fileURLToPath(import.meta.url);
 
