@@ -1,19 +1,11 @@
 import puppeteer from "puppeteer";
+import { launchConfig, viewport } from "../config/puppeteer.js";
 import { inifinteScrollToBottom } from "../utils/scrapeHelpers.js";
 export default class Medium {
-  MEDIUM_URL = "https://medium.com";
-
-  constructor(username) {
-    this.username = username;
-  }
-
   async initPuppeteer() {
-    this.browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox"],
-    });
+    this.browser = await puppeteer.launch(launchConfig);
     this.page = await this.browser.newPage();
-    this.page.setViewport({ width: 1000, height: 9999 });
+    this.page.setViewport(viewport);
   }
 
   async getPostsMetaData(posts) {
@@ -39,19 +31,22 @@ export default class Medium {
         (await descriptionElement.getProperty("innerHTML"));
       const description =
         descriptionInnerHTML && (await descriptionInnerHTML.jsonValue());
-        
+
       //Get image
       const imageElement = await post.$("img");
       const imageElementSrc =
         imageElement && (await imageElement.getProperty("src"));
       const image = imageElementSrc && (await imageElementSrc.jsonValue());
 
-      result.push({
-        url,
-        title,
-        description,
-        image,
-      });
+      // Make sure there's at least url and title
+      if (url && title) {
+        result.push({
+          url,
+          title,
+          description,
+          image,
+        });
+      }
     }
 
     console.log("Done generating metadata");
@@ -60,30 +55,45 @@ export default class Medium {
   }
 
   // Checks if its a valid medium account
-  async isPagevalid() {
+  async isPageValid() {
     const divElements = await this.page.$$("div");
+    const anchorElements = await this.page.$$("a");
     let is404 = null;
+    let isMediumPage = false;
     for (const divElement of divElements) {
       const innerText = await this.page.evaluate(
         (el) => el.innerText,
         divElement
       );
+
       if (innerText.toLowerCase().includes("page not found")) {
         is404 = innerText;
       }
     }
-    return !is404;
+
+    for (const anchorElement of anchorElements) {
+      const mediumIcon = await this.page.evaluate(
+        (el) => el.getAttribute("href"),
+        anchorElement
+      );
+
+      if (mediumIcon && mediumIcon.includes("medium.com")) {
+        isMediumPage = true;
+      }
+    }
+
+    return !is404 && isMediumPage;
   }
 
-  async getAllPosts(authorPage) {
+  async getAllPosts(authorsUrl) {
     try {
       await this.initPuppeteer();
 
-      console.log("Visiting ", authorPage);
-      await this.page.goto(authorPage, { waitUntil: "networkidle2" });
+      console.log("Visiting ", authorsUrl);
+      await this.page.goto(authorsUrl, { waitUntil: "networkidle2" });
 
-      if (await this.isPagevalid()) {
-        console.log("Loaded", authorPage);
+      if (await this.isPageValid()) {
+        console.log("Loaded", authorsUrl);
 
         await inifinteScrollToBottom(this.page);
 
@@ -93,7 +103,11 @@ export default class Medium {
 
         return postsMetadata;
       } else {
-        throw "Could not fetch posts from author: " + authorPage;
+        throw (
+          "Could not fetch posts from author: " +
+          authorsUrl +
+          " as its not a valid medium page"
+        );
       }
     } catch (err) {
       console.log("Couldn't get all posts - medium", err);
