@@ -4,7 +4,7 @@ import { SUBSCRIPTIONS_QUEUE } from "../../utils/constants.js";
 
 dotenv.config({ path: "../../../.env" });
 
-const subscriptionPublisher = (authorId, url) => {
+const subscriptionPublisher = ({ authorId, url, service }) => {
   amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
     if (err0) {
       throw err0;
@@ -15,7 +15,7 @@ const subscriptionPublisher = (authorId, url) => {
         throw err1;
       }
 
-      const msg = authorId + "_" + url;
+      const msg = authorId + "_" + url + "_" + service;
 
       channel.assertQueue(SUBSCRIPTIONS_QUEUE, {
         durable: true,
