@@ -1,7 +1,7 @@
 export const parseMediumUrl = (url) => {
   // If URL matches https://josepholabisi.medium.com convert to https://medium.com/@josepholabisi
   // If URL matches https://medium.com/@josepholabisi leave as is
-  
+
   let split = url.split("/@");
   if (split.length >= 2) return url;
 
@@ -11,8 +11,10 @@ export const parseMediumUrl = (url) => {
   return `https://medium.com/@${name}`;
 };
 
+const VALID_URL_REGEX = /^(ftp|http|https):\/\/[^ "]+$/;
+
 export const extractMediumAuthorNameFromURL = (url) => {
-  if (!/^(ftp|http|https):\/\/[^ "]+$/.test(url)) {
+  if (!VALID_URL_REGEX.test(url)) {
     throw "Invalid URL";
   }
 
@@ -45,6 +47,27 @@ export const extractMediumAuthorNameFromURL = (url) => {
 
   console.log("Author name: ", name);
   return name;
+};
+
+export const extractSubstackAuthorNameFromURL = (url) => {
+  if (!VALID_URL_REGEX.test(url)) {
+    throw "Invalid URL";
+  }
+
+  const substackUsernameRegex = /https:\/\/[a-zA-Z0-9]+\.substack\.com/;
+
+  if (substackUsernameRegex.test(url)) {
+    const match = url.match(substackUsernameRegex);
+    let name = match[1];
+
+    if (name) {
+      return name;
+    } else {
+      return url;
+    }
+  } else {
+    return url;
+  }
 };
 
 export const inifinteScrollToBottom = (currentPage) => {

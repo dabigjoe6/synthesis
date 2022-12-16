@@ -1,5 +1,6 @@
 export const launchConfig = {
-  headless: false,
+  //TODO: Confirm if this works
+  headless: process.env.NODE_ENV === "development" ? false : true,
   args: ["--no-sandbox"],
 };
 

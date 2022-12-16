@@ -1,13 +1,10 @@
 import AuthorModel from "../models/authors.js";
 import UserModel from "../models/users.js";
 import { sources } from "../utils/constants.js";
-import {
-  extractMediumAuthorNameFromURL,
-  parseMediumUrl,
-} from "../utils/scrapeHelpers.js";
 import subscriptionPublisher from "../workers/publishers/subscriptionPublisher.js";
+import { extractSubstackAuthorNameFromURL } from "../utils/scrapeHelpers.js";
 
-export default class MediumService {
+export default class SubstackService {
   constructor() {
     this.AuthorModel = AuthorModel;
     this.UserModel = UserModel;
@@ -20,29 +17,22 @@ export default class MediumService {
       user = await this.UserModel.create({ email });
     }
 
-    // If URL matches https://josepholabisi.medium.com convert to https://medium.com/@josepholabisi
-    // If URL matches https://medium.com/@josepholabisi leave as is
-    url = parseMediumUrl(url);
-
     let author = await this.AuthorModel.findOne({
       url,
     }).exec();
 
     if (!author) {
-      //Handles the two URL styles in Medium to avoid duplicate subscribtions on the DB
-      // Eg1: https://josepholabisi.medium.com
-      // Eg2: https://medium.com/@josepholabisi/
-      const name = extractMediumAuthorNameFromURL(url);
+      const name = extractSubstackAuthorNameFromURL(url);
       author = await this.AuthorModel.create({
         name,
         url,
-        source: sources.MEDIUM,
+        source: sources.SUBSTACK,
       });
 
       try {
         subscriptionPublisher({
           authorId: author._id,
-          service: sources.MEDIUM,
+          service: sources.SUBSTACK,
           url,
         });
       } catch (err) {
@@ -56,6 +46,7 @@ export default class MediumService {
         $addToSet: { subscriptions: author._id },
       }
     );
+
     return newUser.subscriptions;
   };
 }

@@ -1,18 +1,70 @@
 import dotenv from "dotenv";
 import path from "path";
 import amqp from "amqplib/callback_api.js";
-import Medium from "../../scrapers/Medium.js";
 import ResourceModel from "../../models/resources.js";
 import { startDb } from "../../config/database.js";
 import { sources, SUBSCRIPTIONS_QUEUE } from "../../utils/constants.js";
 import { fileURLToPath } from "url";
 import lodash from "lodash";
 
+import Medium from "../../scrapers/Medium.js";
+import Substack from "../../scrapers/Substack.js";
+
 const { isArray } = lodash;
 
 const __filename = fileURLToPath(import.meta.url);
 
 dotenv.config({ path: path.resolve(__filename, "../../../../.env") });
+
+const handleMediumService = async (authorId, url) => {
+  const mediumScraper = new Medium();
+  console.log(
+    "Scraping medium for authorId: " + authorId + " from URL: " + url
+  );
+  return await mediumScraper.getAllPosts(url);
+};
+
+const handleSubstackService = async (authorId, url) => {
+  const substackScraper = new Substack();
+  console.log(
+    "Scraping substack for authorId: " + authorId + " from URL: " + url
+  );
+  return await substackScraper.getAllPosts(url);
+};
+
+const getPostsFromService = async (service, authorId, url) => {
+  let posts = null;
+  switch (service) {
+    case sources.MEDIUM:
+      posts = await handleMediumService(authorId, url);
+      break;
+    case sources.SUBSTACK:
+      posts = await handleSubstackService(authorId, url);
+      break;
+    default:
+      throw "Service not supported: " + service;
+  }
+
+  if (posts && isArray(posts) && posts.length > 0) {
+    posts = posts.map((post) => ({
+      ...post,
+      source: service,
+      author: authorId,
+    }));
+
+    console.log("Saving posts to DB");
+    //Update Resource collection with crawled articles
+    await ResourceModel.create(posts);
+
+    console.log("Succesfully saved posts!");
+  } else if (posts.length === 0) {
+    console.warn("Empty posts");
+  } else if (!isArray(posts)) {
+    console.warn("Posts not an array, expecting an array");
+  } else {
+    console.warn("Posts is " + posts);
+  }
+};
 
 amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
   if (err0) {
@@ -41,39 +93,15 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
     channel.consume(
       SUBSCRIPTIONS_QUEUE,
       async (msg) => {
-        const mediumScraper = new Medium();
-
         if (msg) {
           console.log("Received msg: " + msg.content.toString());
-          const authorId = msg.content.toString().split("_")[0];
-          const url = msg.content.toString().split("_")[1];
+          const message = msg.content.toString().split("_");
+          const authorId = message[0];
+          const url = message[1];
+          const service = message[2];
 
-          console.log(
-            "Scraping medium for authorId: " + authorId + " from URL: " + url
-          );
-          let posts = await mediumScraper.getAllPosts(url);
-
-          if (posts && isArray(posts) && posts.length > 0) {
-            posts = posts.map((post) => ({
-              ...post,
-              source: sources.MEDIUM,
-              author: authorId,
-            }));
-
-            console.log("Saving posts to DB");
-            console.log("Posts: ", posts);
-            //Update Resource collection with crawled articles
-            await ResourceModel.create(posts);
-
-            console.log("Succesfully saved posts!");
-            channel.ack(msg);
-          } else if (posts.length === 0) {
-            console.warn("Empty posts");
-          } else if (!isArray(posts)) {
-            console.warn("Posts not an array, expecting an array");
-          } else {
-            console.warn("Posts is " + posts);
-          }
+          await getPostsFromService(service, authorId, url);
+          channel.ack(msg);
         }
       },
       {

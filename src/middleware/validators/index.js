@@ -8,6 +8,11 @@ const medium = Joi.object({
   email: Joi.string().email().required(),
 });
 
+const substack = Joi.object({
+  author: Joi.string().uri().required(),
+  email: Joi.string().email().required(),
+});
+
 const getSubscriptions = Joi.object({
   email: Joi.string().email().required(),
 });
@@ -19,6 +24,7 @@ const unsubscribe = Joi.object({
 
 const Validators = {
   medium,
+  substack,
   getSubscriptions,
   unsubscribe,
 };
