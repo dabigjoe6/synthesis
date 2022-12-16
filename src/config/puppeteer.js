@@ -1,6 +1,6 @@
 export const launchConfig = {
-  //TODO: Confirm if this works
-  headless: process.env.NODE_ENV === "development" ? false : true,
+  //TODO: Use environment variable to determine headless mode
+  headless: true,
   args: ["--no-sandbox"],
 };
 
