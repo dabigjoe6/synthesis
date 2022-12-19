@@ -8,7 +8,7 @@ const resourceSchema = new Schema({
   source: { type: String, required: false, unique: false },
   description: { type: String, required: false, unique: false },
   image: { type: String, required: false, unique: false },
-  author: { type: String, required: false, unique: false },
+  authorsName: { type: String, required: false, unique: false },
   datePublished: { type: Date, required: false, unique: false },
   numberOfLikes: { type: Number, required: false, unique: false },
   numberOfComments: { type: Number, required: false, unique: false },
