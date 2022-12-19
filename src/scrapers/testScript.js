@@ -20,7 +20,7 @@ const trySubstack = async () => {
   const substackScrapper = new Substack();
 
   try {
-    let posts = await substackScrapper.getAllPosts("https://newsletter.pragmaticengineer.com");
+    let posts = await substackScrapper.getAllPosts("https://timdenning.substack.com");
   
     if (posts) {
       console.log(posts, posts.length);

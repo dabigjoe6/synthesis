@@ -45,7 +45,7 @@ export default class Substack {
       const authorElement = authorWrapper && (await authorWrapper.$("a"));
       const authorInnerHTML =
         authorElement && (await authorElement.getProperty("innerHTML"));
-      const author = authorInnerHTML && (await authorInnerHTML.jsonValue());
+      const authorsName = authorInnerHTML && (await authorInnerHTML.jsonValue());
 
       // Get published date
       const timeElement = await post.$("time");
@@ -82,7 +82,7 @@ export default class Substack {
           title,
           description,
           image,
-          author,
+          authorsName,
           datePublished,
           numberOfLikes,
           numberOfComments,
