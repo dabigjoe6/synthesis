@@ -11,7 +11,7 @@ export default class Medium {
   async getPostsMetaData(posts) {
     console.log("Generating metadata from posts");
     const result = [];
-    for await (const post of posts) {
+    for await (const [index, post] of posts.entries()) {
       //Get post URL
       const urlElement = await post.$('a[aria-label="Post Preview Title"]');
 
@@ -45,6 +45,7 @@ export default class Medium {
           title,
           description,
           image,
+          latest: index === 0 // TODO: Fix this logic as there are pinned posts in Medium
         });
       }
     }

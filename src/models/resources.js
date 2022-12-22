@@ -12,6 +12,7 @@ const resourceSchema = new Schema({
   datePublished: { type: Date, required: false, unique: false },
   numberOfLikes: { type: Number, required: false, unique: false },
   numberOfComments: { type: Number, required: false, unique: false },
+  latest: { type: Boolean, required: true, unique: false },
 });
 
 export default mongoose.model("Resource", resourceSchema);

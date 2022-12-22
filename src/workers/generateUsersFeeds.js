@@ -38,12 +38,38 @@ const generateUsersFeeds = async () => {
         },
       },
     },
-    // Filter out users with no feed/digest to send
+    // Get the latest post from the users digest if any
+    {
+      $project: {
+        email: 1,
+        digest: {
+          $filter: {
+            input: "$digest",
+            as: "digest",
+            cond: { $ne: ["$$digest.latest", true] }, // Removes the latest articles from the rest of the digest so we don't end up with repition
+          },
+        },
+        latest: {
+          $filter: {
+            input: "$digest",
+            as: "digest",
+            cond: { $eq: ["$$digest.latest", true] },
+          },
+        },
+      },
+    },
+    // // Filter out users with no feed/digest to send
     {
       $project: {
         email: 1,
         digest: 1,
-        at_least_one_digest: { $gt: [{ $size: "$digest" }, 0] },
+        latest: 1,
+        at_least_one_digest: {
+          $or: [
+            { $gt: [{ $size: "$digest" }, 0] },
+            { $gt: [{ $size: "$latest" }, 0] },
+          ],
+        },
       },
     },
     {
@@ -51,8 +77,8 @@ const generateUsersFeeds = async () => {
         at_least_one_digest: true,
       },
     },
-    // Picks a digest at random
-    // TODO: Use slice to get a number of random digest for the user
+    // // // Picks a digest at random
+    // // // TODO: Use slice to get a number of random digest for the user
     {
       $project: {
         digest: [
@@ -72,17 +98,17 @@ const generateUsersFeeds = async () => {
             ],
           },
         ],
+        latest: 1,
       },
     },
   ]);
-
-  console.log("UserFeeds", JSON.stringify(allUsersFeeds));
 
   allUsersFeeds.forEach((userFeed) => {
     if (userFeed.digest.length > 0) {
       sendUserFeed(
         userFeed._id,
-        userFeed.digest.map((feed) => feed._id)
+        userFeed.digest.map((feed) => feed._id),
+        userFeed.latest.map((feed) => feed._id)
       );
     }
   });

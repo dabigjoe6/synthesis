@@ -9,6 +9,7 @@ import generateEmailTemplate from "../../utils/generateEmailTemplate.js";
 import { FEEDS_QUEUE } from "../../utils/constants.js";
 import { fileURLToPath } from "url";
 import path from "path";
+import generateEmailTemplateNew from "../../utils/generateEmailTemplateNew.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -41,10 +42,11 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
       queue,
       async (msg) => {
         if (msg) {
-          console.log("Received msg: " + msg.content.toString());
+          const messageContent = msg.content.toString();
+          console.log("Received msg: " + messageContent);
 
           console.log("Getting feeds from DB");
-          let resourceIds = JSON.parse(msg.content.toString().split("_")[1]);
+          let resourceIds = JSON.parse(messageContent.split("_")[1]);
           if (!resourceIds) {
             throw new Error("Could not get resource Ids - sendFeedConsumer.js");
           }
@@ -55,13 +57,18 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
             _id: { $in: resourceIds },
           }).exec();
 
+          let latestResourceIds = JSON.parse(messageContent.split("_")[2]);
+          const latestResources = await ResourceModel.find({
+            _id: { $in: latestResourceIds },
+          });
+
           let userEmail;
           let userId;
           let user;
 
           try {
             console.log("Getting user from DB");
-            userId = msg.content.toString().split("_")[0];
+            userId = messageContent.split("_")[0];
 
             if (!userId) {
               throw new Error("User ID not defined - sendFeedConsumer.js");
@@ -75,10 +82,14 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
           }
 
           console.log("User email " + userEmail, !!userEmail);
-          if (!!userEmail && resources.length > 0) {
+          if (
+            !!userEmail &&
+            (resources.length > 0 || latestResources.length > 0)
+          ) {
             try {
               console.log("Sending email to user: " + userEmail);
-              const message = generateEmailTemplate(resources);
+              // const message = generateEmailTemplate(resources, latestResources);
+              const message = generateEmailTemplateNew(resources, latestResources);
               Sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
               await Sendgrid.send({
                 to: userEmail,
@@ -97,7 +108,13 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
               console.log("Marking resources as seen for user: " + userEmail);
               await UserModel.findOneAndUpdate(
                 { _id: userId },
-                { $push: { seenResources: { $each: resourceIds } } }
+                {
+                  $push: {
+                    seenResources: {
+                      $each: [...resourceIds, ...latestResourceIds],
+                    },
+                  },
+                }
               );
               console.log(
                 "Done marking resources as seen for user: " + userEmail

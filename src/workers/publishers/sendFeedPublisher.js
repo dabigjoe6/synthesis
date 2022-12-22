@@ -4,7 +4,7 @@ import { FEEDS_QUEUE } from "../../utils/constants.js";
 
 dotenv.config({ path: "../../../.env" });
 
-const sendUserFeed = (userId, feed) => {
+const sendUserFeed = (userId, feed, latestPost) => {
   amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
     if (err0) {
       throw err0;
@@ -16,7 +16,7 @@ const sendUserFeed = (userId, feed) => {
       }
 
       const queue = FEEDS_QUEUE;
-      const msg = userId + "_" + JSON.stringify(feed);
+      const msg = userId + "_" + JSON.stringify(feed) + "_" + JSON.stringify(latestPost);
 
       channel.assertQueue(queue, {
         durable: true,
