@@ -32,7 +32,7 @@ const trySubstack = async () => {
 }
 
 
-tryMedium();
+trySubstack();
 
 
 

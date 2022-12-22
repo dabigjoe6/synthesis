@@ -13,7 +13,7 @@ export default class Substack {
     console.log("Generating metadata from posts");
     const result = [];
 
-    for await (const post of posts) {
+    for await (const [index, post] of posts.entries()) {
       // Get post URL
       const urlElement = await post.$('a[class~="post-preview-title"]');
       const href = urlElement && (await urlElement.getProperty("href"));
@@ -86,6 +86,7 @@ export default class Substack {
           datePublished,
           numberOfLikes,
           numberOfComments,
+          latest: index === 0
         });
       }
     }
