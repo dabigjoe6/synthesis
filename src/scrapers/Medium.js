@@ -45,7 +45,7 @@ export default class Medium {
           title,
           description,
           image,
-          latest: index === 0
+          latest: index === 0 // TODO: Fix this logic as there are pinned posts in Medium
         });
       }
     }
