@@ -8,8 +8,7 @@ import { startDb } from "../../config/database.js";
 import generateEmailTemplate from "../../utils/generateEmailTemplate.js";
 import { FEEDS_QUEUE } from "../../utils/constants.js";
 import { fileURLToPath } from "url";
-import path from 'path';
-
+import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -46,6 +45,9 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
 
           console.log("Getting feeds from DB");
           let resourceIds = JSON.parse(msg.content.toString().split("_")[1]);
+          if (!resourceIds) {
+            throw new Error("Could not get resource Ids - sendFeedConsumer.js");
+          }
           resourceIds = resourceIds.map((resourceId) =>
             mongoose.Types.ObjectId(resourceId)
           );
@@ -60,6 +62,11 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
           try {
             console.log("Getting user from DB");
             userId = msg.content.toString().split("_")[0];
+
+            if (!userId) {
+              throw new Error("User ID not defined - sendFeedConsumer.js");
+            }
+
             user = await UserModel.findOne({ _id: userId }).exec();
             userEmail = user?.email;
           } catch (err) {

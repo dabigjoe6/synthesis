@@ -96,9 +96,25 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
         if (msg) {
           console.log("Received msg: " + msg.content.toString());
           const message = msg.content.toString().split("_");
+
           const authorId = message[0];
+          if (!authorId) {
+            throw new Error(
+              "Could not get author Id - subscriptionConsumer.js"
+            );
+          }
           const url = message[1];
+          if (!url) {
+            throw new Error(
+              "Could not get authors url - subscriptionConsumer.js"
+            );
+          }
           const service = message[2];
+          if (!service) {
+            throw new Error(
+              "Could not determine service - subscriptionConsumer.js"
+            );
+          }
 
           await getPostsFromService(service, authorId, url);
           channel.ack(msg);
