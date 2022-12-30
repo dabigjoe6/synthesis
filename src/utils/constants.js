@@ -1,6 +1,7 @@
 export const sources = {
   MEDIUM: "MEDIUM",
   SUBSTACK: "SUBSTACK",
+  RSS: "RSS"
 };
 
 export const FEEDS_QUEUE = "feeds";

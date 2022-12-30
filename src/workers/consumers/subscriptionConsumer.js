@@ -9,6 +9,7 @@ import lodash from "lodash";
 
 import Medium from "../../scrapers/Medium.js";
 import Substack from "../../scrapers/Substack.js";
+import RSS from "../../scrapers/RSS.js";
 
 const { isArray } = lodash;
 
@@ -32,6 +33,14 @@ const handleSubstackService = async (authorId, url) => {
   return await substackScraper.getAllPosts(url);
 };
 
+const handleRSSService = async (authorId, url) => {
+  const rssScraper = new RSS();
+  console.log(
+    "Scraping RSS feed for authorId: " + authorId + " from URL: " + url
+  );
+  return await rssScraper.getAllPosts(url);
+}
+
 const getPostsFromService = async (service, authorId, url) => {
   let posts = null;
   switch (service) {
@@ -41,6 +50,8 @@ const getPostsFromService = async (service, authorId, url) => {
     case sources.SUBSTACK:
       posts = await handleSubstackService(authorId, url);
       break;
+    case sources.RSS:
+      posts = await handleRSSService(authorId, url);
     default:
       throw "Service not supported: " + service;
   }
