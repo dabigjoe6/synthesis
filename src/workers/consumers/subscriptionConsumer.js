@@ -52,8 +52,9 @@ const getPostsFromService = async (service, authorId, url) => {
       break;
     case sources.RSS:
       posts = await handleRSSService(authorId, url);
+      break;
     default:
-      throw "Service not supported: " + service;
+      throw new Error("Service not supported: " + service);
   }
 
   if (posts && isArray(posts) && posts.length > 0) {
