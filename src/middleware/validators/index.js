@@ -3,12 +3,7 @@ import JoiObjectId from "joi-objectid";
 
 const joiObjectId = JoiObjectId(Joi);
 
-const medium = Joi.object({
-  author: Joi.string().uri().required(),
-  email: Joi.string().email().required(),
-});
-
-const substack = Joi.object({
+const resource = Joi.object({
   author: Joi.string().uri().required(),
   email: Joi.string().email().required(),
 });
@@ -23,8 +18,7 @@ const unsubscribe = Joi.object({
 });
 
 const Validators = {
-  medium,
-  substack,
+  resource,
   getSubscriptions,
   unsubscribe,
 };

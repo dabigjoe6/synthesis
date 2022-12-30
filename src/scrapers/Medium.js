@@ -104,10 +104,10 @@ export default class Medium {
 
         return postsMetadata;
       } else {
-        throw (
+        throw new Error(
           "Could not fetch posts from author: " +
-          authorsUrl +
-          " as its not a valid medium page"
+            authorsUrl +
+            " as its not a valid medium page"
         );
       }
     } catch (err) {

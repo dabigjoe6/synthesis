@@ -45,7 +45,8 @@ export default class Substack {
       const authorElement = authorWrapper && (await authorWrapper.$("a"));
       const authorInnerHTML =
         authorElement && (await authorElement.getProperty("innerHTML"));
-      const authorsName = authorInnerHTML && (await authorInnerHTML.jsonValue());
+      const authorsName =
+        authorInnerHTML && (await authorInnerHTML.jsonValue());
 
       // Get published date
       const timeElement = await post.$("time");
@@ -74,7 +75,8 @@ export default class Substack {
         commentsWrapper && (await commentsWrapper.$('div[class="label"]'));
       const comments =
         commentsElement && (await commentsElement.getProperty("innerHTML"));
-      const numberOfComments = Number(comments && (await comments.jsonValue())) || 0;
+      const numberOfComments =
+        Number(comments && (await comments.jsonValue())) || 0;
 
       if (url && title) {
         result.push({
@@ -161,12 +163,12 @@ export default class Substack {
 
         const postsMetadata = await this.getPostsMetaData(posts);
 
-        return postsMetadata
+        return postsMetadata;
       } else {
-        throw (
+        throw new Error(
           "Could not fetch posts from author: " +
-          authorsUrl +
-          " as its not a valid Substack page"
+            authorsUrl +
+            " as its not a valid Substack page"
         );
       }
     } catch (err) {

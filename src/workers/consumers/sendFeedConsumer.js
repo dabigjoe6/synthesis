@@ -9,7 +9,6 @@ import generateEmailTemplate from "../../utils/generateEmailTemplate.js";
 import { FEEDS_QUEUE } from "../../utils/constants.js";
 import { fileURLToPath } from "url";
 import path from "path";
-import generateEmailTemplateNew from "../../utils/generateEmailTemplateNew.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -88,8 +87,7 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
           ) {
             try {
               console.log("Sending email to user: " + userEmail);
-              // const message = generateEmailTemplate(resources, latestResources);
-              const message = generateEmailTemplateNew(resources, latestResources);
+              const message = generateEmailTemplate(resources, latestResources);
               Sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
               await Sendgrid.send({
                 to: userEmail,
