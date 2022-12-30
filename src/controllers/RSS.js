@@ -1,4 +1,4 @@
-import RSSService from "../services/RSS.js";
+import RSSService from "../services/rss.js";
 import SubscriptionService from "../services/subscription.js";
 
 export const subscribe = async (req, res, next) => {
