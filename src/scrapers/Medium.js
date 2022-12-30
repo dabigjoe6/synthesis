@@ -45,6 +45,7 @@ export default class Medium {
           title,
           description,
           image,
+          latest: index === 0, // TODO: Fix this logic as there are pinned posts in Medium
         });
       }
     }
@@ -103,10 +104,10 @@ export default class Medium {
 
         return postsMetadata;
       } else {
-        throw (
+        throw new Error(
           "Could not fetch posts from author: " +
-          authorsUrl +
-          " as its not a valid medium page"
+            authorsUrl +
+            " as its not a valid medium page"
         );
       }
     } catch (err) {
