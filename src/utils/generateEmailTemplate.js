@@ -17,7 +17,7 @@ const generatePost = (post) => `
       <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:0px 10px 10px;font-family:trebuchet ms,geneva;" align="left">
 
         <div class="v-text-align v-line-height" style="color: #34495e; line-height: 120%; text-align: left; word-wrap: break-word;">
-          <p style="font-size: 14px; line-height: 120%;">${post.description}</p>
+          <p style="font-size: 14px; line-height: 120%; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 10; line-clamp: 10; -webkit-box-orient: vertical; max-height: 18em; line-height: 1.8em;">${post.description}</p>
         </div>
 
       </td>
@@ -25,7 +25,7 @@ const generatePost = (post) => `
   </tbody>
 </table>
 
-<table id="u_content_text_2" style="font-family:trebuchet ms,geneva;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+<table id="u_content_text_2" style="font-family:trebuchet ms,geneva; margin-bottom: 15px;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
   <tbody>
     <tr>
       <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:0px 0px 0px 10px;font-family:trebuchet ms,geneva;" align="left">
