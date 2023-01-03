@@ -384,7 +384,7 @@ const generateEmailTemplate = (posts, latestPosts) => {
                                 <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:trebuchet ms,geneva;" align="left">
     
                                   <h1 class="v-text-align v-line-height" style="margin: 0px; color: #66ced6; line-height: 140%; text-align: center; word-wrap: break-word; font-weight: normal; font-size: 10px;">
-                                    <p><em>Copyright © 2022 MorningBrew</em><br /><em>All rights reserved.</em></p>
+                                    <p><em>Copyright © 2023 MorningBrew</em><br /><em>All rights reserved.</em></p>
                                   </h1>
     
                                 </td>
