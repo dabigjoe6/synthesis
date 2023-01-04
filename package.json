@@ -12,7 +12,8 @@
     "generate-users-feeds": "node ./src/workers/generateUsersFeeds.js",
     "generate-stale-resources": "node ./src/workers/syncResources.js",
     "send-user-feed": "node ./src/workers/consumers/sendFeedConsumer.js",
-    "subscriptions": "node ./src/workers/consumers/subscriptionConsumer.js"
+    "subscriptions": "node ./src/workers/consumers/subscriptionConsumer.js",
+    "sync-resources": "node ./src/workers/consumers/syncResourcesConsumer.js"
   },
   "type": "module",
   "dependencies": {
