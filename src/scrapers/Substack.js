@@ -88,7 +88,7 @@ export default class Substack {
           datePublished,
           numberOfLikes,
           numberOfComments,
-          latest: index === 0
+          latest: index === 0,
         });
       }
     }
@@ -129,7 +129,7 @@ export default class Substack {
     return !is404 && isSubstackPage;
   }
 
-  async getAllPosts(authorsUrl) {
+  async getAllPosts(authorsUrl, shouldScrollToBottom = true) {
     try {
       await this.initPuppeteer();
 
@@ -157,7 +157,9 @@ export default class Substack {
           await this.page.waitForTimeout(3000);
         }
 
-        await inifinteScrollToBottom(this.page);
+        if (shouldScrollToBottom) {
+          await inifinteScrollToBottom(this.page);
+        }
 
         const posts = await this.page.$$('div[class*="post-preview"]');
 
