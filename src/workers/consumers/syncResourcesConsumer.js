@@ -76,7 +76,10 @@ const syncPosts = async (newPosts, mostRecentPostsInDb, service, authorId) => {
   }));
 
   console.log("Saving posts to DB");
-  await ResourceModel.updateMany({}, { latest: false }).exec();
+  await ResourceModel.updateMany(
+    { author: authorId },
+    { $set: { latest: false } }
+  ).exec();
   //Update Resource collection with crawled articles
   await ResourceModel.create(posts);
   //Update last synced time for Author
