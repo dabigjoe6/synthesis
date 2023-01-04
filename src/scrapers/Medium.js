@@ -45,7 +45,7 @@ export default class Medium {
           title,
           description,
           image,
-          latest: index === 0 // TODO: Fix this logic as there are pinned posts in Medium
+          latest: index === 0, // TODO: Fix this logic as there are pinned posts in Medium
         });
       }
     }
@@ -86,7 +86,7 @@ export default class Medium {
     return !is404 && isMediumPage;
   }
 
-  async getAllPosts(authorsUrl) {
+  async getAllPosts(authorsUrl, shouldScrollToBottom = true) {
     try {
       await this.initPuppeteer();
 
@@ -96,7 +96,9 @@ export default class Medium {
       if (await this.isPageValid()) {
         console.log("Loaded", authorsUrl);
 
-        await inifinteScrollToBottom(this.page);
+        if (shouldScrollToBottom) {
+          await inifinteScrollToBottom(this.page);
+        }
 
         const posts = await this.page.$$("article");
 

@@ -1,5 +1,6 @@
 import AuthorModel from "../models/authors.js";
 import UserModel from "../models/users.js";
+import ResourceModel from "../models/resources.js";
 import { sources } from "../utils/constants.js";
 import {
   extractMediumAuthorNameFromURL,
@@ -11,6 +12,7 @@ export default class MediumService {
   constructor() {
     this.AuthorModel = AuthorModel;
     this.UserModel = UserModel;
+    this.ResourceModel = ResourceModel;
   }
 
   subscribe = async (email, url) => {
@@ -57,5 +59,19 @@ export default class MediumService {
       }
     );
     return newUser.subscriptions;
+  };
+
+  getMostRecentPosts = async (authorId) => {
+    const author = await this.AuthorModel.findById(authorId).exec();
+
+    if (!author) {
+      throw new Error("Author with author id: " + authorId + " does not exist");
+    }
+
+    const mostRecentPosts = await this.ResourceModel.find({ author: authorId })
+      .limit(10)
+      .exec();
+
+    return mostRecentPosts;
   };
 }

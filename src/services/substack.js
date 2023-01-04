@@ -49,4 +49,18 @@ export default class SubstackService {
 
     return newUser.subscriptions;
   };
+
+  getMostRecentPosts = async (authorId) => {
+    const author = await this.AuthorModel.findById(authorId).exec();
+
+    if (!author) {
+      throw new Error("Author with author id: " + authorId + " does not exist");
+    }
+
+    const mostRecentPosts = await this.ResourceModel.find({ author: authorId })
+      .limit(10)
+      .exec();
+
+    return mostRecentPosts;
+  };
 }

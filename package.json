@@ -1,13 +1,16 @@
 {
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "run-p dev:server dev:send-user-feed dev:subscriptions",
+    "dev": "run-p dev:server dev:send-user-feed dev:subscriptions dev:sync-resources",
     "dev:server": "nodemon index.js ",
     "dev:send-user-feed": "nodemon ./src/workers/consumers/sendFeedConsumer.js",
     "dev:subscriptions": "nodemon ./src/workers/consumers/subscriptionConsumer.js",
-    "dev:generate-users-feeds": "node ./src/workers/generateUsersFeeds.js",
+    "dev:sync-resources": "nodemon ./src/workers/consumers/syncResourcesConsumer.js",
+    "dev:generate-users-feeds": "nodemon ./src/workers/generateUsersFeeds.js",
+    "dev:generate-stale-resources": "nodemon ./src/workers/syncResources.js",
     "start": "node index.js",
     "generate-users-feeds": "node ./src/workers/generateUsersFeeds.js",
+    "generate-stale-resources": "node ./src/workers/syncResources.js",
     "send-user-feed": "node ./src/workers/consumers/sendFeedConsumer.js",
     "subscriptions": "node ./src/workers/consumers/subscriptionConsumer.js"
   },
