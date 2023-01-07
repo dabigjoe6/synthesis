@@ -1,10 +1,13 @@
 import { Router } from "express";
+import { verifyToken } from "../middleware/auth.js";
 
+import authRouter from "./auth.js";
 import subscribeRouter from "./subscribe.js";
 
 const routes = Router();
 
-routes.use("/subscribe", subscribeRouter);
+routes.use("/auth", authRouter);
+routes.use("/subscribe", verifyToken, subscribeRouter);
 
 routes.get("/", (req, res, next) => {
   try {
