@@ -7,6 +7,8 @@ const resourceSchema = new Schema({
   title: { type: String, required: false, unique: false },
   source: { type: String, required: false, unique: false },
   description: { type: String, required: false, unique: false },
+  summary: { type: String, required: false, unique: false },
+  lastSummaryUpdate: { type: Date, required: false, unique: false },
   image: { type: String, required: false, unique: false },
   authorsName: { type: String, required: false, unique: false },
   datePublished: { type: Date, required: false, unique: false },
