@@ -20,10 +20,10 @@ const resetPassword = Joi.object({
 
 const changePassword = Joi.object({
   email: Joi.string().email().lowercase().required(),
-  password: Joi.string().min(8).required(),
-  resetPasswordToken: Joi.number().min(4).optional(),
+  password: Joi.string().min(8),
+  resetPasswordToken: Joi.string(),
   newPassword: Joi.string().required(),
-});
+}).or("password", "resetPasswordToken");
 
 const resource = Joi.object({
   author: Joi.string().uri().required(),
