@@ -116,4 +116,49 @@ export default class Medium {
       console.log("Couldn't get all posts - medium", err);
     }
   }
+
+  async getPost(url) {
+    try {
+      // init puppeteer
+      await this.initPuppeteer();
+
+      console.log("Visiting ", url);
+
+      await page.goto(url, { waitUntil: "networkidle2" });
+
+      // check if page is valid
+      const isValid = await page.evaluate(() => {
+        const article = document.querySelector("article");
+        return article && article.innerHTML;
+      });
+
+      if (isValid) {
+        console.log("Loaded", url);
+
+        const postContent = await page.$("article");
+
+        const postContentInnerHTML =
+          postContent && (await postContent.getProperty("innerHTML"));
+
+        const postContentHTML =
+          postContentInnerHTML && (await postContentInnerHTML.jsonValue());
+
+        // remove all html tags and merge all text content
+        const extractedText = postContentHTML.replace(/<[^>]*>?/gm, "");
+
+        // TODO: Further preprocessing, remove code snippets, remove links, ... while maintaining content structure
+        // Minimize the text to 200 words or so (based on GPT-3's max input length)
+
+        return extractedText;
+      } else {
+        throw new Error(
+          "Could not fetch post from url: " +
+            url +
+            " as its not a valid medium page"
+        );
+      }
+    } catch (err) {
+      console.log(`Couldn't get post - medium ${url}`, err);
+    }
+  }
 }
