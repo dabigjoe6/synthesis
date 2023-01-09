@@ -4,7 +4,7 @@ const RATE_LIMIT_PER_MINUTE = 20;
 const DEFAULT_DELAY_IN_SECOND = 60 / RATE_LIMIT_PER_MINUTE;
 
 const configuration = new Configuration({
-  apiKey: "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",
+  apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
