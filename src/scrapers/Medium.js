@@ -125,10 +125,10 @@ export default class Medium {
 
       console.log("Visiting ", url);
 
-      await page.goto(url, { waitUntil: "networkidle2" });
+      await this.page.goto(url, { waitUntil: "networkidle2" });
 
       // check if page is valid
-      const isValid = await page.evaluate(() => {
+      const isValid = await this.page.evaluate(() => {
         const article = document.querySelector("article");
         return article && article.innerHTML;
       });
@@ -136,7 +136,7 @@ export default class Medium {
       if (isValid) {
         console.log("Loaded", url);
 
-        const postContent = await page.$("article");
+        const postContent = await this.page.$("article");
 
         const postContentInnerHTML =
           postContent && (await postContent.getProperty("innerHTML"));
@@ -147,7 +147,7 @@ export default class Medium {
         let content = cleanHTMLContent(postContentHTML);
 
         // get 500 tokens from data. That's about 2000 characters
-        const tokens = cleanedUp.split(" ").slice(0, 500).join(" ");
+        const tokens = content.split(" ").slice(0, 500).join(" ");
         const lastStopIndex = tokens.lastIndexOf(".");
 
         if (lastStopIndex > 0) {
