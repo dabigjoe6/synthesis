@@ -144,11 +144,17 @@ export default class Medium {
         const postContentHTML =
           postContentInnerHTML && (await postContentInnerHTML.jsonValue());
 
-        const cleanedUp = cleanHTMLContent(postContentHTML);
+        let content = cleanHTMLContent(postContentHTML);
 
-        // TODO: Minimize the text to 200 words or so (based on GPT-3's max input length)
+        // get 500 tokens from data. That's about 2000 characters
+        const tokens = cleanedUp.split(" ").slice(0, 500).join(" ");
+        const lastStopIndex = tokens.lastIndexOf(".");
 
-        return cleanedUp;
+        if (lastStopIndex > 0) {
+          content = tokens.slice(0, lastStopIndex + 1);
+        }
+
+        return content;
       } else {
         throw new Error(
           "Could not fetch post from url: " +
