@@ -10,7 +10,7 @@ import { FEEDS_QUEUE } from "../../utils/constants.js";
 import { fileURLToPath } from "url";
 import path from "path";
 import MediumScraper from "../../scrapers/Medium.js";
-import { summarize } from "../../utils/summarize.js";
+import Summarizer from "../../utils/summarize.js";
 import { sources } from "../../utils/constants.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -90,6 +90,7 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
           ) {
             try {
               console.log("Summarizing resources for user: " + userEmail);
+              const summarizer = new Summarizer();
 
               for (let i = 0; i < resources.length; i++) {
                 const resource = resources[i];
@@ -104,8 +105,10 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
 
                       // summarize
                       if (mediumPost) {
-                        resource.summary = await summarize(mediumPost);
-                        resource.lastSummaryUpdate = Date.now;
+                        resource.summary = await summarizer.summarize(
+                          mediumPost
+                        );
+                        resource.lastSummaryUpdate = Date.now();
                       } else {
                         throw new Error("Could not get medium post");
                       }
