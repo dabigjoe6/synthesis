@@ -1,6 +1,7 @@
 import puppeteer from "puppeteer";
 import { launchConfig, viewport } from "../config/puppeteer.js";
 import { inifinteScrollToBottom } from "../utils/scrapeHelpers.js";
+import { cleanHTMLContent } from "../utils/preprocessing.js";
 export default class Medium {
   async initPuppeteer() {
     this.browser = await puppeteer.launch(launchConfig);
@@ -143,13 +144,11 @@ export default class Medium {
         const postContentHTML =
           postContentInnerHTML && (await postContentInnerHTML.jsonValue());
 
-        // remove all html tags and merge all text content
-        const extractedText = postContentHTML.replace(/<[^>]*>?/gm, "");
+        const cleanedUp = cleanHTMLContent(postContentHTML);
 
-        // TODO: Further preprocessing, remove code snippets, remove links, ... while maintaining content structure
-        // Minimize the text to 200 words or so (based on GPT-3's max input length)
+        // TODO: Minimize the text to 200 words or so (based on GPT-3's max input length)
 
-        return extractedText;
+        return cleanedUp;
       } else {
         throw new Error(
           "Could not fetch post from url: " +
