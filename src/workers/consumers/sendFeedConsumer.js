@@ -9,6 +9,9 @@ import generateEmailTemplate from "../../utils/generateEmailTemplate.js";
 import { FEEDS_QUEUE } from "../../utils/constants.js";
 import { fileURLToPath } from "url";
 import path from "path";
+import MediumScraper from "../../scrapers/Medium.js";
+import { summarize } from "../../utils/summarize.js";
+import { sources } from "../../utils/constants.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -85,6 +88,46 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
             !!userEmail &&
             (resources.length > 0 || latestResources.length > 0)
           ) {
+            try {
+              console.log("Summarizing resources for user: " + userEmail);
+
+              for (let i = 0; i < resources.length; i++) {
+                const resource = resources[i];
+                if (!resource.summary) {
+                  // TODO: Refactor flow
+                  switch (resource.source) {
+                    case sources.MEDIUM:
+                      const mediumScraper = new MediumScraper();
+                      const mediumPost = await mediumScraper.getPost(
+                        resource.url
+                      );
+
+                      // summarize
+                      if (mediumPost) {
+                        resource.summary = await summarize(mediumPost);
+                        resource.lastSummaryUpdate = Date.now;
+                      } else {
+                        throw new Error("Could not get medium post");
+                      }
+
+                      break;
+                    default:
+                      // do nothing
+                      break;
+                  }
+
+                  await resource.save();
+                }
+              }
+
+              console.log("Done summarizing resources for user: " + userEmail);
+            } catch (err) {
+              console.error(
+                "Couldn't summarize resources for user: " + userEmail
+              );
+              throw err;
+            }
+
             try {
               console.log("Sending email to user: " + userEmail);
               const message = generateEmailTemplate(resources, latestResources);
