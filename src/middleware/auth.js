@@ -41,13 +41,17 @@ export const generateToken = (user) => {
 
 export const verifyGoogleToken = async (req, res, next) => {
   try {
-    const { tokenId } = req.body;
+    const { code } = req.body;
 
     const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-    const client = new OAuth2Client(CLIENT_ID);
+    const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+
+    const client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, 'postmessage');
+
+    const tokenObject = await client.getToken(code);
 
     const ticket = await client.verifyIdToken({
-      idToken: tokenId,
+      idToken: tokenObject.tokens.id_token,
       audience: CLIENT_ID,
     });
 

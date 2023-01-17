@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String, required: false },
   resetPasswordToken: { type: String, required: false },
   subscriptions: { type: [Schema.ObjectId], required: false, unique: false },
   seenResources: { type: [Schema.ObjectId], required: false, unique: false },

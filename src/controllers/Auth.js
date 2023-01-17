@@ -83,7 +83,6 @@ export const oAuthLogin = async (req, res, next) => {
     if (!user) {
       user = await userService.createUser({
         email,
-        password: password && userService.hashPassword(password),
       });
 
       const token = userService.generateToken(user);
