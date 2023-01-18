@@ -26,6 +26,7 @@ export const unsubscribe = async (req, res, next) => {
     const subscriptions = await subscriptionService.getUserSubscriptions(email);
 
     return res.status(200).json({
+      status: 200,
       message: "Successfully unsubscribed",
       subscriptions,
     });

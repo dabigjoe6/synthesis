@@ -91,7 +91,7 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
               Sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
               await Sendgrid.send({
                 to: userEmail,
-                from: "josepholabisi6000@gmail.com",
+                from: process.env.FROM,
                 subject: "Your daily morning brew",
                 text: "Your daily morning brew is here",
                 html: message,
