@@ -22,24 +22,28 @@ dotenv.config({ path: path.resolve(__filename, "../../../../.env") });
 const summarizeResources = async (resources) => {
   const summarizer = new Summarizer();
 
-  for (const resource of resources) {
-    if (!resource.summary) {
-      switch (resource.source) {
-        case sources.MEDIUM:
-          await summarizeMediumPost(resource, summarizer);
-          break;
-        case sources.SUBSTACK:
-          await summarizeSubstackPost(resource, summarizer);
-          break;
-        case sources.RSS:
-          await summarizeRSSPost(resource, summarizer);
-          break;
-        default:
-          // do nothing
-          break;
+  try {
+    for (const resource of resources) {
+      if (!resource.summary) {
+        switch (resource.source) {
+          case sources.MEDIUM:
+            await summarizeMediumPost(resource, summarizer);
+            break;
+          case sources.SUBSTACK:
+            await summarizeSubstackPost(resource, summarizer);
+            break;
+          case sources.RSS:
+            await summarizeRSSPost(resource, summarizer);
+            break;
+          default:
+            // do nothing
+            break;
+        }
       }
     }
-  }
+  } catch (err) {
+    console.error("Something went wrong with summarizing", err);
+  }  
 }
 
 const summarizeMediumPost = async (resource, summarizer) => {
