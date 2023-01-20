@@ -1,5 +1,6 @@
 import AuthorModel from "../models/authors.js";
 import UserModel from "../models/users.js";
+import ResourceModel from "../models/resources.js";
 import { sources } from "../utils/constants.js";
 import subscriptionPublisher from "../workers/publishers/subscriptionPublisher.js";
 
@@ -7,6 +8,7 @@ export default class SubstackService {
   constructor() {
     this.AuthorModel = AuthorModel;
     this.UserModel = UserModel;
+    this.ResourceModel = ResourceModel;
   }
 
   subscribe = async (email, url) => {
