@@ -18,6 +18,9 @@ export default class RSS {
       // Get post description
       const description = post.contentSnippet;
 
+      // Get post content
+      const content = post.content;
+
       // Get image
       const dom = new JSDOM(post.content);
       const image = dom.window.document.querySelector("img")?.src;
@@ -32,6 +35,7 @@ export default class RSS {
           image,
           description,
           datePublished,
+          content,
           latest: index === 0,
         });
       }

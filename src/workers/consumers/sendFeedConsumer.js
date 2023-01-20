@@ -18,6 +18,30 @@ const __filename = fileURLToPath(import.meta.url);
 
 dotenv.config({ path: path.resolve(__filename, "../../../../.env") });
 
+
+const summarizeResources = async (resources) => {
+  const summarizer = new Summarizer();
+
+  for (const resource of resources) {
+    if (!resource.summary) {
+      switch (resource.source) {
+        case sources.MEDIUM:
+          await summarizeMediumPost(resource, summarizer);
+          break;
+        case sources.SUBSTACK:
+          await summarizeSubstackPost(resource, summarizer);
+          break;
+        case sources.RSS:
+          await summarizeRSSPost(resource, summarizer);
+          break;
+        default:
+          // do nothing
+          break;
+      }
+    }
+  }
+}
+
 const summarizeMediumPost = async (resource, summarizer) => {
 
   const mediumScraper = new MediumScraper();
@@ -46,6 +70,14 @@ const summarizeSubstackPost = async (resource, summarizer) => {
     throw new Error("Could not get substack post");
   }
 };
+
+const summarizeRSSPost = async (resource, summarizer) => {
+  if (resource.content) {
+    resource.summary = await summarizer.summarize(resource.content);
+    resource.lastSummaryUpdate = Date.now();
+    resource.save();
+  }
+}
 
 amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
   if (err0) {
@@ -120,22 +152,8 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
             try {
               console.log("Summarizing resources for user: " + userEmail);
 
-              const summarizer = new Summarizer();
-
-              for (const resource of resources) {
-                if (!resource.summary) {
-                  switch (resource.source) {
-                    case sources.MEDIUM:
-                      await summarizeMediumPost(resource, summarizer);
-                      break;
-                    case sources.SUBSTACK:
-                      await summarizeSubstackPost(resource, summarizer);
-                    default:
-                      // do nothing
-                      break;
-                  }
-                }
-              }
+              await summarizeResources(resources);
+              await summarizeResources(latestResources);
 
               console.log("Done summarizing resources for user: " + userEmail);
             } catch (err) {
