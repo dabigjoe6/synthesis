@@ -1,6 +1,7 @@
 import puppeteer from "puppeteer";
 import { launchConfig, viewport } from "../config/puppeteer.js";
 import { inifinteScrollToBottom } from "../utils/scrapeHelpers.js";
+import { cleanHTMLContent } from "../utils/preprocessing.js";
 export default class Medium {
   async initPuppeteer() {
     this.browser = await puppeteer.launch(launchConfig);
@@ -114,6 +115,55 @@ export default class Medium {
       }
     } catch (err) {
       console.log("Couldn't get all posts - medium", err);
+    }
+  }
+
+  async getPost(url) {
+    try {
+      // init puppeteer
+      await this.initPuppeteer();
+
+      console.log("Visiting ", url);
+
+      await this.page.goto(url, { waitUntil: "networkidle2" });
+
+      // check if page is valid
+      const isValid = await this.page.evaluate(() => {
+        const article = document.querySelector("article");
+        return article && article.innerHTML;
+      });
+
+      if (isValid) {
+        console.log("Loaded", url);
+
+        const postContent = await this.page.$("article");
+
+        const postContentInnerHTML =
+          postContent && (await postContent.getProperty("innerHTML"));
+
+        const postContentHTML =
+          postContentInnerHTML && (await postContentInnerHTML.jsonValue());
+
+        let content = cleanHTMLContent(postContentHTML);
+
+        // get 500 tokens from data. That's about 2000 characters
+        const tokens = content.split(" ").slice(0, 500).join(" ");
+        const lastStopIndex = tokens.lastIndexOf(".");
+
+        if (lastStopIndex > 0) {
+          content = tokens.slice(0, lastStopIndex + 1);
+        }
+
+        return content;
+      } else {
+        throw new Error(
+          "Could not fetch post from url: " +
+            url +
+            " as its not a valid medium page"
+        );
+      }
+    } catch (err) {
+      console.log(`Couldn't get post - medium ${url}`, err);
     }
   }
 }

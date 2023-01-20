@@ -9,10 +9,75 @@ import generateEmailTemplate from "../../utils/generateEmailTemplate.js";
 import { FEEDS_QUEUE } from "../../utils/constants.js";
 import { fileURLToPath } from "url";
 import path from "path";
+import MediumScraper from "../../scrapers/Medium.js";
+import SubstackScraper from "../../scrapers/Substack.js";
+import Summarizer from "../../utils/summarize.js";
+import { sources } from "../../utils/constants.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
 dotenv.config({ path: path.resolve(__filename, "../../../../.env") });
+
+
+const summarizeResources = async (resources) => {
+  const summarizer = new Summarizer();
+
+  for (const resource of resources) {
+    if (!resource.summary) {
+      switch (resource.source) {
+        case sources.MEDIUM:
+          await summarizeMediumPost(resource, summarizer);
+          break;
+        case sources.SUBSTACK:
+          await summarizeSubstackPost(resource, summarizer);
+          break;
+        case sources.RSS:
+          await summarizeRSSPost(resource, summarizer);
+          break;
+        default:
+          // do nothing
+          break;
+      }
+    }
+  }
+}
+
+const summarizeMediumPost = async (resource, summarizer) => {
+
+  const mediumScraper = new MediumScraper();
+  const mediumPost = await mediumScraper.getPost(resource.url);
+
+  // summarize
+  if (mediumPost) {
+    resource.summary = await summarizer.summarize(mediumPost);
+    resource.lastSummaryUpdate = Date.now();
+    resource.save();
+  } else {
+    throw new Error("Could not get medium post");
+  }
+};
+
+const summarizeSubstackPost = async (resource, summarizer) => {
+  const substackScraper = new SubstackScraper();
+  const substackPost = await substackScraper.getPost(resource.url);
+
+  // summarize
+  if (substackPost) {
+    resource.summary = await summarizer.summarize(substackPost);
+    resource.lastSummaryUpdate = Date.now();
+    resource.save();
+  } else {
+    throw new Error("Could not get substack post");
+  }
+};
+
+const summarizeRSSPost = async (resource, summarizer) => {
+  if (resource.content) {
+    resource.summary = await summarizer.summarize(resource.content);
+    resource.lastSummaryUpdate = Date.now();
+    resource.save();
+  }
+}
 
 amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
   if (err0) {
@@ -80,11 +145,24 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
             throw err;
           }
 
-          console.log("User email " + userEmail, !!userEmail);
           if (
             !!userEmail &&
             (resources.length > 0 || latestResources.length > 0)
           ) {
+            try {
+              console.log("Summarizing resources for user: " + userEmail);
+
+              await summarizeResources(resources);
+              await summarizeResources(latestResources);
+
+              console.log("Done summarizing resources for user: " + userEmail);
+            } catch (err) {
+              console.error(
+                "Couldn't summarize resources for user: " + userEmail
+              );
+              throw err;
+            }
+
             try {
               console.log("Sending email to user: " + userEmail);
               const message = generateEmailTemplate(resources, latestResources);
