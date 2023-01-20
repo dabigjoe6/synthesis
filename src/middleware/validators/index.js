@@ -3,6 +3,28 @@ import JoiObjectId from "joi-objectid";
 
 const joiObjectId = JoiObjectId(Joi);
 
+const login = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().min(8).required(),
+});
+
+//TODO: CREATE STRICT VALIDATION
+const register = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().min(8).required(),
+});
+
+const resetPassword = Joi.object({
+  email: Joi.string().email().required(),
+});
+
+const changePassword = Joi.object({
+  email: Joi.string().email().lowercase().required(),
+  password: Joi.string().min(8),
+  resetPasswordToken: Joi.string(),
+  newPassword: Joi.string().required(),
+}).or("password", "resetPasswordToken");
+
 const resource = Joi.object({
   author: Joi.string().uri().required(),
   email: Joi.string().email().required(),
@@ -18,6 +40,10 @@ const unsubscribe = Joi.object({
 });
 
 const Validators = {
+  login,
+  register,
+  resetPassword,
+  changePassword,
   resource,
   getSubscriptions,
   unsubscribe,
