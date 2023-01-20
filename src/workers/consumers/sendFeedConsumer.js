@@ -10,12 +10,42 @@ import { FEEDS_QUEUE } from "../../utils/constants.js";
 import { fileURLToPath } from "url";
 import path from "path";
 import MediumScraper from "../../scrapers/Medium.js";
+import SubstackScraper from "../../scrapers/Substack.js";
 import Summarizer from "../../utils/summarize.js";
 import { sources } from "../../utils/constants.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
 dotenv.config({ path: path.resolve(__filename, "../../../../.env") });
+
+const summarizeMediumPost = async (resource, summarizer) => {
+
+  const mediumScraper = new MediumScraper();
+  const mediumPost = await mediumScraper.getPost(resource.url);
+
+  // summarize
+  if (mediumPost) {
+    resource.summary = await summarizer.summarize(mediumPost);
+    resource.lastSummaryUpdate = Date.now();
+    resource.save();
+  } else {
+    throw new Error("Could not get medium post");
+  }
+};
+
+const summarizeSubstackPost = async (resource, summarizer) => {
+  const substackScraper = new SubstackScraper();
+  const substackPost = await substackScraper.getPost(resource.url);
+
+  // summarize
+  if (substackPost) {
+    resource.summary = await summarizer.summarize(substackPost);
+    resource.lastSummaryUpdate = Date.now();
+    resource.save();
+  } else {
+    throw new Error("Could not get substack post");
+  }
+};
 
 amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
   if (err0) {
@@ -83,43 +113,27 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
             throw err;
           }
 
-          console.log("User email " + userEmail, !!userEmail);
           if (
             !!userEmail &&
             (resources.length > 0 || latestResources.length > 0)
           ) {
             try {
               console.log("Summarizing resources for user: " + userEmail);
+
               const summarizer = new Summarizer();
 
-              for (let i = 0; i < resources.length; i++) {
-                const resource = resources[i];
+              for (const resource of resources) {
                 if (!resource.summary) {
-                  // TODO: Refactor flow
                   switch (resource.source) {
                     case sources.MEDIUM:
-                      const mediumScraper = new MediumScraper();
-                      const mediumPost = await mediumScraper.getPost(
-                        resource.url
-                      );
-
-                      // summarize
-                      if (mediumPost) {
-                        resource.summary = await summarizer.summarize(
-                          mediumPost
-                        );
-                        resource.lastSummaryUpdate = Date.now();
-                      } else {
-                        throw new Error("Could not get medium post");
-                      }
-
+                      await summarizeMediumPost(resource, summarizer);
                       break;
+                    case sources.SUBSTACK:
+                      await summarizeSubstackPost(resource, summarizer);
                     default:
                       // do nothing
                       break;
                   }
-
-                  await resource.save();
                 }
               }
 

@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer";
 import { launchConfig, viewport } from "../config/puppeteer.js";
+import { cleanHTMLContent } from "../utils/preprocessing.js";
 import { inifinteScrollToBottom } from "../utils/scrapeHelpers.js";
 
 export default class Substack {
@@ -175,6 +176,38 @@ export default class Substack {
       }
     } catch (err) {
       console.log("Couldn't get all posts - substack", err);
+    }
+  }
+
+
+  async getPost(url) {
+    try {
+      await this.initPuppeteer();
+
+      console.log("Visiting", url);
+      await this.page.goto(url, { waitUntil: "networkidle2" });
+
+      const articleInnerHTML = await this.page.evaluate(() => {
+        const article = document.querySelector(".available-content");
+        return article && article.innerHTML;
+      })
+
+      if (articleInnerHTML) {
+        console.log("Loaded", url);
+
+        let content = cleanHTMLContent(articleInnerHTML);
+
+        const tokens = content.split(" ").slice(0, 500).join(" ");
+        const lastStopIndex = tokens.lastIndexOf('.');
+
+        if (lastStopIndex > 0) {
+          content = tokens.slice(0, lastStopIndex + 1);
+        }
+
+        return content;
+      }
+    } catch (err) {
+      console.log(`Couldn't get post - substack ${url}`, err);
     }
   }
 }

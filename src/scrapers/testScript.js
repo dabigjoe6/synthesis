@@ -50,4 +50,18 @@ const tryRss = async () => {
   }
 };
 
-tryRss();
+const trySubstackPost = async () => {
+  const substackScraper = new Substack();
+
+  try {
+    let post = await substackScraper.getPost("https://timdenning.substack.com/p/fixed-income-fixed-mindset");
+
+    if (post) {
+      console.log("Post", post);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+trySubstackPost();
