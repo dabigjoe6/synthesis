@@ -2,13 +2,19 @@ import AuthorModel from "../models/authors.js";
 import UserModel from "../models/users.js";
 import ResourceModel from "../models/resources.js";
 import { sources } from "../utils/constants.js";
+import {
+  extractMediumAuthorNameFromURL,
+  extractSubstackAuthorNameFromURL,
+  parseMediumUrl,
+} from "../utils/scrapeHelpers.js";
 import subscriptionPublisher from "../workers/publishers/subscriptionPublisher.js";
 
-export default class SubstackService {
-  constructor() {
+export default class ResourceService {
+  constructor(source) {
     this.AuthorModel = AuthorModel;
     this.UserModel = UserModel;
     this.ResourceModel = ResourceModel;
+    this.source = source;
   }
 
   subscribe = async (email, url) => {
@@ -18,22 +24,31 @@ export default class SubstackService {
       user = await this.UserModel.create({ email });
     }
 
+    if (this.source === sources.MEDIUM) {
+      // If URL matches https://josepholabisi.medium.com convert to https://medium.com/@josepholabisi
+      // If URL matches https://medium.com/@josepholabisi leave as is
+      url = parseMediumUrl(url);
+    }
+
     let author = await this.AuthorModel.findOne({
       url,
     }).exec();
 
     if (!author) {
-      const name = url;
+      //Handles the two URL styles in Medium to avoid duplicate subscribtions on the DB
+      // Eg1: https://josepholabisi.medium.com
+      // Eg2: https://medium.com/@josepholabisi/
+      const name = this.getNameBasedOnSource(url);
       author = await this.AuthorModel.create({
         name,
         url,
-        source: sources.RSS,
+        source: this.source,
       });
 
       try {
         subscriptionPublisher({
           authorId: author._id,
-          service: sources.RSS,
+          service: this.source,
           url,
         });
       } catch (err) {
@@ -47,7 +62,6 @@ export default class SubstackService {
         $addToSet: { subscriptions: author._id },
       }
     );
-
     return newUser.subscriptions;
   };
 
@@ -63,5 +77,16 @@ export default class SubstackService {
       .exec();
 
     return mostRecentPosts;
+  };
+
+  getNameBasedOnSource = (url) => {
+    switch (this.source) {
+      case sources.MEDIUM:
+        return extractMediumAuthorNameFromURL(url);
+      case sources.SUBSTACK:
+        return extractSubstackAuthorNameFromURL(url);
+      default:
+        return url;
+    }
   };
 }

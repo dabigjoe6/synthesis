@@ -1,27 +1,11 @@
-import MediumService from "../services/medium.js";
-import SubstackService from "../services/substack.js";
-import RSSService from "../services/rss.js";
 import SubscriptionService from "../services/subscription.js";
-import { sources } from "../utils/constants.js";
-
-const getServiceInstance = (source) => {
-  switch (source) {
-    case sources.MEDIUM:
-      return new MediumService();
-    case sources.SUBSTACK:
-      return new SubstackService();
-    case sources.RSS:
-      return new RSSService();
-    default:
-      throw new Error("Service not recognised - Resource.js");
-  }
-};
+import ResourceService from "../services/resource.js";
 
 export const subscribe = (source) => async (req, res, next) => {
   try {
     const { email, author } = req.body;
 
-    const serviceInstance = getServiceInstance(source);
+    const serviceInstance = ResourceService(source);
     await serviceInstance.subscribe(email, author);
 
     const subscriptionService = new SubscriptionService();
