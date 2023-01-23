@@ -84,85 +84,37 @@ const syncPosts = async (newPosts, mostRecentPostsInDb, service, authorId) => {
   await AuthorModel.updateOne({ _id: authorId }, { lastSynced: Date.now() });
 };
 
-const handleMediumService = async (authorId, url) => {
-  const mediumScraper = new Medium();
-  const mediumService = new ResourceService(sources.MEDIUM);
-
-  console.log(
-    "Getting most recent posts in DB from authorId: " +
-      authorId +
-      " from URL: " +
-      url
-  );
-  const mostRecentPostsInDb = await mediumService.getMostRecentPosts(authorId);
-
-  console.log(
-    "Scraping medium for authorId: " + authorId + " from URL: " + url
-  );
-  const newPosts = await mediumScraper.getAllPosts(url, false);
-
-  await syncPosts(newPosts, mostRecentPostsInDb, sources.MEDIUM, authorId);
-};
-
-const handleSubstackService = async (authorId, url) => {
-  const substackScraper = new Substack();
-  const substackService = new ResourceService(sources.SUBSTACK);
-
-  console.log(
-    "Getting most recent posts in DB from authorId: " +
-      authorId +
-      " from URL: " +
-      url
-  );
-  const mostRecentPostsInDb = await substackService.getMostRecentPosts(
-    authorId
-  );
-
-  console.log(
-    "Scraping substack for authorId: " + authorId + " from URL: " + url
-  );
-  const newPosts = await substackScraper.getAllPosts(url, false);
-  await syncPosts(newPosts, mostRecentPostsInDb, sources.SUBSTACK, authorId);
-};
-
-const handleRSSService = async (authorId, url) => {
-  const rssScraper = new RSS();
-  const rssService = new ResourceService(sources.RSS);
-
-  console.log(
-    "Getting most recent posts in DB from authorId: " +
-      authorId +
-      " from URL: " +
-      url
-  );
-  const mostRecentPostsInDb = await rssService.getMostRecentPosts(authorId);
-
-  console.log(
-    "Scraping RSS feed for authorId: " + authorId + " from URL: " + url
-  );
-  const newPosts = await rssScraper.getAllPosts(url);
-  await syncPosts(newPosts, mostRecentPostsInDb, sources.RSS, authorId);
-};
-
-const getPostsFromServiceAndSyncService = async (service, authorId, url) => {
-  try {
-    switch (service) {
-      case sources.MEDIUM:
-        await handleMediumService(authorId, url);
-        break;
-      case sources.SUBSTACK:
-        await handleSubstackService(authorId, url);
-        break;
-      case sources.RSS:
-        await handleRSSService(authorId, url);
-        break;
-      default:
-        throw new Error("Service not supported: " + service);
-    }
-  } catch (err) {
-    console.error("Error", err);
-    throw new Error("Could not sync posts - syncResourcesConsumer.js", err);
+const getScraperInstance = (source) => {
+  switch (source) {
+    case sources.MEDIUM:
+      return new Medium();
+    case sources.SUBSTACK:
+      return new Substack();
+    case sources.RSS:
+      return new RSS();
+    default:
+      throw new Error("Not a valid source - syncResourcesConsumer.js");
   }
+}
+
+const handleService = async (authorId, url, source) => {
+  const scraperInstance = getScraperInstance(source);
+  const resourceService = new ResourceService(source);
+
+  console.log(
+    "Getting most recent posts in DB from authorId: " +
+      authorId +
+      " from URL: " +
+      url
+  );
+  const mostRecentPostsInDb = await resourceService.getMostRecentPosts(authorId);
+
+  console.log(
+    "Scraping source for authorId: " + authorId + " from URL: " + url
+  );
+  const newPosts = await scraperInstance.getAllPosts(url, false);
+
+  await syncPosts(newPosts, mostRecentPostsInDb, source, authorId);
 };
 
 amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
@@ -215,7 +167,7 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
             );
           }
 
-          await getPostsFromServiceAndSyncService(service, authorId, url);
+          await handleService(authorId, url, service);
           channel.ack(msg);
         }
       },
