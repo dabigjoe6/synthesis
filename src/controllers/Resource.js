@@ -5,7 +5,7 @@ export const subscribe = (source) => async (req, res, next) => {
   try {
     const { email, author } = req.body;
 
-    const serviceInstance = ResourceService(source);
+    const serviceInstance = new ResourceService(source);
     await serviceInstance.subscribe(email, author);
 
     const subscriptionService = new SubscriptionService();
