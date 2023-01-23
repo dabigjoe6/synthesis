@@ -176,6 +176,8 @@ export default class Substack {
       }
     } catch (err) {
       console.log("Couldn't get all posts - substack", err);
+    } finally {
+      this.killPuppeteer();
     }
   }
 
@@ -208,6 +210,14 @@ export default class Substack {
       }
     } catch (err) {
       console.log(`Couldn't get post - substack ${url}`, err);
+    } finally {
+      this.killPuppeteer();
+    }
+  }
+
+  async killPuppeteer() {
+    if (this.browser) {
+      await this.browser.close();
     }
   }
 }

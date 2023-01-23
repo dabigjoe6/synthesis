@@ -115,6 +115,8 @@ export default class Medium {
       }
     } catch (err) {
       console.log("Couldn't get all posts - medium", err);
+    } finally {
+      this.killPuppeteer();
     }
   }
 
@@ -164,6 +166,14 @@ export default class Medium {
       }
     } catch (err) {
       console.log(`Couldn't get post - medium ${url}`, err);
+    } finally {
+      this.killPuppeteer();
+    }
+  }
+
+  async killPuppeteer() {
+    if (this.browser) {
+      await this.browser.close();
     }
   }
 }
