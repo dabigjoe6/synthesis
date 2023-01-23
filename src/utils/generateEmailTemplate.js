@@ -20,7 +20,7 @@ const generatePost = (post) => `
 
         <div class="v-text-align v-line-height" style="color: #34495e; line-height: 120%; text-align: left; word-wrap: break-word;">
           <p style="font-size: 14px; line-height: 120%; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 10; line-clamp: 10; -webkit-box-orient: vertical; max-height: 18em; line-height: 1.8em;">${
-            post?.summary || post.description
+            post?.summary ? "Summary" + post.summary : post.description
           }</p>
         </div>
 
