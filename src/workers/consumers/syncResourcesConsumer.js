@@ -9,13 +9,11 @@ import lodash from "lodash";
 import AuthorModel from "../../models/authors.js";
 import ResourceModel from "../../models/resources.js";
 
-import MediumService from "../../services/medium.js";
-import SubstackService from "../../services/substack.js";
-import RSSService from "../../services/rss.js";
-
 import Medium from "../../scrapers/Medium.js";
 import Substack from "../../scrapers/Substack.js";
 import RSS from "../../scrapers/RSS.js";
+
+import ResourceService from "../../services/resource.js";
 
 const { isArray } = lodash;
 
@@ -88,7 +86,7 @@ const syncPosts = async (newPosts, mostRecentPostsInDb, service, authorId) => {
 
 const handleMediumService = async (authorId, url) => {
   const mediumScraper = new Medium();
-  const mediumService = new MediumService();
+  const mediumService = new ResourceService(sources.MEDIUM);
 
   console.log(
     "Getting most recent posts in DB from authorId: " +
@@ -108,7 +106,7 @@ const handleMediumService = async (authorId, url) => {
 
 const handleSubstackService = async (authorId, url) => {
   const substackScraper = new Substack();
-  const substackService = new SubstackService();
+  const substackService = new ResourceService(sources.SUBSTACK);
 
   console.log(
     "Getting most recent posts in DB from authorId: " +
@@ -129,7 +127,7 @@ const handleSubstackService = async (authorId, url) => {
 
 const handleRSSService = async (authorId, url) => {
   const rssScraper = new RSS();
-  const rssService = new RSSService();
+  const rssService = new ResourceService(sources.RSS);
 
   console.log(
     "Getting most recent posts in DB from authorId: " +
