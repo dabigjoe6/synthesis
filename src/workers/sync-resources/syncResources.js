@@ -1,13 +1,13 @@
 import dotenv from "dotenv";
-import { startDb } from "../config/database.js";
-import AuthorModel from "../models/authors.js";
+import { startDb } from "../../config/database.js";
+import AuthorModel from "../../models/authors.js";
 import syncResourcesPublisher from "./publishers/syncResourcesPublisher.js";
 import { fileURLToPath } from "url";
 import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 
-dotenv.config({ path: path.resolve(__filename, "../../../.env") });
+dotenv.config({ path: path.resolve(__filename, "../../../../.env") });
 
 const syncResources = async () => {
   startDb(process.env.MONGO_URI);

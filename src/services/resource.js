@@ -7,7 +7,7 @@ import {
   extractSubstackAuthorNameFromURL,
   parseMediumUrl,
 } from "../utils/scrapeHelpers.js";
-import subscriptionPublisher from "../workers/publishers/subscriptionPublisher.js";
+import subscriptionPublisher from "../workers/subscriptions/subscriptionPublisher.js";
 
 export default class ResourceService {
   constructor(source) {
