@@ -4,7 +4,7 @@ const generatePost = (post) => `
     <tr>
       <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:0px 10px 10px;font-family:trebuchet ms,geneva;" align="left">
 
-        <h4 class="v-text-align v-line-height" style="margin: 0px; line-height: 100%; text-align: left; word-wrap: break-word; font-weight: normal; font-family: 'Open Sans',sans-serif; font-size: 16px;"><strong>${
+        <h4 class="v-text-align v-line-height" style="margin: 0px; line-height: 110%; text-align: left; word-wrap: break-word; font-weight: normal; font-family: 'Open Sans',sans-serif; font-size: 16px;"><strong>${
           post.title
         }</strong></h4>
 
@@ -20,7 +20,12 @@ const generatePost = (post) => `
 
         <div class="v-text-align v-line-height" style="color: #34495e; line-height: 120%; text-align: left; word-wrap: break-word;">
           <p style="font-size: 14px; line-height: 120%; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 10; line-clamp: 10; -webkit-box-orient: vertical; max-height: 18em; line-height: 1.8em;">${
-            post?.summary ? "Summary" + post.summary : post.description
+            post?.summary
+            //TODO: Handle column put in summary 
+              ? post?.summary[0] === ":"
+                ? "Summary" + post.summary
+                : "Summary: " + post.summary
+              : post.description
           }</p>
         </div>
 

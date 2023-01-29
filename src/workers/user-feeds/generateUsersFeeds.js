@@ -1,13 +1,13 @@
 import dotenv from "dotenv";
-import { startDb } from "../config/database.js";
-import UserModel from "../models/users.js";
-import sendUserFeed from "./publishers/sendFeedPublisher.js";
+import { startDb } from "../../config/database.js";
+import UserModel from "../../models/users.js";
+import sendUserFeed from "./sendFeedPublisher.js";
 import { fileURLToPath } from "url";
 import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 
-dotenv.config({ path: path.resolve(__filename, "../../../.env") });
+dotenv.config({ path: path.resolve(__filename, "../../../../.env")});
 
 const generateUsersFeeds = async () => {
   startDb(process.env.MONGO_URI);
