@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { startDb } from "../../config/database.js";
+import { startDb } from "../../config/database.ts/index.js.js";
 import UserModel from "../../models/users.js";
 import sendUserFeed from "./sendFeedPublisher.js";
 import { fileURLToPath } from "url";

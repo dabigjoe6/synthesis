@@ -4,7 +4,7 @@ import Sendgrid from "@sendgrid/mail";
 import mongoose from "mongoose";
 import ResourceModel from "../../models/resources.js";
 import UserModel from "../../models/users.js";
-import { startDb } from "../../config/database.js";
+import { startDb } from "../../config/database.ts/index.js.js";
 import generateEmailTemplate from "../../utils/generateEmailTemplate.js";
 import { FEEDS_QUEUE } from "../../utils/constants.js";
 import { fileURLToPath } from "url";

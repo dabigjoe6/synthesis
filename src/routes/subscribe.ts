@@ -5,13 +5,13 @@ import {
   unsubscribe,
   getSubscriptions,
 } from "../controllers/Resource.js";
-import { sources } from "../utils/constants.js";
+import { Sources } from "../utils/constants.js";
 
 const router = Router();
 
-router.post("/medium", validate("resource"), subscribe(sources.MEDIUM));
-router.post("/substack", validate("resource"), subscribe(sources.SUBSTACK));
-router.post("/rss", validate("resource"), subscribe(sources.RSS));
+router.post("/medium", validate("resource"), subscribe(Sources.MEDIUM));
+router.post("/substack", validate("resource"), subscribe(Sources.SUBSTACK));
+router.post("/rss", validate("resource"), subscribe(Sources.RSS));
 
 router.post("/unsubscribe", validate("unsubscribe"), unsubscribe);
 router.post(

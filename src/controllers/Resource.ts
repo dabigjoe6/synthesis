@@ -1,7 +1,9 @@
+import { Request, Response, NextFunction } from "express";
 import SubscriptionService from "../services/subscription.js";
 import ResourceService from "../services/resource.js";
+import { Sources } from "../utils/constants.js";
 
-export const subscribe = (source) => async (req, res, next) => {
+export const subscribe = (source: Sources) => async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, author } = req.body;
 
@@ -23,7 +25,7 @@ export const subscribe = (source) => async (req, res, next) => {
 };
 
 
-export const getSubscriptions = async (req, res, next) => {
+export const getSubscriptions = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email } = req.body;
 
@@ -39,7 +41,7 @@ export const getSubscriptions = async (req, res, next) => {
   }
 };
 
-export const unsubscribe = async (req, res, next) => {
+export const unsubscribe = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, subscriptionIds } = req.body;
 

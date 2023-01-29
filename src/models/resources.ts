@@ -1,9 +1,26 @@
-import mongoose from "mongoose";
-const Schema = mongoose.Schema;
+import mongoose, { Schema, Document } from "mongoose";
+import { Sources } from "../utils/constants";
 
-const resourceSchema = new Schema({
+export interface ResourceI extends Document {
+  url: string;
+  author: Schema.Types.ObjectId;
+  title?: string;
+  source?: Sources;
+  description?: string;
+  content?: string;
+  summary?: string;
+  lastSummaryUpdate?: Date;
+  image?: string;
+  authorsName?: string;
+  datePublished?: Date;
+  numberOfLikes?: number;
+  numberOfComments?: number;
+  latest: boolean;
+}
+
+const resourceSchema = new Schema<ResourceI>({
   url: { type: String, required: true, unique: false },
-  author: { type: Schema.ObjectId, required: true, unique: false },
+  author: { type: Schema.Types.ObjectId, required: true, unique: false },
   title: { type: String, required: false, unique: false },
   source: { type: String, required: false, unique: false },
   description: { type: String, required: false, unique: false },

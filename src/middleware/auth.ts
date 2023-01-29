@@ -1,12 +1,19 @@
 import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
 import { OAuth2Client } from "google-auth-library";
+import { UserI } from "../models/users";
 
-export const verifyToken = (req, res, next) => {
+interface VerifyTokenRequest extends Request {
+  user: string | jwt.JwtPayload | undefined
+}
+
+export const verifyToken = (req: VerifyTokenRequest, res: Response, next: NextFunction) => {
   const bearerHeader = req.headers["authorization"];
   if (typeof bearerHeader !== "undefined") {
     const bearer = bearerHeader.split(" ");
     const bearerToken = bearer[1];
-    jwt.verify(bearerToken, process.env.JWT_SECRET, (err, user) => {
+    const JWT_SECRET = process.env.JWT_SECRET || ""
+    jwt.verify(bearerToken, JWT_SECRET, (err, user) => {
       console.error(err);
       if (err) {
         return res.json({
@@ -25,21 +32,20 @@ export const verifyToken = (req, res, next) => {
   }
 };
 
-export const generateToken = (user) => {
+export const generateToken = (user: UserI) => {
   return jwt.sign(
     {
-      username: user.username,
       email: user.email,
       _id: user._id,
     },
-    process.env.JWT_SECRET,
+    process.env.JWT_SECRET || "",
     {
       expiresIn: "24h",
     }
   );
 };
 
-export const verifyGoogleToken = async (req, res, next) => {
+export const verifyGoogleToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { code } = req.body;
 
@@ -51,13 +57,13 @@ export const verifyGoogleToken = async (req, res, next) => {
     const tokenObject = await client.getToken(code);
 
     const ticket = await client.verifyIdToken({
-      idToken: tokenObject.tokens.id_token,
+      idToken: tokenObject.tokens.id_token || "",
       audience: CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
 
-    req.body["email"] = payload.email;
+    req.body["email"] = payload && payload.email;
 
     next();
   } catch (err) {

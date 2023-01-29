@@ -3,13 +3,16 @@ import { launchConfig, viewport } from "../config/puppeteer.js";
 import { inifinteScrollToBottom } from "../utils/scrapeHelpers.js";
 import { cleanHTMLContent } from "../utils/preprocessing.js";
 export default class Medium {
+  browser: puppeteer.Browser;
+  page: puppeteer.Page;
+
   async initPuppeteer() {
     this.browser = await puppeteer.launch(launchConfig);
     this.page = await this.browser.newPage();
     this.page.setViewport(viewport);
   }
 
-  async getPostsMetaData(posts) {
+  private async getPostsMetaData(posts: puppeteer.ElementHandle<HTMLElement>[]) {
     console.log("Generating metadata from posts");
     const result = [];
     for await (const [index, post] of posts.entries()) {
@@ -87,7 +90,7 @@ export default class Medium {
     return !is404 && isMediumPage;
   }
 
-  async getAllPosts(authorsUrl, shouldScrollToBottom = true) {
+  async getAllPosts(authorsUrl: string, shouldScrollToBottom:boolean = true) {
     try {
       await this.initPuppeteer();
 
@@ -101,7 +104,7 @@ export default class Medium {
           await inifinteScrollToBottom(this.page);
         }
 
-        const posts = await this.page.$$("article");
+        const posts: puppeteer.ElementHandle<HTMLElement>[] = await this.page.$$("article");
 
         const postsMetadata = await this.getPostsMetaData(posts);
 
@@ -120,7 +123,7 @@ export default class Medium {
     }
   }
 
-  async getPost(url) {
+  async getPost(url: string) {
     try {
       // init puppeteer
       await this.initPuppeteer();
@@ -143,8 +146,8 @@ export default class Medium {
         const postContentInnerHTML =
           postContent && (await postContent.getProperty("innerHTML"));
 
-        const postContentHTML =
-          postContentInnerHTML && (await postContentInnerHTML.jsonValue());
+        const postContentHTML: string =
+          (postContentInnerHTML && (await postContentInnerHTML.jsonValue())) || "";
 
         let content = cleanHTMLContent(postContentHTML);
 

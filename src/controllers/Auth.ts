@@ -1,9 +1,10 @@
 import Sendgrid from "@sendgrid/mail";
+import { Request, Response, NextFunction } from 'express';
 import UserService from "../services/users.js";
 import generateResetPasswordTemplate from "../utils/generateResetPasswordTemplate.js";
 import { generateToken } from "../middleware/auth.js";
 
-export const login = async (req, res, next) => {
+export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
 
@@ -39,7 +40,7 @@ export const login = async (req, res, next) => {
   }
 };
 
-export const register = async (req, res, next) => {
+export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
 
@@ -73,7 +74,7 @@ export const register = async (req, res, next) => {
   }
 };
 
-export const oAuthLogin = async (req, res, next) => {
+export const oAuthLogin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email } = req.body;
 
@@ -112,7 +113,7 @@ export const oAuthLogin = async (req, res, next) => {
   }
 };
 
-export const resetPassword = async (req, res, next) => {
+export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email } = req.body;
 
@@ -128,7 +129,7 @@ export const resetPassword = async (req, res, next) => {
     const resetPasswordToken = await userService.generateResetPasswordToken(
       user.email
     );
-    const FROM = process.env.FROM;
+    const FROM = process.env.FROM || "";
     const SUBJECT = "Reset MorningBrew password";
     const TEXT =
       "Hi there, a request was made to reset your MorningBrew password";
@@ -137,7 +138,7 @@ export const resetPassword = async (req, res, next) => {
       user.email
     );
 
-    const payload = {
+    const payload: Sendgrid.MailDataRequired = {
       to: user.email,
       from: FROM,
       subject: SUBJECT,
@@ -146,7 +147,8 @@ export const resetPassword = async (req, res, next) => {
     };
 
     // TODO: Add this to messaging queue
-    Sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+    const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || "";
+    Sendgrid.setApiKey(SENDGRID_API_KEY);
     await Sendgrid.send(payload);
 
     res.status(200).json({
@@ -158,7 +160,7 @@ export const resetPassword = async (req, res, next) => {
   }
 };
 
-export const changePassword = async (req, res, next) => {
+export const changePassword = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password, newPassword, resetPasswordToken } = req.body;
 

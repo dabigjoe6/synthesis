@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { startDb } from "../../config/database.js";
+import { startDb } from "../../config/database.ts/index.js.js";
 import AuthorModel from "../../models/authors.js";
 import syncResourcesPublisher from "./publishers/syncResourcesPublisher.js";
 import { fileURLToPath } from "url";

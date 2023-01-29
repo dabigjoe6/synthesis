@@ -1,5 +1,6 @@
 import Joi from "joi";
 import JoiObjectId from "joi-objectid";
+import { Request, Response, NextFunction } from "express";
 
 const joiObjectId = JoiObjectId(Joi);
 
@@ -39,7 +40,16 @@ const unsubscribe = Joi.object({
   subscriptionIds: Joi.array().items(joiObjectId()).required(),
 });
 
-const Validators = {
+interface ValidatorsI {
+  "login": Joi.ObjectSchema,
+  "register": Joi.ObjectSchema,
+  "resetPassword": Joi.ObjectSchema,
+  "changePassword": Joi.ObjectSchema,
+  "resource": Joi.ObjectSchema,
+  "getSubscriptions": Joi.ObjectSchema,
+  "unsubscribe": Joi.ObjectSchema
+}
+const Validators: ValidatorsI = {
   login,
   register,
   resetPassword,
@@ -49,14 +59,15 @@ const Validators = {
   unsubscribe,
 };
 
-export const validate = (validator) => {
+export const validate = (validator: keyof ValidatorsI) => {
   if (!Validators.hasOwnProperty(validator)) {
     throw new Error(`${validator} is not a validator`);
   }
 
-  return async function (req, res, next) {
+  return async function (req: Request, res: Response, next: NextFunction) {
     try {
-      const validated = await Validators[validator].validateAsync(req.body);
+      const validatorObject: Joi.ObjectSchema = Validators[validator];
+      const validated = await validatorObject.validateAsync(req.body);
       req.body = validated;
       next();
     } catch (err) {

@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import path from "path";
 import amqp from "amqplib/callback_api.js";
-import { startDb } from "../../config/database.js";
+import { startDb } from "../../config/database.ts/index.js.js";
 import { sources, SYNC_RESOURCES_QUEUE } from "../../utils/constants.js";
 import { fileURLToPath } from "url";
 import lodash from "lodash";
