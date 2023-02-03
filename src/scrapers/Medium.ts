@@ -1,8 +1,8 @@
 import puppeteer from "puppeteer";
-import { launchConfig, viewport } from "../config/puppeteer";
-import { inifinteScrollToBottom } from "../utils/scrapeHelpers";
-import { cleanHTMLContent } from "../utils/preprocessing";
-import { ResourceI } from "../models/resources";
+import { launchConfig, viewport } from "../config/puppeteer.js";
+import { inifinteScrollToBottom } from "../utils/scrapeHelpers.js";
+import { cleanHTMLContent } from "../utils/preprocessing.js";
+import { ResourceI } from "../models/resources.js";
 export default class Medium {
   browser: puppeteer.Browser;
   page: puppeteer.Page;

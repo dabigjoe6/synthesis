@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { OAuth2Client } from "google-auth-library";
-import { UserI } from "../models/users";
+import { UserI } from "../models/users.js";
 
 interface VerifyTokenRequest extends Request {
   user: string | jwt.JwtPayload | undefined

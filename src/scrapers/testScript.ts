@@ -1,6 +1,6 @@
-import Medium from "./Medium";
-import Substack from "./Substack";
-import RSS from "./RSS";
+import Medium from "./Medium.js";
+import Substack from "./Substack.js";
+import RSS from "./RSS.js";
 
 const tryMedium = async () => {
   const mediumScrapper = new Medium();

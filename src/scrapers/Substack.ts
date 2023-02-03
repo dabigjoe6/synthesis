@@ -1,8 +1,8 @@
 import puppeteer from "puppeteer";
-import { launchConfig, viewport } from "../config/puppeteer";
-import { ResourceI } from "../models/resources";
-import { cleanHTMLContent } from "../utils/preprocessing";
-import { inifinteScrollToBottom } from "../utils/scrapeHelpers";
+import { launchConfig, viewport } from "../config/puppeteer.js";
+import { ResourceI } from "../models/resources.js";
+import { cleanHTMLContent } from "../utils/preprocessing.js";
+import { inifinteScrollToBottom } from "../utils/scrapeHelpers.js";
 
 export default class Substack {
   browser: puppeteer.Browser;

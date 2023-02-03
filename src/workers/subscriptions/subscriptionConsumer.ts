@@ -1,16 +1,16 @@
 import dotenv from "dotenv";
 import path from "path";
-import amqp from "amqplib/callback_api";
-import ResourceModel, { ResourceI } from "../../models/resources";
-import { startDb } from "../../config/database";
-import { Sources, SUBSCRIPTIONS_QUEUE } from "../../utils/constants";
+import amqp from "amqplib/callback_api.js";
+import ResourceModel, { ResourceI } from "../../models/resources.js";
+import { startDb } from "../../config/database.js";
+import { Sources, SUBSCRIPTIONS_QUEUE } from "../../utils/constants.js";
 import { fileURLToPath } from "url";
 import lodash from "lodash";
 
-import Medium from "../../scrapers/Medium";
-import Substack from "../../scrapers/Substack";
-import RSS from "../../scrapers/RSS";
-import { ObjectId } from "mongoose";
+import Medium from "../../scrapers/Medium.js";
+import Substack from "../../scrapers/Substack.js";
+import RSS from "../../scrapers/RSS.js";
+import mongoose from "mongoose";
 
 const { isArray } = lodash;
 
@@ -18,7 +18,7 @@ const __filename = fileURLToPath(import.meta.url);
 
 dotenv.config({ path: path.resolve(__filename, "../../../../.env") });
 
-const handleMediumService = async (authorId: ObjectId, url: string): Promise<Partial<ResourceI>[]> => {
+const handleMediumService = async (authorId: mongoose.ObjectId, url: string): Promise<Partial<ResourceI>[]> => {
   const mediumScraper = new Medium();
   console.log(
     "Scraping medium for authorId: " + authorId + " from URL: " + url
@@ -26,7 +26,7 @@ const handleMediumService = async (authorId: ObjectId, url: string): Promise<Par
   return (await mediumScraper.getAllPosts(url)) || [];
 };
 
-const handleSubstackService = async (authorId: ObjectId, url: string): Promise<Partial<ResourceI>[]> => {
+const handleSubstackService = async (authorId: mongoose.ObjectId, url: string): Promise<Partial<ResourceI>[]> => {
   const substackScraper = new Substack();
   console.log(
     "Scraping substack for authorId: " + authorId + " from URL: " + url
@@ -34,7 +34,7 @@ const handleSubstackService = async (authorId: ObjectId, url: string): Promise<P
   return (await substackScraper.getAllPosts(url)) || [];
 };
 
-const handleRSSService = async (authorId: ObjectId, url: string): Promise<Partial<ResourceI>[]> => {
+const handleRSSService = async (authorId: mongoose.ObjectId, url: string): Promise<Partial<ResourceI>[]> => {
   const rssScraper = new RSS();
   console.log(
     "Scraping RSS feed for authorId: " + authorId + " from URL: " + url
@@ -42,7 +42,7 @@ const handleRSSService = async (authorId: ObjectId, url: string): Promise<Partia
   return (await rssScraper.getAllPosts(url)) || [];
 }
 
-const getPostsFromService = async (service: Sources, authorId: ObjectId, url: string) => {
+const getPostsFromService = async (service: Sources, authorId: mongoose.ObjectId, url: string) => {
   let posts: Partial<ResourceI>[] = [];
   switch (service) {
     case Sources.MEDIUM:
@@ -111,7 +111,7 @@ amqp.connect(process.env.RABBITMQ_URL || "", (err0, connection) => {
           console.log("Received msg: " + msg.content.toString());
           const message = msg.content.toString().split("_");
 
-          const authorId = (message[0] as unknown) as ObjectId;
+          const authorId = (message[0] as unknown) as mongoose.ObjectId;
           if (!authorId) {
             throw new Error(
               "Could not get author Id - subscriptionConsumer.ts"

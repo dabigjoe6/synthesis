@@ -1,13 +1,13 @@
 import { Router } from "express";
-import { validate } from "../middleware/validators";
+import { validate } from "../middleware/validators/index.js";
 import {
   changePassword,
   login,
   oAuthLogin,
   register,
   resetPassword,
-} from "../controllers/Auth";
-import { verifyGoogleToken } from "../middleware/auth";
+} from "../controllers/Auth.js";
+import { verifyGoogleToken } from "../middleware/auth.js";
 
 const router = Router();
 

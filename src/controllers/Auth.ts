@@ -1,8 +1,8 @@
 import Sendgrid from "@sendgrid/mail";
 import { Request, Response, NextFunction } from 'express';
-import UserService from "../services/users";
-import generateResetPasswordTemplate from "../utils/generateResetPasswordTemplate";
-import { generateToken } from "../middleware/auth";
+import UserService from "../services/users.js";
+import generateResetPasswordTemplate from "../utils/generateResetPasswordTemplate.js";
+import { generateToken } from "../middleware/auth.js";
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {

@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
-import { startDb } from "../../config/database";
-import UserModel from "../../models/users";
-import sendUserFeed from "./sendFeedPublisher";
+import { startDb } from "../../config/database.js";
+import UserModel from "../../models/users.js";
+import sendUserFeed from "./sendFeedPublisher.js";
 import { fileURLToPath } from "url";
 import path from "path";
-import { ResourceI } from "../../models/resources";
+import { ResourceI } from "../../models/resources.js";
 
 const __filename = fileURLToPath(import.meta.url);
 

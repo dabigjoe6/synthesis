@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
-import { startDb } from "../../config/database";
-import AuthorModel from "../../models/authors";
-import syncResourcesPublisher from "./syncResourcesPublisher";
+import { startDb } from "../../config/database.js";
+import AuthorModel from "../../models/authors.js";
+import syncResourcesPublisher from "./syncResourcesPublisher.js";
 import { fileURLToPath } from "url";
 import path from "path";
-import { Sources } from "../../utils/constants";
+import { Sources } from "../../utils/constants.js";
 
 const __filename = fileURLToPath(import.meta.url);
 

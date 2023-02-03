@@ -2,9 +2,9 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
-import { startDb } from "./src/config/database";
-import { errorHandler } from "./src/middleware/errorHandler";
-import routes from "./src/routes/index";
+import { startDb } from "./config/database.js";
+import { errorHandler } from "./middleware/errorHandler.js";
+import routes from "./routes/index.js";
 
 const app = express();
 

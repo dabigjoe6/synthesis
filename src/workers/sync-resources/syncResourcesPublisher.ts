@@ -1,12 +1,12 @@
 import dotenv from "dotenv";
-import amqp from "amqplib/callback_api";
-import { Sources, SYNC_RESOURCES_QUEUE } from "../../utils/constants";
-import { ObjectId } from "mongoose";
+import amqp from "amqplib/callback_api.js";
+import { Sources, SYNC_RESOURCES_QUEUE } from "../../utils/constants.js";
+import mongoose from "mongoose";
 
 dotenv.config({ path: "../../../.env" });
 
 const syncResourcesPublisher = ({ authorId, url, service }: {
-  authorId: ObjectId;
+  authorId: mongoose.ObjectId;
   url: string;
   service: Sources;
 }) => {

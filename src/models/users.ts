@@ -1,19 +1,19 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose from "mongoose";
 
-export interface UserI extends Document {
+export interface UserI extends mongoose.Document {
   email: string;
   password?: string;
   resetPasswordToken?: string;
-  subscriptions: Array<Schema.Types.ObjectId>;
-  seenResources: Array<Schema.Types.ObjectId>;
+  subscriptions: Array<mongoose.Schema.Types.ObjectId>;
+  seenResources: Array<mongoose.Schema.Types.ObjectId>;
 }
 
-const userSchema = new Schema<UserI>({
+const userSchema = new mongoose.Schema<UserI>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: false },
   resetPasswordToken: { type: String, required: false },
-  subscriptions: { type: [Schema.Types.ObjectId], required: false, unique: false },
-  seenResources: { type: [Schema.Types.ObjectId], required: false, unique: false }, 
+  subscriptions: { type: [mongoose.Schema.Types.ObjectId], required: false, unique: false },
+  seenResources: { type: [mongoose.Schema.Types.ObjectId], required: false, unique: false },
 }, {
   timestamps: true
 });

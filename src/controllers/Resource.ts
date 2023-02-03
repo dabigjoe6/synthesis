@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import SubscriptionService from "../services/subscription";
-import ResourceService from "../services/resource";
-import { Sources } from "../utils/constants";
+import SubscriptionService from "../services/subscription.js";
+import ResourceService from "../services/resource.js";
+import { Sources } from "../utils/constants.js";
 
 export const subscribe = (source: Sources) => async (req: Request, res: Response, next: NextFunction) => {
   try {

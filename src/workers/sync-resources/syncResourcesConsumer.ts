@@ -1,20 +1,20 @@
 import dotenv from "dotenv";
 import path from "path";
-import amqp from "amqplib/callback_api";
-import { startDb } from "../../config/database";
-import { Sources, SYNC_RESOURCES_QUEUE } from "../../utils/constants";
+import amqp from "amqplib/callback_api.js";
+import { startDb } from "../../config/database.js";
+import { Sources, SYNC_RESOURCES_QUEUE } from "../../utils/constants.js";
 import { fileURLToPath } from "url";
 import lodash from "lodash";
 
-import AuthorModel from "../../models/authors";
-import ResourceModel, { ResourceI } from "../../models/resources";
+import AuthorModel from "../../models/authors.js";
+import ResourceModel, { ResourceI } from "../../models/resources.js";
 
-import Medium from "../../scrapers/Medium";
-import Substack from "../../scrapers/Substack";
-import RSS from "../../scrapers/RSS";
+import Medium from "../../scrapers/Medium.js";
+import Substack from "../../scrapers/Substack.js";
+import RSS from "../../scrapers/RSS.js";
 
-import ResourceService from "../../services/resource";
-import { ObjectId } from "mongoose";
+import ResourceService from "../../services/resource.js";
+import mongoose from "mongoose";
 
 const { isArray } = lodash;
 
@@ -22,7 +22,7 @@ const __filename = fileURLToPath(import.meta.url);
 
 dotenv.config({ path: path.resolve(__filename, "../../../../.env") });
 
-const syncPosts = async (newPosts: ResourceI[], mostRecentPostsInDb: ResourceI[], service: Sources, authorId: ObjectId) => {
+const syncPosts = async (newPosts: ResourceI[], mostRecentPostsInDb: ResourceI[], service: Sources, authorId: mongoose.ObjectId) => {
   if (!newPosts) {
     console.error(
       "newPosts is undefined but required - syncResourcesConsumer"
@@ -100,7 +100,7 @@ const getScraperInstance = (source: Sources) => {
   }
 };
 
-const handleService = async (authorId: ObjectId, url: string, source: Sources) => {
+const handleService = async (authorId: mongoose.ObjectId, url: string, source: Sources) => {
   const scraperInstance = getScraperInstance(source);
   const resourceService = new ResourceService(source);
 
@@ -153,7 +153,7 @@ amqp.connect(process.env.RABBITMQ_URL || "", (err0, connection) => {
           console.log("Received msg: " + msg.content.toString());
           const message = msg.content.toString().split("_");
 
-          const authorId = (message[0] as unknown) as ObjectId;
+          const authorId = (message[0] as unknown) as mongoose.ObjectId;
           if (!authorId) {
             throw new Error(
               "Could not get author Id - syncResourcesConsumer"

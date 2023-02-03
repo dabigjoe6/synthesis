@@ -1,20 +1,20 @@
-import AuthorModel, { AuthorI } from "../models/authors";
-import UserModel, { UserI } from "../models/users";
-import ResourceModel, { ResourceI } from "../models/resources";
-import { Sources } from "../utils/constants";
+import AuthorModel, { AuthorI } from "../models/authors.js";
+import UserModel, { UserI } from "../models/users.js";
+import ResourceModel, { ResourceI } from "../models/resources.js";
+import { Sources } from "../utils/constants.js";
 import {
   extractMediumAuthorNameFromURL,
   extractSubstackAuthorNameFromURL,
   parseMediumUrl,
-} from "../utils/scrapeHelpers";
-import subscriptionPublisher from "../workers/subscriptions/subscriptionPublisher";
+} from "../utils/scrapeHelpers.js";
+import subscriptionPublisher from "../workers/subscriptions/subscriptionPublisher.js";
 import mongoose from "mongoose";
 
 export default class ResourceService {
   AuthorModel: mongoose.Model<AuthorI>;
   UserModel: mongoose.Model<UserI>;
   ResourceModel: mongoose.Model<ResourceI>;
-  
+
   source: Sources;
 
   constructor(source: Sources) {

@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
-import amqp from "amqplib/callback_api";
-import { FEEDS_QUEUE } from "../../utils/constants";
+import amqp from "amqplib/callback_api.js";
+import { FEEDS_QUEUE } from "../../utils/constants.js";
 
 dotenv.config({ path: "../../../.env" });
 

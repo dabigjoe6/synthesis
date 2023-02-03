@@ -1,18 +1,18 @@
 import dotenv from "dotenv";
-import amqp, { Message } from "amqplib/callback_api";
+import amqp, { Message } from "amqplib/callback_api.js";
 import Sendgrid from "@sendgrid/mail";
 import mongoose from "mongoose";
-import ResourceModel, { ResourceI } from "../../models/resources";
-import UserModel from "../../models/users";
-import { startDb } from "../../config/database";
-import generateEmailTemplate from "../../utils/generateEmailTemplate";
-import { FEEDS_QUEUE } from "../../utils/constants";
+import ResourceModel, { ResourceI } from "../../models/resources.js";
+import UserModel from "../../models/users.js";
+import { startDb } from "../../config/database.js";
+import generateEmailTemplate from "../../utils/generateEmailTemplate.js";
+import { FEEDS_QUEUE } from "../../utils/constants.js";
 import { fileURLToPath } from "url";
 import path from "path";
-import MediumScraper from "../../scrapers/Medium";
-import SubstackScraper from "../../scrapers/Substack";
-import Summarizer from "../../utils/summarize";
-import { Sources } from "../../utils/constants";
+import MediumScraper from "../../scrapers/Medium.js";
+import SubstackScraper from "../../scrapers/Substack.js";
+import Summarizer from "../../utils/summarize.js";
+import { Sources } from "../../utils/constants.js";
 import { Channel } from "amqplib";
 
 const __filename = fileURLToPath(import.meta.url);

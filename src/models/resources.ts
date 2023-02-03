@@ -1,9 +1,9 @@
-import mongoose, { Schema, Document } from "mongoose";
-import { Sources } from "../utils/constants";
+import mongoose from "mongoose";
+import { Sources } from "../utils/constants.js";
 
-export interface ResourceI extends Document {
+export interface ResourceI extends mongoose.Document {
   url: string;
-  author: Schema.Types.ObjectId;
+  author: mongoose.Schema.Types.ObjectId;
   title?: string;
   source?: Sources;
   description?: string;
@@ -18,9 +18,9 @@ export interface ResourceI extends Document {
   latest: boolean;
 }
 
-const resourceSchema = new Schema<ResourceI>({
+const resourceSchema = new mongoose.Schema<ResourceI>({
   url: { type: String, required: true, unique: false },
-  author: { type: Schema.Types.ObjectId, required: true, unique: false },
+  author: { type: mongoose.Schema.Types.ObjectId, required: true, unique: false },
   title: { type: String, required: false, unique: false },
   source: { type: String, required: false, unique: false },
   description: { type: String, required: false, unique: false },

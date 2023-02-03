@@ -1,8 +1,8 @@
-import UserModel, { UserI } from "../models/users";
+import UserModel, { UserI } from "../models/users.js";
 import bcrypt from "bcryptjs";
-import { generateToken } from "../middleware/auth";
-import generateResetTokenHelper from "../utils/generateResetToken";
-import mongoose, { ObjectId } from "mongoose";
+import { generateToken } from "../middleware/auth.js";
+import generateResetTokenHelper from "../utils/generateResetToken.js";
+import mongoose from "mongoose";
 
 export default class User {
   UserModel: mongoose.Model<UserI>;
@@ -11,7 +11,7 @@ export default class User {
     this.UserModel = UserModel;
   }
 
-  async updateUser(id: ObjectId, user: UserI) {
+  async updateUser(id: mongoose.ObjectId, user: UserI) {
     return await this.UserModel.findByIdAndUpdate(id, user).exec();
   }
 
@@ -19,15 +19,15 @@ export default class User {
     return await this.UserModel.findOne({ email }).exec();
   }
 
-  async getUserById(id: ObjectId) {
+  async getUserById(id: mongoose.ObjectId) {
     return await this.UserModel.findById(id).exec();
   }
 
-  async createUser(user: { email: string, password?: string}) {
+  async createUser(user: { email: string, password?: string }) {
     return await this.UserModel.create(user);
   }
 
-  async deleteUser(id: ObjectId) {
+  async deleteUser(id: mongoose.ObjectId) {
     return await this.UserModel.findByIdAndDelete(id).exec();
   }
 
