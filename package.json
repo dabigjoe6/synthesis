@@ -9,12 +9,12 @@
     "dev:generate-users-feeds": "ts-node-esm ./src/workers/user-feeds/generateUsersFeeds.ts",
     "dev:generate-stale-resources": "ts-node-esm ./src/workers/sync-resources/syncResources.ts",
     "main": "dist/index.js",
-    "start": "tsc && node dist/index.js",
-    "generate-users-feeds": "tsc && node dist/workers/user-feeds/generateUsersFeeds.js",
-    "generate-stale-resources": "tsc && node dist/workers/sync-resources/syncResources.js",
-    "send-user-feed": "tsc && node dist/workers/user-feeds/sendFeedConsumer.js",
-    "subscriptions": "tsc && node dist/workers/subscriptions/subscriptionConsumer.js",
-    "sync-resources": "tsc && node dist/workers/sync-resources/syncResourcesConsumer.js"
+    "start": "npx tsc && node dist/index.js",
+    "generate-users-feeds": "npx tsc && node dist/workers/user-feeds/generateUsersFeeds.js",
+    "generate-stale-resources": "npx tsc && node dist/workers/sync-resources/syncResources.js",
+    "send-user-feed": "npx tsc && node dist/workers/user-feeds/sendFeedConsumer.js",
+    "subscriptions": "npx tsc && node dist/workers/subscriptions/subscriptionConsumer.js",
+    "sync-resources": "npx tsc && node dist/workers/sync-resources/syncResourcesConsumer.js"
   },
   "type": "module",
   "dependencies": {
