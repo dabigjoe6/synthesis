@@ -1,16 +1,20 @@
 import puppeteer from "puppeteer";
-import { launchConfig, viewport } from "../config/puppeteer.js";
-import { cleanHTMLContent } from "../utils/preprocessing.js";
-import { inifinteScrollToBottom } from "../utils/scrapeHelpers.js";
+import { launchConfig, viewport } from "../config/puppeteer";
+import { ResourceI } from "../models/resources";
+import { cleanHTMLContent } from "../utils/preprocessing";
+import { inifinteScrollToBottom } from "../utils/scrapeHelpers";
 
 export default class Substack {
+  browser: puppeteer.Browser;
+  page: puppeteer.Page;
+
   async initPuppeteer() {
     this.browser = await puppeteer.launch(launchConfig);
     this.page = await this.browser.newPage();
     this.page.setViewport(viewport);
   }
 
-  async getPostsMetaData(posts) {
+  async getPostsMetaData(posts: puppeteer.ElementHandle<HTMLElement>[]): Promise<Partial<ResourceI>[]> {
     console.log("Generating metadata from posts");
     const result = [];
 
@@ -18,45 +22,50 @@ export default class Substack {
       // Get post URL
       const urlElement = await post.$('a[class~="post-preview-title"]');
       const href = urlElement && (await urlElement.getProperty("href"));
-      const url = href && (await href.jsonValue());
+      const url: string = (href && (await href.jsonValue())) || "";
 
       // Get post title
       const titleInnerHTML =
         urlElement && (await urlElement.getProperty("innerHTML"));
-      const title = titleInnerHTML && (await titleInnerHTML.jsonValue());
+      const title: string = (titleInnerHTML && (await titleInnerHTML.jsonValue())) || "";
 
       // Get post description
       const descriptionElement = await post.$(
         'a[class="post-preview-description"]'
       );
-      const descriptionInnerHTML =
+      const descriptionInnerHTML: puppeteer.JSHandle<string> | null =
         descriptionElement &&
         (await descriptionElement.getProperty("innerHTML"));
-      const description =
-        descriptionElement && (await descriptionInnerHTML.jsonValue());
+      let description: string = "";
+
+      if (descriptionInnerHTML) {
+        description = (descriptionElement && (await descriptionInnerHTML.jsonValue())) || "";
+      }
 
       // Get image
       const imageWrapper = await post.$('div[class="post-preview-image"]');
       const imageElement = imageWrapper && (await imageWrapper.$("img"));
       const imageSrc = imageElement && (await imageElement.getProperty("src"));
-      const image = imageSrc && (await imageSrc.jsonValue());
+      const image: string = (imageSrc && (await imageSrc.jsonValue())) || "";
 
       // Get author
       const authorWrapper = await post.$('div[class="profile-hover-wrapper"]');
       const authorElement = authorWrapper && (await authorWrapper.$("a"));
       const authorInnerHTML =
         authorElement && (await authorElement.getProperty("innerHTML"));
-      const authorsName =
-        authorInnerHTML && (await authorInnerHTML.jsonValue());
+      const authorsName: string =
+        (authorInnerHTML && (await authorInnerHTML.jsonValue())) || "";
 
       // Get published date
       const timeElement = await post.$("time");
-      const datePublished =
-        timeElement &&
-        (await this.page.evaluate(
-          (el) => el.getAttribute("datetime"),
-          timeElement
-        ));
+      const datePublishedString: string =
+        (timeElement &&
+          (await this.page.evaluate(
+            (el) => el.getAttribute("datetime"),
+            timeElement
+          )) || "")
+
+      const datePublished = new Date(datePublishedString);
 
       // Get number of likes
       const likesWrapper = await post.$(
@@ -66,7 +75,7 @@ export default class Substack {
         likesWrapper && (await likesWrapper.$('div[class="label"]'));
       const likes =
         likesElement && (await likesElement.getProperty("innerHTML"));
-      const numberOfLikes = Number(likes && (await likes.jsonValue())) || 0;
+      const numberOfLikes: number = Number(likes && (await likes.jsonValue())) || 0;
 
       // Get number of comments
       const commentsWrapper = await post.$(
@@ -76,7 +85,7 @@ export default class Substack {
         commentsWrapper && (await commentsWrapper.$('div[class="label"]'));
       const comments =
         commentsElement && (await commentsElement.getProperty("innerHTML"));
-      const numberOfComments =
+      const numberOfComments: number =
         Number(comments && (await comments.jsonValue())) || 0;
 
       if (url && title) {
@@ -130,7 +139,7 @@ export default class Substack {
     return !is404 && isSubstackPage;
   }
 
-  async getAllPosts(authorsUrl, shouldScrollToBottom = true) {
+  async getAllPosts(authorsUrl: string, shouldScrollToBottom: boolean = true): Promise<Partial<ResourceI>[] | undefined> {
     try {
       await this.initPuppeteer();
 
@@ -170,8 +179,8 @@ export default class Substack {
       } else {
         throw new Error(
           "Could not fetch posts from author: " +
-            authorsUrl +
-            " as its not a valid Substack page"
+          authorsUrl +
+          " as its not a valid Substack page"
         );
       }
     } catch (err) {
@@ -182,7 +191,7 @@ export default class Substack {
   }
 
 
-  async getPost(url) {
+  async getPost(url: string) {
     try {
       await this.initPuppeteer();
 

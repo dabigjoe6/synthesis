@@ -1,4 +1,6 @@
-const generatePost = (post) => `
+import { ResourceI } from "../models/resources";
+
+const generatePost = (post: ResourceI) => `
 <table style="font-family:trebuchet ms,geneva;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
   <tbody>
     <tr>
@@ -50,7 +52,7 @@ const generatePost = (post) => `
   </tbody>
 </table>`;
 
-const generateEmailTemplate = (posts, latestPosts) => {
+const generateEmailTemplate = (posts: ResourceI[], latestPosts: ResourceI[]) => {
   if (posts && posts.length > 0) {
     let postsHTML = "";
     let latestPostsHTML = "";

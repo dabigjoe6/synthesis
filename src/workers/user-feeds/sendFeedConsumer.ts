@@ -1,38 +1,39 @@
 import dotenv from "dotenv";
-import amqp from "amqplib/callback_api.js";
+import amqp, { Message } from "amqplib/callback_api";
 import Sendgrid from "@sendgrid/mail";
 import mongoose from "mongoose";
-import ResourceModel from "../../models/resources.js";
-import UserModel from "../../models/users.js";
-import { startDb } from "../../config/database.ts/index.js.js";
-import generateEmailTemplate from "../../utils/generateEmailTemplate.js";
-import { FEEDS_QUEUE } from "../../utils/constants.js";
+import ResourceModel, { ResourceI } from "../../models/resources";
+import UserModel from "../../models/users";
+import { startDb } from "../../config/database";
+import generateEmailTemplate from "../../utils/generateEmailTemplate";
+import { FEEDS_QUEUE } from "../../utils/constants";
 import { fileURLToPath } from "url";
 import path from "path";
-import MediumScraper from "../../scrapers/Medium.js";
-import SubstackScraper from "../../scrapers/Substack.js";
-import Summarizer from "../../utils/summarize.js";
-import { sources } from "../../utils/constants.js";
+import MediumScraper from "../../scrapers/Medium";
+import SubstackScraper from "../../scrapers/Substack";
+import Summarizer from "../../utils/summarize";
+import { Sources } from "../../utils/constants";
+import { Channel } from "amqplib";
 
 const __filename = fileURLToPath(import.meta.url);
 
 dotenv.config({ path: path.resolve(__filename, "../../../../.env") });
 
 
-const summarizeResources = async (resources) => {
+const summarizeResources = async (resources: ResourceI[]) => {
   const summarizer = new Summarizer();
 
   try {
     for (const resource of resources) {
       if (!resource.summary) {
         switch (resource.source) {
-          case sources.MEDIUM:
+          case Sources.MEDIUM:
             await summarizeMediumPost(resource, summarizer);
             break;
-          case sources.SUBSTACK:
+          case Sources.SUBSTACK:
             await summarizeSubstackPost(resource, summarizer);
             break;
-          case sources.RSS:
+          case Sources.RSS:
             await summarizeRSSPost(resource, summarizer);
             break;
           default:
@@ -43,10 +44,10 @@ const summarizeResources = async (resources) => {
     }
   } catch (err) {
     console.error("Something went wrong with summarizing", err);
-  }  
+  }
 }
 
-const summarizeMediumPost = async (resource, summarizer) => {
+const summarizeMediumPost = async (resource: ResourceI, summarizer: Summarizer) => {
 
   const mediumScraper = new MediumScraper();
   const mediumPost = await mediumScraper.getPost(resource.url);
@@ -54,44 +55,44 @@ const summarizeMediumPost = async (resource, summarizer) => {
   // summarize
   if (mediumPost) {
     resource.summary = await summarizer.summarize(mediumPost);
-    resource.lastSummaryUpdate = Date.now();
+    resource.lastSummaryUpdate = new Date();
     resource.save();
   } else {
     throw new Error("Could not get medium post");
   }
 };
 
-const summarizeSubstackPost = async (resource, summarizer) => {
+const summarizeSubstackPost = async (resource: ResourceI, summarizer: Summarizer) => {
   const substackScraper = new SubstackScraper();
   const substackPost = await substackScraper.getPost(resource.url);
 
   // summarize
   if (substackPost) {
     resource.summary = await summarizer.summarize(substackPost);
-    resource.lastSummaryUpdate = Date.now();
+    resource.lastSummaryUpdate = new Date();
     resource.save();
   } else {
     throw new Error("Could not get substack post");
   }
 };
 
-const summarizeRSSPost = async (resource, summarizer) => {
+const summarizeRSSPost = async (resource: ResourceI, summarizer: Summarizer) => {
   if (resource.content) {
     resource.summary = await summarizer.summarize(resource.content);
-    resource.lastSummaryUpdate = Date.now();
+    resource.lastSummaryUpdate = new Date();
     resource.save();
   }
 }
 
-amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
+amqp.connect(process.env.RABBITMQ_URL || "", (err0, connection) => {
   if (err0) {
-    console.log("sendFeedConsumer.js error: ", err0);
+    console.log("sendFeedConsumer.ts error: ", err0);
     throw err0;
   }
 
-  connection.createChannel((err1, channel) => {
+  connection.createChannel((err1: any, channel: Channel) => {
     if (err1) {
-      console.log("sendFeedConsumer.js error: ", err1);
+      console.log("sendFeedConsumer.ts error: ", err1);
       throw err1;
     }
 
@@ -116,10 +117,10 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
           console.log("Getting feeds from DB");
           let resourceIds = JSON.parse(messageContent.split("_")[1]);
           if (!resourceIds) {
-            throw new Error("Could not get resource Ids - sendFeedConsumer.js");
+            throw new Error("Could not get resource Ids - sendFeedConsumer.ts");
           }
-          resourceIds = resourceIds.map((resourceId) =>
-            mongoose.Types.ObjectId(resourceId)
+          resourceIds = resourceIds.map((resourceId: string) =>
+            new mongoose.Types.ObjectId(resourceId)
           );
           const resources = await ResourceModel.find({
             _id: { $in: resourceIds },
@@ -139,7 +140,7 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
             userId = messageContent.split("_")[0];
 
             if (!userId) {
-              throw new Error("User ID not defined - sendFeedConsumer.js");
+              throw new Error("User ID not defined - sendFeedConsumer.ts");
             }
 
             user = await UserModel.findOne({ _id: userId }).exec();
@@ -170,10 +171,10 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
             try {
               console.log("Sending email to user: " + userEmail);
               const message = generateEmailTemplate(resources, latestResources);
-              Sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+              Sendgrid.setApiKey(process.env.SENDGRID_API_KEY || "");
               await Sendgrid.send({
                 to: userEmail,
-                from: process.env.FROM,
+                from: (process.env.FROM || ""),
                 subject: "Your daily morning brew",
                 text: "Your daily morning brew is here",
                 html: message,
@@ -214,7 +215,7 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
           }
         } else {
           console.log("Bad message, skipping....");
-          channel.reject(msg, false);
+          channel.reject((msg || {}) as Message, false);
         }
       },
       {

@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { verifyToken } from "../middleware/auth.js";
+import { verifyToken } from "../middleware/auth";
 
-import authRouter from "./auth.js";
-import subscribeRouter from "./subscribe.js";
+import authRouter from "./auth";
+import subscribeRouter from "./subscribe";
 
 const routes = Router();
 

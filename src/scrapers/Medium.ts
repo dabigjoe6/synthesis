@@ -1,7 +1,8 @@
 import puppeteer from "puppeteer";
-import { launchConfig, viewport } from "../config/puppeteer.js";
-import { inifinteScrollToBottom } from "../utils/scrapeHelpers.js";
-import { cleanHTMLContent } from "../utils/preprocessing.js";
+import { launchConfig, viewport } from "../config/puppeteer";
+import { inifinteScrollToBottom } from "../utils/scrapeHelpers";
+import { cleanHTMLContent } from "../utils/preprocessing";
+import { ResourceI } from "../models/resources";
 export default class Medium {
   browser: puppeteer.Browser;
   page: puppeteer.Page;
@@ -12,35 +13,35 @@ export default class Medium {
     this.page.setViewport(viewport);
   }
 
-  private async getPostsMetaData(posts: puppeteer.ElementHandle<HTMLElement>[]) {
+  private async getPostsMetaData(posts: puppeteer.ElementHandle<HTMLElement>[]): Promise<Partial<ResourceI>[]> {
     console.log("Generating metadata from posts");
-    const result = [];
+    const result: Partial<ResourceI>[] = [];
     for await (const [index, post] of posts.entries()) {
       //Get post URL
       const urlElement = await post.$('a[aria-label="Post Preview Title"]');
 
       const href = urlElement && (await urlElement.getProperty("href"));
-      const url = href && (await href.jsonValue());
+      const url: string = (href && (await href.jsonValue())) || "";
 
       //Get post title
       const titleElement = await post.$("h2");
       const titleInnerHTML =
         titleElement && (await titleElement.getProperty("innerHTML"));
-      const title = titleInnerHTML && (await titleInnerHTML.jsonValue());
+      const title: string = (titleInnerHTML && (await titleInnerHTML.jsonValue())) || "";
 
       //Get description
       const descriptionElement = await post.$("a > div > p");
       const descriptionInnerHTML =
         descriptionElement &&
         (await descriptionElement.getProperty("innerHTML"));
-      const description =
-        descriptionInnerHTML && (await descriptionInnerHTML.jsonValue());
+      const description: string =
+        (descriptionInnerHTML && (await descriptionInnerHTML.jsonValue())) || "";
 
       //Get image
       const imageElement = await post.$("img");
       const imageElementSrc =
         imageElement && (await imageElement.getProperty("src"));
-      const image = imageElementSrc && (await imageElementSrc.jsonValue());
+      const image: string = (imageElementSrc && (await imageElementSrc.jsonValue())) || "";
 
       // Make sure there's at least url and title
       if (url && title) {
@@ -90,12 +91,14 @@ export default class Medium {
     return !is404 && isMediumPage;
   }
 
-  async getAllPosts(authorsUrl: string, shouldScrollToBottom:boolean = true) {
+  async getAllPosts(authorsUrl: string, shouldScrollToBottom: boolean = true): Promise<Partial<ResourceI>[] | undefined> {
     try {
       await this.initPuppeteer();
 
       console.log("Visiting ", authorsUrl);
       await this.page.goto(authorsUrl, { waitUntil: "networkidle2" });
+
+      let postsMetadata: Partial<ResourceI>[];
 
       if (await this.isPageValid()) {
         console.log("Loaded", authorsUrl);
@@ -106,16 +109,18 @@ export default class Medium {
 
         const posts: puppeteer.ElementHandle<HTMLElement>[] = await this.page.$$("article");
 
-        const postsMetadata = await this.getPostsMetaData(posts);
+        postsMetadata = await this.getPostsMetaData(posts);
 
-        return postsMetadata;
       } else {
         throw new Error(
           "Could not fetch posts from author: " +
-            authorsUrl +
-            " as its not a valid medium page"
+          authorsUrl +
+          " as its not a valid medium page"
         );
       }
+
+      return postsMetadata;
+
     } catch (err) {
       console.log("Couldn't get all posts - medium", err);
     } finally {
@@ -163,8 +168,8 @@ export default class Medium {
       } else {
         throw new Error(
           "Could not fetch post from url: " +
-            url +
-            " as its not a valid medium page"
+          url +
+          " as its not a valid medium page"
         );
       }
     } catch (err) {

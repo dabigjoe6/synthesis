@@ -35,4 +35,4 @@ const resourceSchema = new Schema<ResourceI>({
   latest: { type: Boolean, required: true, unique: false },
 });
 
-export default mongoose.model("Resource", resourceSchema);
+export default mongoose.model<ResourceI>("Resource", resourceSchema);

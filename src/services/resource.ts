@@ -1,30 +1,37 @@
-import AuthorModel from "../models/authors.js";
-import UserModel from "../models/users.js";
-import ResourceModel from "../models/resources.js";
-import { sources } from "../utils/constants.js";
+import AuthorModel, { AuthorI } from "../models/authors";
+import UserModel, { UserI } from "../models/users";
+import ResourceModel, { ResourceI } from "../models/resources";
+import { Sources } from "../utils/constants";
 import {
   extractMediumAuthorNameFromURL,
   extractSubstackAuthorNameFromURL,
   parseMediumUrl,
-} from "../utils/scrapeHelpers.js";
-import subscriptionPublisher from "../workers/subscriptions/subscriptionPublisher.js";
+} from "../utils/scrapeHelpers";
+import subscriptionPublisher from "../workers/subscriptions/subscriptionPublisher";
+import mongoose from "mongoose";
 
 export default class ResourceService {
-  constructor(source) {
+  AuthorModel: mongoose.Model<AuthorI>;
+  UserModel: mongoose.Model<UserI>;
+  ResourceModel: mongoose.Model<ResourceI>;
+  
+  source: Sources;
+
+  constructor(source: Sources) {
     this.AuthorModel = AuthorModel;
     this.UserModel = UserModel;
     this.ResourceModel = ResourceModel;
     this.source = source;
   }
 
-  subscribe = async (email, url) => {
+  subscribe = async (email: string, url: string) => {
     let user = await this.UserModel.findOne({ email }).exec();
 
     if (!user) {
       user = await this.UserModel.create({ email });
     }
 
-    if (this.source === sources.MEDIUM) {
+    if (this.source === Sources.MEDIUM) {
       // If URL matches https://josepholabisi.medium.com convert to https://medium.com/@josepholabisi
       // If URL matches https://medium.com/@josepholabisi leave as is
       url = parseMediumUrl(url);
@@ -62,10 +69,10 @@ export default class ResourceService {
         $addToSet: { subscriptions: author._id },
       }
     );
-    return newUser.subscriptions;
+    return (newUser?.subscriptions || []);
   };
 
-  getMostRecentPosts = async (authorId) => {
+  getMostRecentPosts = async (authorId: string) => {
     const author = await this.AuthorModel.findById(authorId).exec();
 
     if (!author) {
@@ -79,11 +86,11 @@ export default class ResourceService {
     return mostRecentPosts;
   };
 
-  getNameBasedOnSource = (url) => {
+  getNameBasedOnSource = (url: string) => {
     switch (this.source) {
-      case sources.MEDIUM:
+      case Sources.MEDIUM:
         return extractMediumAuthorNameFromURL(url);
-      case sources.SUBSTACK:
+      case Sources.SUBSTACK:
         return extractSubstackAuthorNameFromURL(url);
       default:
         return url;

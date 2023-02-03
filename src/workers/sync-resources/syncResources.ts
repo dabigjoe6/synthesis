@@ -1,9 +1,10 @@
 import dotenv from "dotenv";
-import { startDb } from "../../config/database.ts/index.js.js";
-import AuthorModel from "../../models/authors.js";
-import syncResourcesPublisher from "./publishers/syncResourcesPublisher.js";
+import { startDb } from "../../config/database";
+import AuthorModel from "../../models/authors";
+import syncResourcesPublisher from "./syncResourcesPublisher";
 import { fileURLToPath } from "url";
 import path from "path";
+import { Sources } from "../../utils/constants";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -17,7 +18,7 @@ const syncResources = async () => {
   // TODO: Determine whats the best time for last synced (24 hours?)
   // Authors resources that need to be synced are authros with a last sync time of > 4 hours
 
-  const hours = process.env.SYNC_HOURS; // the number of hours
+  const hours: number = process.env.SYNC_HOURS ? Number(process.env.SYNC_HOURS) : 4; // the number of hours
   const timeLimit = new Date(Date.now() - hours * 60 * 60 * 1000); // the time limit
 
   console.log("Timelimit", timeLimit)
@@ -34,13 +35,13 @@ const syncResources = async () => {
     authorsToBeSynced.forEach((author) => {
       syncResourcesPublisher({
         authorId: author._id,
-        service: author.source,
+        service: (author.source as Sources),
         url: author.url,
       });
     });
   } catch (err) {
     console.error(
-      "Could not fetch resources to be synced - syncResources.js",
+      "Could not fetch resources to be synced - syncResources.ts",
       err
     );
   }

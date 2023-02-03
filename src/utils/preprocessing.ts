@@ -3,7 +3,7 @@
  *  @param {string} str - The string to strip HTML tags from
  *  @returns {string} The string with HTML tags stripped
  */
-export const stripHTMLTags = (str) => {
+export const stripHTMLTags = (str: string) => {
   const tagsToFilter = ["pre", "code", "img", "picture"];
 
   let text = str.replace(/<[^>]*>?/gm, (match) => {
@@ -28,7 +28,7 @@ export const stripHTMLTags = (str) => {
  * @param {string} str - The string to remove white space from
  * @returns {string} The string with white space removed
  */
-export const removeWhiteSpace = (str) => {
+export const removeWhiteSpace = (str: string) => {
   const text = str.replace(/\s+/gm, " ").split(" ");
   return text.join(" ").trim();
 };
@@ -38,7 +38,7 @@ export const removeWhiteSpace = (str) => {
  * @param {string} str - The string to clean
  * @returns {string} The cleaned string
  */
-export const cleanHTMLContent = (str) => {
+export const cleanHTMLContent = (str: string) => {
   // NOTE: This could be extended to handle all cleaning necessary as required.
 
   let content = "";

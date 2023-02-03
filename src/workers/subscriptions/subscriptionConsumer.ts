@@ -1,15 +1,16 @@
 import dotenv from "dotenv";
 import path from "path";
-import amqp from "amqplib/callback_api.js";
-import ResourceModel from "../../models/resources.js";
-import { startDb } from "../../config/database.ts/index.js.js";
-import { sources, SUBSCRIPTIONS_QUEUE } from "../../utils/constants.js";
+import amqp from "amqplib/callback_api";
+import ResourceModel, { ResourceI } from "../../models/resources";
+import { startDb } from "../../config/database";
+import { Sources, SUBSCRIPTIONS_QUEUE } from "../../utils/constants";
 import { fileURLToPath } from "url";
 import lodash from "lodash";
 
-import Medium from "../../scrapers/Medium.js";
-import Substack from "../../scrapers/Substack.js";
-import RSS from "../../scrapers/RSS.js";
+import Medium from "../../scrapers/Medium";
+import Substack from "../../scrapers/Substack";
+import RSS from "../../scrapers/RSS";
+import { ObjectId } from "mongoose";
 
 const { isArray } = lodash;
 
@@ -17,43 +18,44 @@ const __filename = fileURLToPath(import.meta.url);
 
 dotenv.config({ path: path.resolve(__filename, "../../../../.env") });
 
-const handleMediumService = async (authorId, url) => {
+const handleMediumService = async (authorId: ObjectId, url: string): Promise<Partial<ResourceI>[]> => {
   const mediumScraper = new Medium();
   console.log(
     "Scraping medium for authorId: " + authorId + " from URL: " + url
   );
-  return await mediumScraper.getAllPosts(url);
+  return (await mediumScraper.getAllPosts(url)) || [];
 };
 
-const handleSubstackService = async (authorId, url) => {
+const handleSubstackService = async (authorId: ObjectId, url: string): Promise<Partial<ResourceI>[]> => {
   const substackScraper = new Substack();
   console.log(
     "Scraping substack for authorId: " + authorId + " from URL: " + url
   );
-  return await substackScraper.getAllPosts(url);
+  return (await substackScraper.getAllPosts(url)) || [];
 };
 
-const handleRSSService = async (authorId, url) => {
+const handleRSSService = async (authorId: ObjectId, url: string): Promise<Partial<ResourceI>[]> => {
   const rssScraper = new RSS();
   console.log(
     "Scraping RSS feed for authorId: " + authorId + " from URL: " + url
   );
-  return await rssScraper.getAllPosts(url);
+  return (await rssScraper.getAllPosts(url)) || [];
 }
 
-const getPostsFromService = async (service, authorId, url) => {
-  let posts = null;
+const getPostsFromService = async (service: Sources, authorId: ObjectId, url: string) => {
+  let posts: Partial<ResourceI>[] = [];
   switch (service) {
-    case sources.MEDIUM:
-      posts = await handleMediumService(authorId, url);
+    case Sources.MEDIUM:
+      posts = await handleMediumService(authorId, url)
       break;
-    case sources.SUBSTACK:
+    case Sources.SUBSTACK:
       posts = await handleSubstackService(authorId, url);
       break;
-    case sources.RSS:
+    case Sources.RSS:
       posts = await handleRSSService(authorId, url);
       break;
     default:
+      posts = [];
       throw new Error("Service not supported: " + service);
   }
 
@@ -78,15 +80,15 @@ const getPostsFromService = async (service, authorId, url) => {
   }
 };
 
-amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
+amqp.connect(process.env.RABBITMQ_URL || "", (err0, connection) => {
   if (err0) {
-    console.log("subscriptionConsumer.js error: ", err0);
+    console.log("subscriptionConsumer.ts error: ", err0);
     throw err0;
   }
 
   connection.createChannel((err1, channel) => {
     if (err1) {
-      console.log("subscriptionConsumer.js error: ", err1);
+      console.log("subscriptionConsumer.ts error: ", err1);
       throw err1;
     }
 
@@ -109,22 +111,22 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
           console.log("Received msg: " + msg.content.toString());
           const message = msg.content.toString().split("_");
 
-          const authorId = message[0];
+          const authorId = (message[0] as unknown) as ObjectId;
           if (!authorId) {
             throw new Error(
-              "Could not get author Id - subscriptionConsumer.js"
+              "Could not get author Id - subscriptionConsumer.ts"
             );
           }
           const url = message[1];
           if (!url) {
             throw new Error(
-              "Could not get authors url - subscriptionConsumer.js"
+              "Could not get authors url - subscriptionConsumer.ts"
             );
           }
-          const service = message[2];
+          const service = (message[2] as unknown) as Sources;
           if (!service) {
             throw new Error(
-              "Could not determine service - subscriptionConsumer.js"
+              "Could not determine service - subscriptionConsumer.ts"
             );
           }
 

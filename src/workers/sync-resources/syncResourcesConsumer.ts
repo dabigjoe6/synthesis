@@ -1,19 +1,20 @@
 import dotenv from "dotenv";
 import path from "path";
-import amqp from "amqplib/callback_api.js";
-import { startDb } from "../../config/database.ts/index.js.js";
-import { sources, SYNC_RESOURCES_QUEUE } from "../../utils/constants.js";
+import amqp from "amqplib/callback_api";
+import { startDb } from "../../config/database";
+import { Sources, SYNC_RESOURCES_QUEUE } from "../../utils/constants";
 import { fileURLToPath } from "url";
 import lodash from "lodash";
 
-import AuthorModel from "../../models/authors.js";
-import ResourceModel from "../../models/resources.js";
+import AuthorModel from "../../models/authors";
+import ResourceModel, { ResourceI } from "../../models/resources";
 
-import Medium from "../../scrapers/Medium.js";
-import Substack from "../../scrapers/Substack.js";
-import RSS from "../../scrapers/RSS.js";
+import Medium from "../../scrapers/Medium";
+import Substack from "../../scrapers/Substack";
+import RSS from "../../scrapers/RSS";
 
-import ResourceService from "../../services/resource.js";
+import ResourceService from "../../services/resource";
+import { ObjectId } from "mongoose";
 
 const { isArray } = lodash;
 
@@ -21,16 +22,16 @@ const __filename = fileURLToPath(import.meta.url);
 
 dotenv.config({ path: path.resolve(__filename, "../../../../.env") });
 
-const syncPosts = async (newPosts, mostRecentPostsInDb, service, authorId) => {
+const syncPosts = async (newPosts: ResourceI[], mostRecentPostsInDb: ResourceI[], service: Sources, authorId: ObjectId) => {
   if (!newPosts) {
     console.error(
-      "newPosts is undefined but required - syncResourcesConsumer.js"
+      "newPosts is undefined but required - syncResourcesConsumer"
     );
     return;
   }
 
   if (isArray(newPosts) && !newPosts.length) {
-    console.warn("No new posts - syncResourcesConsumer.js");
+    console.warn("No new posts - syncResourcesConsumer");
     return;
   }
 
@@ -54,15 +55,17 @@ const syncPosts = async (newPosts, mostRecentPostsInDb, service, authorId) => {
   }
 
   // Check for new posts thats does not exist in DB
-  const newPostsNotInDb = [];
-  const mostRecentPostsMap = {};
+  const newPostsNotInDb: ResourceI[] = [];
+  const mostRecentPostsMap: {
+    [key: string]: ResourceI
+  } = {};
 
   mostRecentPostsInDb.forEach((mostRecentPost) => {
     mostRecentPostsMap[mostRecentPost.url] = mostRecentPost;
   });
 
   newPosts.forEach((newPost) => {
-    if (!(newPost.url in mostRecentPostsMap)) {
+    if (newPost.url && !(newPost.url in mostRecentPostsMap)) {
       newPostsNotInDb.push(newPost);
     }
   });
@@ -84,48 +87,50 @@ const syncPosts = async (newPosts, mostRecentPostsInDb, service, authorId) => {
   await AuthorModel.updateOne({ _id: authorId }, { lastSynced: Date.now() });
 };
 
-const getScraperInstance = (source) => {
+const getScraperInstance = (source: Sources) => {
   switch (source) {
-    case sources.MEDIUM:
+    case Sources.MEDIUM:
       return new Medium();
-    case sources.SUBSTACK:
+    case Sources.SUBSTACK:
       return new Substack();
-    case sources.RSS:
+    case Sources.RSS:
       return new RSS();
     default:
-      throw new Error("Not a valid source - syncResourcesConsumer.js");
+      throw new Error("Not a valid source - syncResourcesConsumer");
   }
-}
+};
 
-const handleService = async (authorId, url, source) => {
+const handleService = async (authorId: ObjectId, url: string, source: Sources) => {
   const scraperInstance = getScraperInstance(source);
   const resourceService = new ResourceService(source);
 
   console.log(
     "Getting most recent posts in DB from authorId: " +
-      authorId +
-      " from URL: " +
-      url
+    authorId +
+    " from URL: " +
+    url
   );
-  const mostRecentPostsInDb = await resourceService.getMostRecentPosts(authorId);
+  const mostRecentPostsInDb = await resourceService.getMostRecentPosts(
+    (authorId as unknown) as string
+  );
 
   console.log(
     "Scraping source for authorId: " + authorId + " from URL: " + url
   );
-  const newPosts = await scraperInstance.getAllPosts(url, false);
+  const newPosts = (await scraperInstance.getAllPosts(url, false)) as ResourceI[];
 
   await syncPosts(newPosts, mostRecentPostsInDb, source, authorId);
 };
 
-amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
+amqp.connect(process.env.RABBITMQ_URL || "", (err0, connection) => {
   if (err0) {
-    console.log("syncResourcesConsumer.js error: ", err0);
+    console.log("syncResourcesConsumer error: ", err0);
     throw err0;
   }
 
   connection.createChannel((err1, channel) => {
     if (err1) {
-      console.log("syncResourcesConsumer.js error: ", err1);
+      console.log("syncResourcesConsumer error: ", err1);
       throw err1;
     }
 
@@ -148,22 +153,22 @@ amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
           console.log("Received msg: " + msg.content.toString());
           const message = msg.content.toString().split("_");
 
-          const authorId = message[0];
+          const authorId = (message[0] as unknown) as ObjectId;
           if (!authorId) {
             throw new Error(
-              "Could not get author Id - syncResourcesConsumer.js"
+              "Could not get author Id - syncResourcesConsumer"
             );
           }
           const url = message[1];
           if (!url) {
             throw new Error(
-              "Could not get authors url - syncResourcesConsumer.js"
+              "Could not get authors url - syncResourcesConsumer"
             );
           }
-          const service = message[2];
+          const service = (message[2] as unknown) as Sources;
           if (!service) {
             throw new Error(
-              "Could not determine service - syncResourcesConsumer.js"
+              "Could not determine service - syncResourcesConsumer"
             );
           }
 

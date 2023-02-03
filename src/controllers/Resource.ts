@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import SubscriptionService from "../services/subscription.js";
-import ResourceService from "../services/resource.js";
-import { Sources } from "../utils/constants.js";
+import SubscriptionService from "../services/subscription";
+import ResourceService from "../services/resource";
+import { Sources } from "../utils/constants";
 
 export const subscribe = (source: Sources) => async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -19,7 +19,7 @@ export const subscribe = (source: Sources) => async (req: Request, res: Response
       subscriptions,
     });
   } catch (err) {
-    console.error("Couldn't subscribe to author - Resource.js", err);
+    console.error("Couldn't subscribe to author - Resource.ts", err);
     next(err);
   }
 };

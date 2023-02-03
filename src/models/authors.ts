@@ -14,4 +14,4 @@ const authorSchema = new Schema({
   lastSynced: { type: Date, default: Date.now },
 });
 
-export default mongoose.model("Author", authorSchema);
+export default mongoose.model<AuthorI>("Author", authorSchema);

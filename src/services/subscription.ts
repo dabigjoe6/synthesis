@@ -1,13 +1,17 @@
-import AuthorModel from "../models/authors.js";
-import UserModel from "../models/users.js";
+import mongoose, { ObjectId } from "mongoose";
+import AuthorModel, { AuthorI } from "../models/authors";
+import UserModel, { UserI } from "../models/users";
 
 export default class SubscriptionService {
+  UserModel: mongoose.Model<UserI>;
+  AuthorModel: mongoose.Model<AuthorI>;
+
   constructor() {
     this.UserModel = UserModel;
     this.AuthorModel = AuthorModel;
   }
 
-  getUserSubscriptions = async (email) => {
+  getUserSubscriptions = async (email: string) => {
     try {
       let user = await this.UserModel.findOne({ email }).exec();
 
@@ -40,11 +44,12 @@ export default class SubscriptionService {
         },
       ]);
     } catch (err) {
-      throw ("Failed to get user subscriptions - subscription.js", err);
+      console.error("Failed to get user subscriptions - subscription.ts", err)
+      throw err;
     }
   };
 
-  unsubscribe = async (email, ids) => {
+  unsubscribe = async (email: string, ids: ObjectId[]) => {
     try {
       let user = await this.UserModel.findOne({ email }).exec();
 
@@ -63,7 +68,8 @@ export default class SubscriptionService {
         }
       );
     } catch (err) {
-      throw ("Failed to remove subscription - subscription.js", err);
+      console.error("Failed to remove subscription - subscription.ts", err)
+      throw (err);
     }
   };
 }

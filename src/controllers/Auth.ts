@@ -1,8 +1,8 @@
 import Sendgrid from "@sendgrid/mail";
 import { Request, Response, NextFunction } from 'express';
-import UserService from "../services/users.js";
-import generateResetPasswordTemplate from "../utils/generateResetPasswordTemplate.js";
-import { generateToken } from "../middleware/auth.js";
+import UserService from "../services/users";
+import generateResetPasswordTemplate from "../utils/generateResetPasswordTemplate";
+import { generateToken } from "../middleware/auth";
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -18,7 +18,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       });
     }
 
-    if (!userService.comparePassword(password, user.password)) {
+    if (!userService.comparePassword(password, user?.password || "")) {
       return res.status(400).json({
         message: "Invalid password",
         status: 400,
@@ -175,7 +175,7 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
     }
 
     if (!resetPasswordToken) {
-      const result = userService.comparePassword(password, user.password);
+      const result = userService.comparePassword(password, user?.password || "");
       if (!result) {
         return res.status(400).json({
           message: "wrong password",

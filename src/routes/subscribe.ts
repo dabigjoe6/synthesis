@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { validate } from "../middleware/validators/index.js";
+import { validate } from "../middleware/validators";
 import {
   subscribe,
   unsubscribe,
   getSubscriptions,
-} from "../controllers/Resource.js";
-import { Sources } from "../utils/constants.js";
+} from "../controllers/Resource";
+import { Sources } from "../utils/constants";
 
 const router = Router();
 

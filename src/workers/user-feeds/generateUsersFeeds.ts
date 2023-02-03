@@ -1,13 +1,14 @@
 import dotenv from "dotenv";
-import { startDb } from "../../config/database.ts/index.js.js";
-import UserModel from "../../models/users.js";
-import sendUserFeed from "./sendFeedPublisher.js";
+import { startDb } from "../../config/database";
+import UserModel from "../../models/users";
+import sendUserFeed from "./sendFeedPublisher";
 import { fileURLToPath } from "url";
 import path from "path";
+import { ResourceI } from "../../models/resources";
 
 const __filename = fileURLToPath(import.meta.url);
 
-dotenv.config({ path: path.resolve(__filename, "../../../../.env")});
+dotenv.config({ path: path.resolve(__filename, "../../../../.env") });
 
 const generateUsersFeeds = async () => {
   startDb(process.env.MONGO_URI);
@@ -107,8 +108,8 @@ const generateUsersFeeds = async () => {
     if (userFeed.digest.length > 0) {
       sendUserFeed(
         userFeed._id,
-        userFeed.digest.map((feed) => feed._id),
-        userFeed.latest.map((feed) => feed._id)
+        userFeed.digest.map((feed: ResourceI) => feed._id),
+        userFeed.latest.map((feed: ResourceI) => feed._id)
       );
     }
   });

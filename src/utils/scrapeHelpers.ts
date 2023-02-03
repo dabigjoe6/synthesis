@@ -1,4 +1,6 @@
-export const parseMediumUrl = (url) => {
+import puppeteer from 'puppeteer';
+
+export const parseMediumUrl = (url: string) => {
   // If URL matches https://josepholabisi.medium.com convert to https://medium.com/@josepholabisi
   // If URL matches https://medium.com/@josepholabisi leave as is
 
@@ -13,24 +15,22 @@ export const parseMediumUrl = (url) => {
 
 const VALID_URL_REGEX = /^(ftp|http|https):\/\/[^ "]+$/;
 
-export const extractMediumAuthorNameFromURL = (url) => {
+export const extractMediumAuthorNameFromURL = (url: string) => {
   if (!VALID_URL_REGEX.test(url)) {
     throw "Invalid URL";
   }
 
-  const mediumUsernameRegex = /^\/@(\S*)\/$/;
-
-  let name = url.match(mediumUsernameRegex);
+  let name: string;
 
   let split = url.split("/@");
 
   if (split.length >= 2) {
     name = split[1];
-  }
 
-  if (name) {
-    console.log("Author name: ", name);
-    return name;
+    if (name) {
+      console.log("Author name: ", name);
+      return name;
+    }
   }
 
   split = url.split(".");
@@ -49,7 +49,7 @@ export const extractMediumAuthorNameFromURL = (url) => {
   return name;
 };
 
-export const extractSubstackAuthorNameFromURL = (url) => {
+export const extractSubstackAuthorNameFromURL = (url: string) => {
   if (!VALID_URL_REGEX.test(url)) {
     throw "Invalid URL";
   }
@@ -57,7 +57,7 @@ export const extractSubstackAuthorNameFromURL = (url) => {
   const substackUsernameRegex = /https:\/\/[a-zA-Z0-9]+\.substack\.com/;
 
   if (substackUsernameRegex.test(url)) {
-    const match = url.match(substackUsernameRegex);
+    const match = url.match(substackUsernameRegex) || []
     let name = match[1];
 
     if (name) {
@@ -70,13 +70,13 @@ export const extractSubstackAuthorNameFromURL = (url) => {
   }
 };
 
-export const inifinteScrollToBottom = (currentPage) => {
+export const inifinteScrollToBottom = (currentPage: puppeteer.Page) => {
   console.log("Scrolling to bottom");
-  return new Promise(async (resolve, reject) => {
+  return new Promise<void>(async (resolve, reject) => {
     try {
       await currentPage.evaluate(async () => {
         const initScrollToBottom = () => {
-          return new Promise((resolve) => {
+          return new Promise<void>((resolve) => {
             let totalHeight = 0;
             const distance = 200;
             const interval = setInterval(() => {

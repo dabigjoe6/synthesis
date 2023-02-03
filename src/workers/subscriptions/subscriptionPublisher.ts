@@ -1,11 +1,16 @@
 import dotenv from "dotenv";
-import amqp from "amqplib/callback_api.js";
-import { SUBSCRIPTIONS_QUEUE } from "../../utils/constants.js";
+import amqp from "amqplib/callback_api";
+import { Sources, SUBSCRIPTIONS_QUEUE } from "../../utils/constants";
+import { ObjectId } from "mongoose";
 
 dotenv.config({ path: "../../../.env" });
 
-const subscriptionPublisher = ({ authorId, url, service }) => {
-  amqp.connect(process.env.RABBITMQ_URL, (err0, connection) => {
+const subscriptionPublisher = ({ authorId, url, service }: {
+  authorId: ObjectId;
+  url: string;
+  service: Sources;
+}) => {
+  amqp.connect(process.env.RABBITMQ_URL || "", (err0, connection) => {
     if (err0) {
       throw err0;
     }
