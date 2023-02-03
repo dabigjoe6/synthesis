@@ -9,12 +9,13 @@
     "dev:generate-users-feeds": "ts-node-esm ./src/workers/user-feeds/generateUsersFeeds.ts",
     "dev:generate-stale-resources": "ts-node-esm ./src/workers/sync-resources/syncResources.ts",
     "main": "dist/index.js",
-    "start": "npm install typescript && npx tsc && node dist/index.js",
-    "generate-users-feeds": "npm install typescript && npx tsc && node dist/workers/user-feeds/generateUsersFeeds.js",
-    "generate-stale-resources": "npm install typescript && npx tsc && node dist/workers/sync-resources/syncResources.js",
-    "send-user-feed": "npm install typescript && npx tsc && node dist/workers/user-feeds/sendFeedConsumer.js",
-    "subscriptions": "npm install typescript && npx tsc && node dist/workers/subscriptions/subscriptionConsumer.js",
-    "sync-resources": "npm install typescript && npx tsc && node dist/workers/sync-resources/syncResourcesConsumer.js"
+    "postinstall": "tsc",
+    "start": "node dist/index.js",
+    "generate-users-feeds": "node dist/workers/user-feeds/generateUsersFeeds.js",
+    "generate-stale-resources": "node dist/workers/sync-resources/syncResources.js",
+    "send-user-feed": "node dist/workers/user-feeds/sendFeedConsumer.js",
+    "subscriptions": "node dist/workers/subscriptions/subscriptionConsumer.js",
+    "sync-resources": "node dist/workers/sync-resources/syncResourcesConsumer.js"
   },
   "type": "module",
   "dependencies": {
