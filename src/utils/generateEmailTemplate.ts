@@ -6,9 +6,8 @@ const generatePost = (post: ResourceI) => `
     <tr>
       <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:0px 10px 10px;font-family:trebuchet ms,geneva;" align="left">
 
-        <h4 class="v-text-align v-line-height" style="margin: 0px; line-height: 110%; text-align: left; word-wrap: break-word; font-weight: normal; font-family: 'Open Sans',sans-serif; font-size: 16px;"><strong>${
-          post.title
-        }</strong></h4>
+        <h4 class="v-text-align v-line-height" style="margin: 0px; line-height: 110%; text-align: left; word-wrap: break-word; font-weight: normal; font-family: 'Open Sans',sans-serif; font-size: 16px;"><strong>${post.title
+  }</strong></h4>
 
       </td>
     </tr>
@@ -21,14 +20,13 @@ const generatePost = (post: ResourceI) => `
       <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:0px 10px 10px;font-family:trebuchet ms,geneva;" align="left">
 
         <div class="v-text-align v-line-height" style="color: #34495e; line-height: 120%; text-align: left; word-wrap: break-word;">
-          <p style="font-size: 14px; line-height: 120%; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 10; line-clamp: 10; -webkit-box-orient: vertical; max-height: 18em; line-height: 1.8em;">${
-            post?.summary
-            //TODO: Handle column put in summary 
-              ? post?.summary[0] === ":"
-                ? "Summary" + post.summary
-                : "Summary: " + post.summary
-              : post.description
-          }</p>
+          <p style="font-size: 14px; line-height: 120%; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 10; line-clamp: 10; -webkit-box-orient: vertical; max-height: 18em; line-height: 1.8em;">${post?.summary
+    //TODO: Handle column put in summary 
+    ? post?.summary[0] === ":"
+      ? "Summary" + post.summary
+      : "Summary: " + post.summary
+    : post.description
+  }</p>
         </div>
 
       </td>
@@ -42,9 +40,8 @@ const generatePost = (post: ResourceI) => `
       <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:0px 0px 0px 10px;font-family:trebuchet ms,geneva;" align="left">
 
         <div class="v-text-align v-line-height" style="line-height: 110%; text-align: left; word-wrap: break-word;">
-          <p style="font-size: 14px; line-height: 110%;"><a rel="noopener" href="${
-            post.url
-          }" target="_blank">Read more</a></p>
+          <p style="font-size: 14px; line-height: 110%;"><a rel="noopener" href="${post.url
+  }" target="_blank">Read more</a></p>
         </div>
 
       </td>
@@ -226,9 +223,9 @@ const generateEmailTemplate = (posts: ResourceI[], latestPosts: ResourceI[]) => 
                     <div class="u-col u-col-100" style="max-width: 320px;min-width: 500px;display: table-cell;vertical-align: top;">
                       <div style="height: 100%;width: 100% !important;">
                         <!--[if (!mso)&(!IE)]><!-->
-                        <div style="height: 100%; padding: 0px 0px 450px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;">
+                        <div style="height: fit-content; padding-bottom: 30px; border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;">
                           <!--<![endif]-->
-    
+    t
                           <table style="font-family:trebuchet ms,geneva;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
                             <tbody>
                               <tr>
@@ -262,9 +259,8 @@ const generateEmailTemplate = (posts: ResourceI[], latestPosts: ResourceI[]) => 
                             </tbody>
                           </table>
     
-                          ${
-                            latestPosts.length
-                              ? `<table style="font-family:trebuchet ms,geneva;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                          ${latestPosts.length
+        ? `<table style="font-family:trebuchet ms,geneva;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
                             <tbody>
                               <tr>
                                 <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px 10px 0px;font-family:trebuchet ms,geneva;" align="left">
@@ -297,14 +293,13 @@ const generateEmailTemplate = (posts: ResourceI[], latestPosts: ResourceI[]) => 
         </tr>
       </tbody>
     </table>`
-                              : ``
-                          }
+        : ``
+      }
     
                           ${latestPostsHTML}
     
-                          ${
-                            posts.length
-                              ? `<table style="font-family:trebuchet ms,geneva;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                          ${posts.length
+        ? `<table style="font-family:trebuchet ms,geneva;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
                             <tbody>
                               <tr>
                                 <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:25px 10px 0px;font-family:trebuchet ms,geneva;" align="left">
@@ -337,8 +332,8 @@ const generateEmailTemplate = (posts: ResourceI[], latestPosts: ResourceI[]) => 
                               </tr>
                             </tbody>
                           </table>`
-                              : ``
-                          }
+        : ``
+      }
     
                           ${postsHTML}
     
@@ -352,20 +347,7 @@ const generateEmailTemplate = (posts: ResourceI[], latestPosts: ResourceI[]) => 
                   </div>
                 </div>
               </div>
-    
-    
-    
-              <div class="u-row-container" style="padding: 0px;background-color: transparent">
-                <div class="u-row" style="Margin: 0 auto;min-width: 320px;max-width: 500px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;">
-                  <div style="border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;">
-                    <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:500px;"><tr style="background-color: transparent;"><![endif]-->
-    
-                    <!--[if (mso)|(IE)]><td align="center" width="500" style="width: 500px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;" valign="top"><![endif]-->
-                    <div class="u-col u-col-100" style="max-width: 320px;min-width: 500px;display: table-cell;vertical-align: top;">
-                      <div style="height: 100%;width: 100% !important;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;">
-                        <!--[if (!mso)&(!IE)]><!-->
-                        <div style="height: 100%; padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;">
-                          <!--<![endif]-->
+          
     
                           <table id="u_content_heading_4" style="font-family:trebuchet ms,geneva;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
                             <tbody>
@@ -405,17 +387,7 @@ const generateEmailTemplate = (posts: ResourceI[], latestPosts: ResourceI[]) => 
                             </tbody>
                           </table>
     
-                          <!--[if (!mso)&(!IE)]><!-->
-                        </div>
-                        <!--<![endif]-->
-                      </div>
-                    </div>
-                    <!--[if (mso)|(IE)]></td><![endif]-->
-                    <!--[if (mso)|(IE)]></tr></table></td></tr></table><![endif]-->
-                  </div>
-                </div>
-              </div>
-    
+                        
     
               <!--[if (mso)|(IE)]></td></tr></table><![endif]-->
             </td>
