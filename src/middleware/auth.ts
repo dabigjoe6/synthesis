@@ -16,8 +16,8 @@ export const verifyToken = (req: VerifyTokenRequest, res: Response, next: NextFu
     jwt.verify(bearerToken, JWT_SECRET, (err, user) => {
       console.error(err);
       if (err) {
-        return res.json({
-          status: 403,
+        return res.status(401).json({
+          status: 401,
           message: "invalid token or token expired",
         });
       }
@@ -25,7 +25,7 @@ export const verifyToken = (req: VerifyTokenRequest, res: Response, next: NextFu
       next();
     });
   } else {
-    return res.json({
+    return res.status(400).json({
       status: 400,
       message: "no available token",
     });
