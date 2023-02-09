@@ -225,7 +225,7 @@ const generateEmailTemplate = (posts: ResourceI[], latestPosts: ResourceI[]) => 
                         <!--[if (!mso)&(!IE)]><!-->
                         <div style="height: fit-content; padding-bottom: 30px; border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;">
                           <!--<![endif]-->
-    t
+    
                           <table style="font-family:trebuchet ms,geneva;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
                             <tbody>
                               <tr>
