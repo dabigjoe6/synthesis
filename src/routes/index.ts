@@ -12,7 +12,7 @@ routes.use("/subscribe", verifyToken, subscribeRouter);
 routes.get("/", (req, res, next) => {
   try {
     return res.json({
-      message: "Welcome to MorningBrew",
+      message: "Welcome to Synthesis",
     });
   } catch (err) {
     next(err);

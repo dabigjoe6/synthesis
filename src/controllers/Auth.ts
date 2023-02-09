@@ -130,9 +130,9 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
       user.email
     );
     const FROM = process.env.FROM || "";
-    const SUBJECT = "Reset MorningBrew password";
+    const SUBJECT = "Reset Synthesis password";
     const TEXT =
-      "Hi there, a request was made to reset your MorningBrew password";
+      "Hi there, a request was made to reset your Synthesis password";
     const MESSAGE = generateResetPasswordTemplate(
       resetPasswordToken,
       user.email

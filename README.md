@@ -1,17 +1,19 @@
-# morning-brew
+# Synthesis
 
-https://app.swaggerhub.com/apis/dabigjoe6/Morningbrew/1.0.0
+https://app.swaggerhub.com/apis/dabigjoe6/Synthesis/1.0.0
 
-Receive daily email digest of the links to the most important and forgotten articles from your favourite authors on Medium, Twitter, newsletters, and other sources.
+Receive daily email digest of the links to the most important and forgotten articles from your favourite authors on Medium, Substack, RSS, and other sources.
+
+Coming soon: Twitter, Newsletters
 
 ## Motivation
-On a weekend, I clicked on several links to articles on the Netflixtechblog on Medium, and the more I read, the more I found articles that I was really interested in reading, some of which were from as far back as 2015. Then I began to wonder what it would be like to receive a daily digest of every one of these articles along with any new ones from Netflictechblog. Because of this, I made Morningbrew.
+As I explored the Netflixtechblog on Medium, I was captivated by the wealth of knowledge and insights contained within its pages. I imagined a curated daily digest of all the articles, inclusive of the latest and greatest from this community of tech experts. This led to the birth of Synthesis, a personalized newsletter providing a convenient means to keep up with the previous and latest resources or articles from your favorite authors.
 
 ## Architecture
-![Morningbrew - Overview](https://user-images.githubusercontent.com/20970329/196035399-cced71fb-1b7e-4139-a15b-5c23c671a4a7.png)
+![Synthesis - Overview](https://user-images.githubusercontent.com/20970329/196035399-cced71fb-1b7e-4139-a15b-5c23c671a4a7.png)
 
 ## Web Client
-https://github.com/dabigjoe6/morning-brew-client
+https://github.com/dabigjoe6/synthesis-client
 
 
 ## Prerequisite
