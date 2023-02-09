@@ -175,8 +175,8 @@ amqp.connect(process.env.RABBITMQ_URL || "", (err0, connection) => {
               await Sendgrid.send({
                 to: userEmail,
                 from: (process.env.FROM || ""),
-                subject: "Your daily morning brew",
-                text: "Your daily morning brew is here",
+                subject: "Your personalized source for informative and inspiring content",
+                text: "Your daily dose of knowledge, tailored for you: Stay informed effortlessly with your personal digest.",
                 html: message,
               });
               console.log("Email sent to user: " + userEmail);
@@ -207,7 +207,7 @@ amqp.connect(process.env.RABBITMQ_URL || "", (err0, connection) => {
               throw err;
             }
 
-            console.log("Succesfully sent " + userEmail + " morning brew");
+            console.log("Succesfully sent " + userEmail + " digest");
             channel.ack(msg);
           } else {
             console.log("Bad email or no post(s) to send, skipping....");

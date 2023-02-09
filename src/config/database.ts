@@ -18,7 +18,7 @@ export const startDb = (uri: string = MONGO_URI) => {
   mongoose
     .connect(uri, connectOptions)
     .then(() => {
-      console.log("Morningbrew Database has connected");
+      console.log("Synthesis Database has connected");
     })
     .catch((err) => {
       console.error(err);
