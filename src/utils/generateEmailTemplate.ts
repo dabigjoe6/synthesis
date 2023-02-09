@@ -235,7 +235,7 @@ const generateEmailTemplate = (posts: ResourceI[], latestPosts: ResourceI[]) => 
                                     <tr>
                                       <td class="v-text-align" style="padding-right: 0px;padding-left: 0px;" align="center">
                                         <a href="http://synthesis-staging.netlify.app" target="_blank">
-                                          <img align="center" border="0" src="https://res.cloudinary.com/dflm5nz9p/image/upload/v1675926437/SYNTHESIS_oanfsc.png" alt="" title="" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 27%;max-width: 129.6px;"
+                                          <img align="center" border="0" src="https://res.cloudinary.com/dflm5nz9p/image/upload/v1675927350/SYNTHESIS-removebg-preview_a6s4ev.png" alt="" title="" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 27%;max-width: 129.6px;"
                                             width="129.6" />
                                         </a>
                                       </td>
