@@ -2,10 +2,24 @@ import dotenv from "dotenv";
 import amqp from "amqplib/callback_api.js";
 import { QUEUE } from "../../utils/constants.js";
 import UserModel from '../../models/users.js';
-import ResourceModel from '../../models/resources.js';
+import ResourceModel, { ResourceI } from '../../models/resources.js';
 import { SendMessageCommand, SQSClient } from "@aws-sdk/client-sqs";
 
 dotenv.config({ path: "../../../.env" });
+
+const getPostsDigestData = (resources: Array<ResourceI>) => {
+  return resources.map(resource => {
+    return {
+      id: resource._id,
+      url: resource.url,
+      source: resource.source,
+      content: resource?.content,
+      summary: resource?.summary,
+      title: resource.title,
+      description: resource.description
+    }
+  })
+}
 
 const sendUserFeed = async (userId: string, feed: string, latestPost: string) => {
   try {
@@ -22,25 +36,8 @@ const sendUserFeed = async (userId: string, feed: string, latestPost: string) =>
       _id: { $in: latestPost },
     });
 
-    const resourceIdsAndUrls = resources.map(resource => {
-      return {
-        id: resource._id,
-        url: resource.url,
-        source: resource.source,
-        content: resource?.content,
-        summary: resource?.summary
-      }
-    });
-
-    const latestResourceIdsAndUrls = latestResources.map(resource => {
-      return {
-        id: resource._id,
-        url: resource.url,
-        source: resource.source,
-        content: resource?.content,
-        summary: resource?.summary
-      }
-    });
+    const resourceIdsAndUrls = getPostsDigestData(resources)
+    const latestResourceIdsAndUrls = getPostsDigestData(latestResources);
 
     const message = "sendfeedsynthesismessage" + JSON.stringify({
       id: user?._id,
