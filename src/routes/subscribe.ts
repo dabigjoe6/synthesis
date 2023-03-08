@@ -4,20 +4,26 @@ import {
   subscribe,
   unsubscribe,
   getSubscriptions,
+  saveAuthorsPosts,
 } from "../controllers/Resource.js";
 import { Sources } from "../utils/constants.js";
+import { verifyToken } from "../middleware/auth.js";
 
 const router = Router();
 
-router.post("/medium", validate("resource"), subscribe(Sources.MEDIUM));
-router.post("/substack", validate("resource"), subscribe(Sources.SUBSTACK));
-router.post("/rss", validate("resource"), subscribe(Sources.RSS));
+router.post("/medium", verifyToken, validate("resource"), subscribe(Sources.MEDIUM));
+router.post("/substack", verifyToken, validate("resource"), subscribe(Sources.SUBSTACK));
+router.post("/rss", verifyToken, validate("resource"), subscribe(Sources.RSS));
 
-router.post("/unsubscribe", validate("unsubscribe"), unsubscribe);
+router.post("/unsubscribe", verifyToken, validate("unsubscribe"), unsubscribe);
+
 router.post(
   "/getSubscriptions",
+  verifyToken,
   validate("getSubscriptions"),
   getSubscriptions
 );
+
+router.post('/saveAuthorsPosts', validate('saveAuthorsPosts'), saveAuthorsPosts);
 
 export default router;

@@ -24,6 +24,52 @@ export const subscribe = (source: Sources) => async (req: Request, res: Response
   }
 };
 
+export const saveAuthorsPosts = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { posts, source } = req.body;
+
+    const serviceInstance = new ResourceService(source);
+    await serviceInstance.saveAuthorsPosts(posts);
+
+    return res.status(200).json({
+      status: 200,
+      message: "Saved authors posts succesfully",
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export const updateResourceSummary = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { resources } = req.body;
+    const serviceInstance = new ResourceService(Sources.MEDIUM);
+    await serviceInstance.updateResourceSummary(resources);
+
+    return res.status(200).json({
+      status: 200,
+      message: "Updated resource summaries",
+    });
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const syncAuthorsResources = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { posts, authorId } = req.body;
+    const serviceInstance = new ResourceService(posts[0].source);
+    await serviceInstance.saveAuthorsPosts(posts, authorId)
+
+    return res.status(200).json({
+      status: 200,
+      message: "Synced resources",
+    });
+  } catch (err) {
+    next(err)
+  }
+}
+
 
 export const getSubscriptions = async (req: Request, res: Response, next: NextFunction) => {
   try {

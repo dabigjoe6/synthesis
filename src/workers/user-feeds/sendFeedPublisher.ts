@@ -1,33 +1,60 @@
 import dotenv from "dotenv";
-import amqp from "amqplib/callback_api.js";
-import { FEEDS_QUEUE } from "../../utils/constants.js";
+import { QUEUE } from "../../utils/constants.js";
+import UserModel from '../../models/users.js';
+import ResourceModel, { ResourceI } from '../../models/resources.js';
+import { SendMessageCommand, SQSClient } from "@aws-sdk/client-sqs";
 
 dotenv.config({ path: "../../../.env" });
 
-const sendUserFeed = (userId: string, feed: string, latestPost: string) => {
-  amqp.connect(process.env.RABBITMQ_URL || "", (err0, connection) => {
-    if (err0) {
-      throw err0;
+const getPostsDigestData = (resources: Array<ResourceI>) => {
+  return resources.map(resource => {
+    return {
+      id: resource._id,
+      url: resource.url,
+      source: resource.source,
+      content: resource?.content,
+      summary: resource?.summary,
+      title: resource.title,
+      description: resource.description
+    }
+  })
+}
+
+const sendUserFeed = async (userId: string, feed: string, latestPost: string) => {
+  try {
+    if (!userId) {
+      throw new Error("User ID not defined - sendFeedPublished.ts");
+    }
+    const user = await UserModel.findOne({ _id: userId }).exec();
+
+    const resources = await ResourceModel.find({
+      _id: { $in: feed },
+    }).exec();
+
+    const latestResources = await ResourceModel.find({
+      _id: { $in: latestPost },
+    });
+
+    const resourceIdsAndUrls = getPostsDigestData(resources)
+    const latestResourceIdsAndUrls = getPostsDigestData(latestResources);
+
+    const message = "sendfeedsynthesismessage" + JSON.stringify({
+      id: user?._id,
+      email: user?.email,
+    }) + "synthesismessage" + JSON.stringify(resourceIdsAndUrls) + "synthesismessage" + JSON.stringify(latestResourceIdsAndUrls);
+    console.log("sendFeedPublisher sending message: " + message);
+    const params = {
+      QueueUrl: QUEUE,
+      MessageBody: message
     }
 
-    connection.createChannel((err1, channel) => {
-      if (err1) {
-        throw err1;
-      }
+    const sqsClient = new SQSClient({ region: 'eu-west-2' });
+    const data = await sqsClient.send(new SendMessageCommand(params));
+    console.log("Success, message sent from sendFeedPublisher. MessageID:", data.MessageId);
+  } catch (err) {
+    throw err;
+  }
+}
 
-      const queue = FEEDS_QUEUE;
-      const msg = userId + "_" + JSON.stringify(feed) + "_" + JSON.stringify(latestPost);
-
-      channel.assertQueue(queue, {
-        durable: true,
-      });
-      channel.sendToQueue(queue, Buffer.from(msg), {
-        persistent: true,
-      });
-
-      console.log(" [x] Queue feed of '%s'", msg);
-    });
-  });
-};
 
 export default sendUserFeed;
