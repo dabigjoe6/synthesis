@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import amqp from "amqplib/callback_api.js";
 import { QUEUE } from "../../utils/constants.js";
 import UserModel from '../../models/users.js';
 import ResourceModel, { ResourceI } from '../../models/resources.js';

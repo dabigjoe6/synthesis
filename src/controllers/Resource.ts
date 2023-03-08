@@ -55,6 +55,21 @@ export const updateResourceSummary = async (req: Request, res: Response, next: N
   }
 }
 
+export const syncAuthorsResources = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { posts, authorId } = req.body;
+    const serviceInstance = new ResourceService(posts[0].source);
+    await serviceInstance.saveAuthorsPosts(posts, authorId)
+
+    return res.status(200).json({
+      status: 200,
+      message: "Synced resources",
+    });
+  } catch (err) {
+    next(err)
+  }
+}
+
 
 export const getSubscriptions = async (req: Request, res: Response, next: NextFunction) => {
   try {

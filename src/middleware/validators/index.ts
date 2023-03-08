@@ -54,6 +54,11 @@ const updateResourceSummary = Joi.object({
   resources: Joi.array().required(),
 })
 
+const syncResources = Joi.object({
+  posts: Joi.array().required(),
+  authorId: joiObjectId().required(),
+})
+
 interface ValidatorsI {
   "login": Joi.ObjectSchema,
   "register": Joi.ObjectSchema,
@@ -65,6 +70,7 @@ interface ValidatorsI {
   "saveAuthorsPosts": Joi.ObjectSchema,
   "markSeenResources": Joi.ObjectSchema,
   "updateResourceSummary": Joi.ObjectSchema,
+  "syncResources": Joi.ObjectSchema
 }
 const Validators: ValidatorsI = {
   login,
@@ -76,7 +82,8 @@ const Validators: ValidatorsI = {
   unsubscribe,
   saveAuthorsPosts,
   markSeenResources,
-  updateResourceSummary
+  updateResourceSummary,
+  syncResources
 };
 
 export const validate = (validator: keyof ValidatorsI) => {

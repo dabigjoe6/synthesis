@@ -1,37 +1,44 @@
+/** 
+ *  Previously used to be a RabbitMQ publisher 
+ *  Now publishes messages to AWS SQS
+**/
+
 import dotenv from "dotenv";
-import amqp from "amqplib/callback_api.js";
-import { Sources, SYNC_RESOURCES_QUEUE } from "../../utils/constants.js";
+import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs'
+import { Sources, QUEUE } from "../../utils/constants.js";
 import mongoose from "mongoose";
+import ResourceService from "../../services/resource.js";
 
 dotenv.config({ path: "../../../.env" });
 
-const syncResourcesPublisher = ({ authorId, url, service }: {
+const syncResourcesPublisher = async ({ authorId, url, service }: {
   authorId: mongoose.ObjectId;
   url: string;
   service: Sources;
 }) => {
-  amqp.connect(process.env.RABBITMQ_URL || "", (err0, connection) => {
-    if (err0) {
-      throw err0;
+  try {
+    const resourceService = new ResourceService(service);
+    const mostRecentPostsInDb = (await resourceService.getMostRecentPosts(
+      (authorId as unknown) as string
+    )).map(resource => {
+      return {
+        url: resource.url
+      }
+    })
+
+    const message = "syncfeedsynthesismessage" + authorId + "synthesismessage" + url + "synthesismessage" + service + "synthesismessage" + JSON.stringify(mostRecentPostsInDb);
+    console.log("syncResourcePublisher sending message: " + message);
+    const params = {
+      QueueUrl: QUEUE,
+      MessageBody: message
     }
 
-    connection.createChannel((err1, channel) => {
-      if (err1) {
-        throw err1;
-      }
-
-      const msg = authorId + "_" + url + "_" + service;
-
-      channel.assertQueue(SYNC_RESOURCES_QUEUE, {
-        durable: true,
-      });
-      channel.sendToQueue(SYNC_RESOURCES_QUEUE, Buffer.from(msg), {
-        persistent: true,
-      });
-
-      console.log(" [x] Queue sync resource of '%s'", msg);
-    });
-  });
-};
+    const sqsClient = new SQSClient({ region: 'eu-west-2' });
+    const data = await sqsClient.send(new SendMessageCommand(params))
+    console.log("Success, message sent. MessageID:", data.MessageId);
+  } catch (err) {
+    throw err;
+  }
+}
 
 export default syncResourcesPublisher;

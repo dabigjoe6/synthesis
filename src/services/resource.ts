@@ -6,7 +6,7 @@ import {
   extractMediumAuthorNameFromURL,
   extractSubstackAuthorNameFromURL,
   parseMediumUrl,
-} from "../utils/scrapeHelpers.js";
+} from "../utils/helpers.js";
 import subscriptionPublisher from "../workers/subscriptions/subscriptionPublisher.js";
 import mongoose from "mongoose";
 
@@ -72,8 +72,11 @@ export default class ResourceService {
     return (newUser?.subscriptions || []);
   };
 
-  saveAuthorsPosts = async (posts: ResourceI) => {
+  saveAuthorsPosts = async (posts: ResourceI, authorId?: mongoose.ObjectId) => {
     await this.ResourceModel.create(posts);
+    if (authorId) {
+      await this.AuthorModel.updateOne({ _id: authorId }, { lastSynced: Date.now() });
+    }
   }
 
   getMostRecentPosts = async (authorId: string) => {
