@@ -72,6 +72,10 @@ export default class ResourceService {
     return (newUser?.subscriptions || []);
   };
 
+  saveAuthorsPosts = async (posts: ResourceI) => {
+    await this.ResourceModel.create(posts);
+  }
+
   getMostRecentPosts = async (authorId: string) => {
     const author = await this.AuthorModel.findById(authorId).exec();
 
@@ -96,4 +100,12 @@ export default class ResourceService {
         return url;
     }
   };
+
+  updateResourceSummary = async (resources: Array<{ id: string, summary: string }>) => {
+    for (const resource of resources) {
+      await this.ResourceModel.findOneAndUpdate({ _id: resource.id }, {
+        summary: resource.summary
+      })
+    }
+  }
 }

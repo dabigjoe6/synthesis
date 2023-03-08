@@ -40,6 +40,20 @@ const unsubscribe = Joi.object({
   subscriptionIds: Joi.array().items(joiObjectId()).required(),
 });
 
+const saveAuthorsPosts = Joi.object({
+  posts: Joi.array().required(),
+  source: Joi.string().required(),
+})
+
+const markSeenResources = Joi.object({
+  userId: joiObjectId().required(),
+  seenResources: Joi.array().items(joiObjectId()).required(),
+})
+
+const updateResourceSummary = Joi.object({
+  resources: Joi.array().required(),
+})
+
 interface ValidatorsI {
   "login": Joi.ObjectSchema,
   "register": Joi.ObjectSchema,
@@ -47,7 +61,10 @@ interface ValidatorsI {
   "changePassword": Joi.ObjectSchema,
   "resource": Joi.ObjectSchema,
   "getSubscriptions": Joi.ObjectSchema,
-  "unsubscribe": Joi.ObjectSchema
+  "unsubscribe": Joi.ObjectSchema,
+  "saveAuthorsPosts": Joi.ObjectSchema,
+  "markSeenResources": Joi.ObjectSchema,
+  "updateResourceSummary": Joi.ObjectSchema,
 }
 const Validators: ValidatorsI = {
   login,
@@ -57,6 +74,9 @@ const Validators: ValidatorsI = {
   resource,
   getSubscriptions,
   unsubscribe,
+  saveAuthorsPosts,
+  markSeenResources,
+  updateResourceSummary
 };
 
 export const validate = (validator: keyof ValidatorsI) => {

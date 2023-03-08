@@ -1,10 +1,8 @@
 {
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "run-p dev:server dev:send-user-feed dev:subscriptions dev:sync-resources",
+    "dev": "run-p dev:server dev:sync-resources",
     "dev:server": "ts-node-esm ./src/index.ts ",
-    "dev:send-user-feed": "ts-node-esm ./src/workers/user-feeds/sendFeedConsumer.ts",
-    "dev:subscriptions": "ts-node-esm ./src/workers/subscriptions/subscriptionConsumer.ts",
     "dev:sync-resources": "ts-node-esm ./src/workers/sync-resources/syncResourcesConsumer.ts",
     "dev:generate-users-feeds": "ts-node-esm ./src/workers/user-feeds/generateUsersFeeds.ts",
     "dev:generate-stale-resources": "ts-node-esm ./src/workers/sync-resources/syncResources.ts",
@@ -13,12 +11,11 @@
     "start": "node dist/index.js",
     "generate-users-feeds": "node dist/workers/user-feeds/generateUsersFeeds.js",
     "generate-stale-resources": "node dist/workers/sync-resources/syncResources.js",
-    "send-user-feed": "node dist/workers/user-feeds/sendFeedConsumer.js",
-    "subscriptions": "node dist/workers/subscriptions/subscriptionConsumer.js",
     "sync-resources": "node dist/workers/sync-resources/syncResourcesConsumer.js"
   },
   "type": "module",
   "dependencies": {
+    "@aws-sdk/client-sqs": "^3.279.0",
     "@sendgrid/mail": "^7.7.0",
     "@types/node": "^18.11.18",
     "amqplib": "^0.10.0",

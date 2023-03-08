@@ -43,6 +43,22 @@ export default class User {
     return generateToken(user);
   }
 
+  async markSeenResources(id: mongoose.ObjectId, seenResources: Array<mongoose.ObjectId>) {
+    await this.UserModel.findOneAndUpdate(
+      { _id: id },
+      {
+        $push: {
+          seenResources: {
+            $each: [...seenResources],
+          },
+        },
+      }
+    );
+    console.log(
+      "Done marking resources as seen for user: " + id
+    );
+  }
+
   async generateResetPasswordToken(email: string) {
     const resetPasswordToken = generateResetTokenHelper();
     // TODO: Add expiry to reset password token
