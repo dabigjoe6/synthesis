@@ -24,6 +24,34 @@ const generateUsersFeeds = async () => {
         as: "digest",
       },
     },
+    // Filter out users that have paused their digests
+    {
+      $project: {
+        email: 1,
+        digest: 1,
+        settings: 1,
+        seenResources: 1,
+        isDigestPaused: { "$ifNull": ["$settings.isDigestPaused", "value_not_set"] },
+      },
+    },
+    {
+      $project: {
+        email: 1,
+        digest: 1,
+        seenResources: 1,
+        is_digest_not_paused: {
+          $or: [
+            { $eq: ["$isDigestPaused", "value_not_set"] },
+            { $eq: ["$settings.isDigestPaused", false] }
+          ] // We want to remove users that have paused their digests
+        },
+      },
+    },
+    {
+      $match: {
+        is_digest_not_paused: true,
+      },
+    },
     // Filter resources that have been previously sent to the user
     {
       $project: {
@@ -43,6 +71,7 @@ const generateUsersFeeds = async () => {
     {
       $project: {
         email: 1,
+        settings: 1,
         digest: {
           $filter: {
             input: "$digest",
@@ -59,7 +88,7 @@ const generateUsersFeeds = async () => {
         },
       },
     },
-    // // Filter out users with no feed/digest to send
+    // Filter out users with no feed/digest to send
     {
       $project: {
         email: 1,
@@ -78,8 +107,8 @@ const generateUsersFeeds = async () => {
         at_least_one_digest: true,
       },
     },
-    // // // Picks a digest at random
-    // // // TODO: Use slice to get a number of random digest for the user
+    // Pick a digest at random
+    // TODO: Use slice to get a number of random digest for the user
     {
       $project: {
         digest: [
@@ -104,17 +133,19 @@ const generateUsersFeeds = async () => {
     },
   ]);
 
-  allUsersFeeds.forEach((userFeed) => {
+  for (const userFeed of allUsersFeeds) {
     if (userFeed.digest.length > 0) {
-      sendUserFeed(
+      await sendUserFeed(
         userFeed._id,
         userFeed.digest.map((feed: ResourceI) => feed._id),
         userFeed.latest.map((feed: ResourceI) => feed._id)
       );
     }
-  });
+  }
 
   console.log("New feed generated for users successfully");
 };
 
-generateUsersFeeds();
+await generateUsersFeeds();
+
+process.exit();

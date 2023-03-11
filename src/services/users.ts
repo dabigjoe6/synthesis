@@ -59,6 +59,20 @@ export default class User {
     );
   }
 
+  async pauseDigest(userId: mongoose.ObjectId) {
+    await this.UserModel.findOneAndUpdate(
+      { _id: userId },
+      { "settings.isDigestPaused": true }
+    )
+  }
+
+  async resumeDigest(userId: mongoose.ObjectId) {
+    await this.UserModel.findOneAndUpdate(
+      { _id: userId },
+      { "settings.isDigestPaused": false }
+    )
+  }
+
   async generateResetPasswordToken(email: string) {
     const resetPasswordToken = generateResetTokenHelper();
     // TODO: Add expiry to reset password token

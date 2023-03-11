@@ -1,7 +1,8 @@
 {
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node-esm ./src/index.ts",
+    "dev": "nodemon -e ts -w ./src -x npm run dev:server",
+    "dev:server": "ts-node-esm ./src/index.ts",
     "dev:generate-users-feeds": "ts-node-esm ./src/workers/user-feeds/generateUsersFeeds.ts",
     "dev:generate-stale-resources": "ts-node-esm ./src/workers/sync-resources/generateResourcesToSync.ts",
     "main": "dist/index.js",
@@ -27,7 +28,6 @@
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
     "mongoose": "^6.4.4",
-    "nodemon": "^2.0.19",
     "openai": "^3.1.0",
     "puppeteer": "^15.3.0",
     "rss-parser": "^3.12.0",
@@ -42,6 +42,7 @@
     "@types/lodash": "^4.14.191",
     "@types/uuid": "^9.0.0",
     "@types/xml2js": "^0.4.11",
+    "nodemon": "^2.0.21",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.5"
   },
