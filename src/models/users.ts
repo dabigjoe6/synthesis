@@ -1,11 +1,40 @@
 import mongoose from "mongoose";
 
-export interface SettingsI extends mongoose.Document {
+export enum WeekDays {
+  "mon",
+  "tue",
+  "wed",
+  "thur",
+  "fri",
+  "sat",
+  "sun",
+};
+
+export enum FrequencyType {
+  "daily",
+  "weekly",
+}
+
+export interface FrequencyI extends mongoose.Document {
+  frequencyType: string;
+  days?: Array<WeekDays>;
+  time: Array<string>;
+}
+
+const frequencySchema = new mongoose.Schema<FrequencyI>({
+  frequencyType: { type: String, required: true, enum: FrequencyType, default: "daily" },
+  days: { type: [mongoose.Schema.Types.String], required: false, },
+  time: { type: [mongoose.Schema.Types.String], required: true, default: ["08:00"] }
+})
+
+interface SettingsI extends mongoose.Document {
   isDigestPaused: boolean,
+  frequency: FrequencyI
 }
 
 const settingsSchema = new mongoose.Schema<SettingsI>({
-  isDigestPaused: { type: Boolean, required: false, default: false }
+  isDigestPaused: { type: Boolean, required: false, default: false },
+  frequency: { type: frequencySchema, required: false }
 });
 
 

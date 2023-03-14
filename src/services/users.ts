@@ -1,4 +1,4 @@
-import UserModel, { UserI } from "../models/users.js";
+import UserModel, { FrequencyType, UserI, WeekDays } from "../models/users.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../middleware/auth.js";
 import generateResetTokenHelper from "../utils/generateResetToken.js";
@@ -70,6 +70,17 @@ export default class User {
     await this.UserModel.findOneAndUpdate(
       { _id: userId },
       { "settings.isDigestPaused": false }
+    )
+  }
+
+  async setDigestFrequency(userId: mongoose.ObjectId, frequency: {
+    frequencyType: FrequencyType,
+    time: Array<string>,
+    days: (Array<WeekDays> | undefined)
+  }) {
+    await this.UserModel.findOneAndUpdate(
+      { _id: userId },
+      { "settings.frequency": frequency }
     )
   }
 
