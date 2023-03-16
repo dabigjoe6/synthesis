@@ -20,7 +20,7 @@ const getPostsDigestData = (resources: Array<ResourceI>) => {
   })
 }
 
-const sendUserFeed = async (userId: string, feed: string, latestPost: string) => {
+const sendUserFeed = async (userId: string, feed: string, latestPost: string, timeToSend: number) => {
   try {
     if (!userId) {
       throw new Error("User ID not defined - sendFeedPublished.ts");
@@ -41,7 +41,7 @@ const sendUserFeed = async (userId: string, feed: string, latestPost: string) =>
     const message = "sendfeedsynthesismessage" + JSON.stringify({
       id: user?._id,
       email: user?.email,
-    }) + "synthesismessage" + JSON.stringify(resourceIdsAndUrls) + "synthesismessage" + JSON.stringify(latestResourceIdsAndUrls);
+    }) + "synthesismessage" + JSON.stringify(resourceIdsAndUrls) + "synthesismessage" + JSON.stringify(latestResourceIdsAndUrls) + "synthesismessage" + timeToSend
     console.log("sendFeedPublisher sending message: " + message);
     const params = {
       QueueUrl: QUEUE,

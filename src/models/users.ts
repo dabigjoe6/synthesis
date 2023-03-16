@@ -4,7 +4,7 @@ export enum WeekDays {
   "mon",
   "tue",
   "wed",
-  "thur",
+  "thu",
   "fri",
   "sat",
   "sun",
