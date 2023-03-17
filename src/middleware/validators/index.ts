@@ -77,6 +77,15 @@ const setDigestFrequency = Joi.object({
 });
 
 
+const enableSummary = Joi.object({
+  userId: joiObjectId().required(),
+});
+
+const disableSummary = Joi.object({
+  userId: joiObjectId().required(),
+})
+
+
 interface ValidatorsI {
   "login": Joi.ObjectSchema,
   "register": Joi.ObjectSchema,
@@ -92,6 +101,8 @@ interface ValidatorsI {
   "pauseDigest": Joi.ObjectSchema,
   "resumeDigest": Joi.ObjectSchema,
   "setDigestFrequency": Joi.ObjectSchema,
+  "enableSummary": Joi.ObjectSchema,
+  "disableSummary": Joi.ObjectSchema,
 }
 const Validators: ValidatorsI = {
   login,
@@ -107,7 +118,9 @@ const Validators: ValidatorsI = {
   syncResources,
   pauseDigest,
   resumeDigest,
-  setDigestFrequency
+  setDigestFrequency,
+  enableSummary,
+  disableSummary
 };
 
 export const validate = (validator: keyof ValidatorsI) => {

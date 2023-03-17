@@ -53,6 +53,43 @@ export const resumeDigest = async (req: Request, res: Response, next: NextFuncti
   }
 };
 
+
+export const enableSummary = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { userId } = req.body;
+
+    const userService = new UserService();
+    await userService.enableSummary(userId);
+
+
+    return res.status(200).json({
+      status: 200,
+      message: "Successfully enabled summary"
+    });
+  } catch (err) {
+    console.error("Couldn't enable summary", err);
+    next(err);
+  }
+}
+
+export const disableSummary = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { userId } = req.body;
+
+    const userService = new UserService();
+    await userService.disableSummary(userId);
+
+
+    return res.status(200).json({
+      status: 200,
+      message: "Successfully disable summary"
+    });
+  } catch (err) {
+    console.error("Couldn't disable summary", err);
+    next(err);
+  }
+}
+
 interface RequestWithUser extends Request {
   user: any;
 }

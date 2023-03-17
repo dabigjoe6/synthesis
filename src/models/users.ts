@@ -29,11 +29,13 @@ const frequencySchema = new mongoose.Schema<FrequencyI>({
 
 interface SettingsI extends mongoose.Document {
   isDigestPaused: boolean,
+  isSummaryEnabled: boolean,
   frequency: FrequencyI
 }
 
 const settingsSchema = new mongoose.Schema<SettingsI>({
   isDigestPaused: { type: Boolean, required: false, default: false },
+  isSummaryEnabled: { type: Boolean, required: false, default: true },
   frequency: { type: frequencySchema, required: false }
 });
 
@@ -44,9 +46,7 @@ export interface UserI extends mongoose.Document {
   resetPasswordToken?: string;
   subscriptions: Array<mongoose.Schema.Types.ObjectId>;
   seenResources: Array<mongoose.Schema.Types.ObjectId>;
-  settings?: {
-    isDigestPaused?: boolean;
-  }
+  settings?: SettingsI
 }
 
 const userSchema = new mongoose.Schema<UserI>({

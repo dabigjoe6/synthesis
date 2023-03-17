@@ -73,6 +73,20 @@ export default class User {
     )
   }
 
+  async enableSummary(userId: mongoose.ObjectId) {
+    await this.UserModel.findOneAndUpdate(
+      { _id: userId },
+      { "settings.isSummaryEnabled": true }
+    )
+  }
+
+  async disableSummary(userId: mongoose.ObjectId) {
+    await this.UserModel.findOneAndUpdate(
+      { _id: userId },
+      { "settings.isSummaryEnabled": false }
+    )
+  }
+
   async setDigestFrequency(userId: mongoose.ObjectId, frequency: {
     frequencyType: FrequencyType,
     time: Array<string>,
@@ -83,6 +97,7 @@ export default class User {
       { "settings.frequency": frequency }
     )
   }
+
 
   async generateResetPasswordToken(email: string) {
     const resetPasswordToken = generateResetTokenHelper();

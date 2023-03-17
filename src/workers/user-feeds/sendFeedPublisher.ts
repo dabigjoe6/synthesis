@@ -41,6 +41,7 @@ const sendUserFeed = async (userId: string, feed: string, latestPost: string, ti
     const message = "sendfeedsynthesismessage" + JSON.stringify({
       id: user?._id,
       email: user?.email,
+      isSummaryEnabled: (typeof user?.settings?.isSummaryEnabled === 'boolean') ? user.settings.isSummaryEnabled : true
     }) + "synthesismessage" + JSON.stringify(resourceIdsAndUrls) + "synthesismessage" + JSON.stringify(latestResourceIdsAndUrls) + "synthesismessage" + timeToSend
     console.log("sendFeedPublisher sending message: " + message);
     const params = {

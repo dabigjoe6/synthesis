@@ -176,7 +176,7 @@ const generateUsersFeeds = async () => {
         userFeed._id,
         userFeed.digest.map((feed: ResourceI) => feed._id),
         userFeed.latest.map((feed: ResourceI) => feed._id),
-        (moment(allUsersFeeds[0].timeToSend, "HH:mm").toDate().getTime() / 1000)
+        (moment(userFeed.timeToSend, "HH:mm").toDate().getTime() / 1000)
       );
     }
   }
