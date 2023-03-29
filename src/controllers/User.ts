@@ -2,6 +2,24 @@ import { Request, Response, NextFunction } from "express";
 import { FrequencyI, FrequencyType, WeekDays } from "../models/users.js";
 import UserService from '../services/users.js';
 
+export const userDetails = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { userId } = req.body;
+
+    const userService = new UserService();
+    const user = await userService.getUserById(userId);
+
+    return res.status(200).json({
+      status: 200,
+      user,
+    });
+
+  } catch (err) {
+    console.error("Couldn't get user details ", err);
+    next(err);
+  }
+}
+
 export const markSeenResources = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { userId, seenResources } = req.body;

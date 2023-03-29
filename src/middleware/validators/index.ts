@@ -68,6 +68,10 @@ const resumeDigest = Joi.object({
   userId: joiObjectId().required(),
 });
 
+const details = Joi.object({
+  userId: joiObjectId().required(),
+})
+
 
 const setDigestFrequency = Joi.object({
   frequencyType: Joi.string().valid(...(Object.values(FrequencyType).filter(value => typeof value === 'string'))).required(),
@@ -103,6 +107,7 @@ interface ValidatorsI {
   "setDigestFrequency": Joi.ObjectSchema,
   "enableSummary": Joi.ObjectSchema,
   "disableSummary": Joi.ObjectSchema,
+  "details": Joi.ObjectSchema
 }
 const Validators: ValidatorsI = {
   login,
@@ -120,7 +125,8 @@ const Validators: ValidatorsI = {
   resumeDigest,
   setDigestFrequency,
   enableSummary,
-  disableSummary
+  disableSummary,
+  details
 };
 
 export const validate = (validator: keyof ValidatorsI) => {
