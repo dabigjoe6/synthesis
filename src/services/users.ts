@@ -1,4 +1,4 @@
-import UserModel, { UserI } from "../models/users.js";
+import UserModel, { FrequencyType, UserI, WeekDays } from "../models/users.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../middleware/auth.js";
 import generateResetTokenHelper from "../utils/generateResetToken.js";
@@ -72,6 +72,32 @@ export default class User {
       { "settings.isDigestPaused": false }
     )
   }
+
+  async enableSummary(userId: mongoose.ObjectId) {
+    await this.UserModel.findOneAndUpdate(
+      { _id: userId },
+      { "settings.isSummaryEnabled": true }
+    )
+  }
+
+  async disableSummary(userId: mongoose.ObjectId) {
+    await this.UserModel.findOneAndUpdate(
+      { _id: userId },
+      { "settings.isSummaryEnabled": false }
+    )
+  }
+
+  async setDigestFrequency(userId: mongoose.ObjectId, frequency: {
+    frequencyType: FrequencyType,
+    time: Array<string>,
+    days: (Array<WeekDays> | undefined)
+  }) {
+    await this.UserModel.findOneAndUpdate(
+      { _id: userId },
+      { "settings.frequency": frequency }
+    )
+  }
+
 
   async generateResetPasswordToken(email: string) {
     const resetPasswordToken = generateResetTokenHelper();

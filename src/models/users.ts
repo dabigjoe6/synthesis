@@ -1,11 +1,42 @@
 import mongoose from "mongoose";
 
-export interface SettingsI extends mongoose.Document {
+export enum WeekDays {
+  "mon",
+  "tue",
+  "wed",
+  "thu",
+  "fri",
+  "sat",
+  "sun",
+};
+
+export enum FrequencyType {
+  "daily",
+  "weekly",
+}
+
+export interface FrequencyI extends mongoose.Document {
+  frequencyType: string;
+  days?: Array<WeekDays>;
+  time: Array<string>;
+}
+
+const frequencySchema = new mongoose.Schema<FrequencyI>({
+  frequencyType: { type: String, required: true, enum: FrequencyType, default: "daily" },
+  days: { type: [mongoose.Schema.Types.String], required: false, },
+  time: { type: [mongoose.Schema.Types.String], required: true, default: ["08:00"] }
+})
+
+interface SettingsI extends mongoose.Document {
   isDigestPaused: boolean,
+  isSummaryEnabled: boolean,
+  frequency: FrequencyI
 }
 
 const settingsSchema = new mongoose.Schema<SettingsI>({
-  isDigestPaused: { type: Boolean, required: false, default: false }
+  isDigestPaused: { type: Boolean, required: false, default: false },
+  isSummaryEnabled: { type: Boolean, required: false, default: true },
+  frequency: { type: frequencySchema, required: false }
 });
 
 
@@ -15,9 +46,7 @@ export interface UserI extends mongoose.Document {
   resetPasswordToken?: string;
   subscriptions: Array<mongoose.Schema.Types.ObjectId>;
   seenResources: Array<mongoose.Schema.Types.ObjectId>;
-  settings?: {
-    isDigestPaused?: boolean;
-  }
+  settings?: SettingsI
 }
 
 const userSchema = new mongoose.Schema<UserI>({

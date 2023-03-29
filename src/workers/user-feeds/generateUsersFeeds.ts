@@ -4,17 +4,51 @@ import UserModel from "../../models/users.js";
 import sendUserFeed from "./sendFeedPublisher.js";
 import { fileURLToPath } from "url";
 import path from "path";
+import moment from 'moment';
 import { ResourceI } from "../../models/resources.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
 dotenv.config({ path: path.resolve(__filename, "../../../../.env") });
 
+const getCurrentDayOfWeek = () => {
+  const today = moment();
+  const dayOfWeek = today.format('ddd');
+  return dayOfWeek.toLowerCase()
+}
+
 const generateUsersFeeds = async () => {
   startDb(process.env.MONGO_URI);
   console.log("Generating users feeds");
 
+
+  const CURRENT_DAY = getCurrentDayOfWeek();
+  const TIME_WINDOW_IN_HOURS = 1;
+
   const allUsersFeeds = await UserModel.aggregate([
+    // Match all users with frequencyType daily or users with frequencyType weekly and have selected today as one of the days
+    {
+      $match: {
+        $or: [
+          { "settings.frequency.frequencyType": "daily" },
+          {
+            "settings.frequency.frequencyType": "weekly",
+            "settings.frequency.days": CURRENT_DAY
+          }
+        ]
+      }
+    },
+    // Match all users that have selected a time for the next hour
+    {
+      $match: {
+        "settings.frequency.time": {
+          $elemMatch: {
+            $gt: moment().format("HH:mm"), // current time with leading zero
+            $lte: moment().add(TIME_WINDOW_IN_HOURS, "hours").format("HH:mm") // current time + 3 hours with leading zero
+          }
+        }
+      }
+    },
     // Find all resources from subscribed authors for every user
     {
       $lookup: {
@@ -129,6 +163,9 @@ const generateUsersFeeds = async () => {
           },
         ],
         latest: 1,
+        // We assume the job runs every xx:00 hour and users are only allowed to pick times for xx:00
+        // If job runs for 06:00, we schedule emails to be sent out using sendgrid for users that have selected 07:00
+        timeToSend: moment().add(TIME_WINDOW_IN_HOURS, "hours").format("HH:mm")
       },
     },
   ]);
@@ -138,7 +175,8 @@ const generateUsersFeeds = async () => {
       await sendUserFeed(
         userFeed._id,
         userFeed.digest.map((feed: ResourceI) => feed._id),
-        userFeed.latest.map((feed: ResourceI) => feed._id)
+        userFeed.latest.map((feed: ResourceI) => feed._id),
+        (moment(userFeed.timeToSend, "HH:mm").toDate().getTime() / 1000)
       );
     }
   }

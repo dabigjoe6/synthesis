@@ -1,6 +1,7 @@
 import Joi from "joi";
 import JoiObjectId from "joi-objectid";
 import { Request, Response, NextFunction } from "express";
+import { FrequencyType, WeekDays } from "../../models/users.js";
 
 const joiObjectId = JoiObjectId(Joi);
 
@@ -67,6 +68,28 @@ const resumeDigest = Joi.object({
   userId: joiObjectId().required(),
 });
 
+const details = Joi.object({
+  userId: joiObjectId().required(),
+})
+
+
+const setDigestFrequency = Joi.object({
+  frequencyType: Joi.string().valid(...(Object.values(FrequencyType).filter(value => typeof value === 'string'))).required(),
+  time: Joi.array().required(), // TODO: Make this validation more strict
+  days: Joi.array().items(Joi.string().valid(...(Object.values(WeekDays).filter(value => typeof value === 'string'))))
+    .when('frequencyType', { is: 'weekly', then: Joi.required() })
+});
+
+
+const enableSummary = Joi.object({
+  userId: joiObjectId().required(),
+});
+
+const disableSummary = Joi.object({
+  userId: joiObjectId().required(),
+})
+
+
 interface ValidatorsI {
   "login": Joi.ObjectSchema,
   "register": Joi.ObjectSchema,
@@ -80,7 +103,11 @@ interface ValidatorsI {
   "updateResourceSummary": Joi.ObjectSchema,
   "syncResources": Joi.ObjectSchema,
   "pauseDigest": Joi.ObjectSchema,
-  "resumeDigest": Joi.ObjectSchema
+  "resumeDigest": Joi.ObjectSchema,
+  "setDigestFrequency": Joi.ObjectSchema,
+  "enableSummary": Joi.ObjectSchema,
+  "disableSummary": Joi.ObjectSchema,
+  "details": Joi.ObjectSchema
 }
 const Validators: ValidatorsI = {
   login,
@@ -95,7 +122,11 @@ const Validators: ValidatorsI = {
   updateResourceSummary,
   syncResources,
   pauseDigest,
-  resumeDigest
+  resumeDigest,
+  setDigestFrequency,
+  enableSummary,
+  disableSummary,
+  details
 };
 
 export const validate = (validator: keyof ValidatorsI) => {
