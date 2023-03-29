@@ -44,7 +44,7 @@ const generateUsersFeeds = async () => {
         "settings.frequency.time": {
           $elemMatch: {
             $gt: moment().format("HH:mm"), // current time with leading zero
-            $lte: moment().add(TIME_WINDOW_IN_HOURS, "hours").format("HH:mm") // current time + 3 hours with leading zero
+            $lte: moment().add(TIME_WINDOW_IN_HOURS, "hours").format("HH:mm") // current time + 1 hours with leading zero
           }
         }
       }

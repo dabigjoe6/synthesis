@@ -32,13 +32,13 @@ const syncResources = async () => {
       console.warn("No author to be synced, looks like things are up to date :)");
     }
 
-    authorsToBeSynced.forEach((author) => {
-      syncResourcesPublisher({
+    for (const author of authorsToBeSynced) {
+      await syncResourcesPublisher({
         authorId: author._id,
         service: (author.source as Sources),
         url: author.url,
       });
-    });
+    }
   } catch (err) {
     console.error(
       "Could not fetch resources to be synced - syncResources.ts",
@@ -47,4 +47,6 @@ const syncResources = async () => {
   }
 };
 
-syncResources();
+await syncResources();
+
+process.exit();
