@@ -23,7 +23,7 @@ export interface FrequencyI extends mongoose.Document {
 
 const frequencySchema = new mongoose.Schema<FrequencyI>({
   frequencyType: { type: String, required: true, enum: FrequencyType, default: "daily" },
-  days: { type: [mongoose.Schema.Types.String], required: false, },
+  days: { type: [mongoose.Schema.Types.String], required: false, default: ["mon"] },
   time: { type: [mongoose.Schema.Types.String], required: true, default: ["08:00"] }
 })
 
