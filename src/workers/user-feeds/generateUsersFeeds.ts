@@ -165,7 +165,7 @@ const generateUsersFeeds = async () => {
         latest: 1,
         // We assume the job runs every xx:00 hour and users are only allowed to pick times for xx:00
         // If job runs for 06:00, we schedule emails to be sent out using sendgrid for users that have selected 07:00
-        timeToSend: moment().add(TIME_WINDOW_IN_HOURS, "hours").format("HH:mm")
+        timeToSend: moment().startOf('hour').add(TIME_WINDOW_IN_HOURS, 'hour').format("HH:mm")
       },
     },
   ]);
