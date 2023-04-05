@@ -58,7 +58,7 @@ export const updateResourceSummary = async (req: Request, res: Response, next: N
 export const syncAuthorsResources = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { posts, authorId } = req.body;
-    const serviceInstance = new ResourceService(posts[0].source);
+    const serviceInstance = new ResourceService(Sources.MEDIUM); // Set dummy source that isn't actually used
     await serviceInstance.saveAuthorsPosts(posts, authorId)
 
     return res.status(200).json({
