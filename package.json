@@ -28,6 +28,7 @@
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
+    "moment-timezone": "^0.5.43",
     "mongoose": "^6.4.4",
     "openai": "^3.1.0",
     "puppeteer": "^15.3.0",

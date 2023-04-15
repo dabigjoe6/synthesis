@@ -4,6 +4,7 @@ import UserModel from "../../models/users.js";
 import sendUserFeed from "./sendFeedPublisher.js";
 import { fileURLToPath } from "url";
 import path from "path";
+import 'moment-timezone';
 import moment from 'moment';
 import { ResourceI } from "../../models/resources.js";
 
@@ -172,11 +173,33 @@ const generateUsersFeeds = async () => {
 
   for (const userFeed of allUsersFeeds) {
     if (userFeed.digest.length > 0) {
+      const time = userFeed.timeToSend;
+      const format = "HH:mm";
+
+      // get the current date in GMT-00:00 timezone
+      const now = moment().tz('Etc/GMT');
+
+      // create a new moment object for the specific time on the current date
+      const specificTime = moment(time, format).tz('Etc/GMT');
+
+      // set the specific time on the current date
+      now.set({
+        hour: specificTime.get('hour'),
+        minute: specificTime.get('minute'),
+        second: 0,
+        millisecond: 0,
+      });
+
+      // get the timestamp for the specific time in GMT-00:00 timezone
+      const timestamp = now.valueOf();
+
+      const timestampInSeconds = Math.floor(timestamp / 1000);
+
       await sendUserFeed(
         userFeed._id,
         userFeed.digest.map((feed: ResourceI) => feed._id),
         userFeed.latest.map((feed: ResourceI) => feed._id),
-        (moment(userFeed.timeToSend, "HH:mm").toDate().getTime() / 1000)
+        timestampInSeconds
       );
     }
   }
