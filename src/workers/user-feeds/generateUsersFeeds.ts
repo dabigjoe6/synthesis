@@ -25,6 +25,11 @@ const generateUsersFeeds = async () => {
 
   const CURRENT_DAY = getCurrentDayOfWeek();
   const TIME_WINDOW_IN_HOURS = 1;
+  const TIME_FORMAT = "HH:mm";
+
+
+  // set timezone to GMT+0
+  moment.tz.setDefault('Etc/GMT');
 
   const allUsersFeeds = await UserModel.aggregate([
     // Match all users with frequencyType daily or users with frequencyType weekly and have selected today as one of the days
@@ -45,7 +50,7 @@ const generateUsersFeeds = async () => {
         "settings.frequency.time": {
           $elemMatch: {
             $gt: moment().format("HH:mm"), // current time with leading zero
-            $lte: moment().add(TIME_WINDOW_IN_HOURS, "hours").format("HH:mm") // current time + 1 hours with leading zero
+            $lte: moment().add(TIME_WINDOW_IN_HOURS, "hours").format(TIME_FORMAT) // current time + 1 hours with leading zero
           }
         }
       }
@@ -166,7 +171,7 @@ const generateUsersFeeds = async () => {
         latest: 1,
         // We assume the job runs every xx:00 hour and users are only allowed to pick times for xx:00
         // If job runs for 06:00, we schedule emails to be sent out using sendgrid for users that have selected 07:00
-        timeToSend: moment().startOf('hour').add(TIME_WINDOW_IN_HOURS, 'hour').format("HH:mm")
+        timeToSend: moment().startOf('hour').add(TIME_WINDOW_IN_HOURS, 'hour').format(TIME_FORMAT)
       },
     },
   ]);
@@ -174,26 +179,7 @@ const generateUsersFeeds = async () => {
   for (const userFeed of allUsersFeeds) {
     if (userFeed.digest.length > 0) {
       const time = userFeed.timeToSend;
-      const format = "HH:mm";
-
-      // get the current date in GMT-00:00 timezone
-      const now = moment().tz('Etc/GMT');
-
-      // create a new moment object for the specific time on the current date
-      const specificTime = moment(time, format).tz('Etc/GMT');
-
-      // set the specific time on the current date
-      now.set({
-        hour: specificTime.get('hour'),
-        minute: specificTime.get('minute'),
-        second: 0,
-        millisecond: 0,
-      });
-
-      // get the timestamp for the specific time in GMT-00:00 timezone
-      const timestamp = now.valueOf();
-
-      const timestampInSeconds = Math.floor(timestamp / 1000);
+      const timestampInSeconds = moment(time, TIME_FORMAT).unix();
 
       await sendUserFeed(
         userFeed._id,
