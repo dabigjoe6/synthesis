@@ -118,12 +118,14 @@ export const setDigestFrequency = async (req: RequestWithUser, res: Response, ne
     const frequencyType: FrequencyType = req.body.frequencyType;
     const time: Array<string> = req.body.time;
     const days: Array<WeekDays> | undefined = req.body?.days;
+    const timeZone: string = req.body.timeZone;
 
     const userService = new UserService();
     await userService.setDigestFrequency(_id, {
       frequencyType,
       time,
-      days
+      days,
+      timeZone
     });
 
     return res.status(200).json({

@@ -90,7 +90,8 @@ export default class User {
   async setDigestFrequency(userId: mongoose.ObjectId, frequency: {
     frequencyType: FrequencyType,
     time: Array<string>,
-    days: (Array<WeekDays> | undefined)
+    days: (Array<WeekDays> | undefined),
+    timeZone: string
   }) {
     await this.UserModel.findOneAndUpdate(
       { _id: userId },

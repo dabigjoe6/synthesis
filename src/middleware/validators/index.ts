@@ -77,7 +77,8 @@ const setDigestFrequency = Joi.object({
   frequencyType: Joi.string().valid(...(Object.values(FrequencyType).filter(value => typeof value === 'string'))).required(),
   time: Joi.array().required(), // TODO: Make this validation more strict
   days: Joi.array().items(Joi.string().valid(...(Object.values(WeekDays).filter(value => typeof value === 'string'))))
-    .when('frequencyType', { is: 'weekly', then: Joi.required() })
+    .when('frequencyType', { is: 'weekly', then: Joi.required() }),
+  timeZone: Joi.string().required()
 });
 
 
