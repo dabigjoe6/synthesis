@@ -16,6 +16,7 @@ export interface ResourceI extends mongoose.Document {
   numberOfLikes?: number;
   numberOfComments?: number;
   latest: boolean;
+  readLength?: string;
 }
 
 const resourceSchema = new mongoose.Schema<ResourceI>({

@@ -40,7 +40,7 @@ export const saveAuthorsPosts = async (req: Request, res: Response, next: NextFu
   }
 }
 
-export const updateResourceSummary = async (req: Request, res: Response, next: NextFunction) => {
+export const updateResourceSummaryAndReadLength = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { resources } = req.body;
     const serviceInstance = new ResourceService(Sources.MEDIUM);

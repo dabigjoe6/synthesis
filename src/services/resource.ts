@@ -104,10 +104,11 @@ export default class ResourceService {
     }
   };
 
-  updateResourceSummary = async (resources: Array<{ id: string, summary: string }>) => {
+  updateResourceSummary = async (resources: Array<{ id: string, summary: string, readLength: string }>) => {
     for (const resource of resources) {
       await this.ResourceModel.findOneAndUpdate({ _id: resource.id }, {
-        summary: resource.summary
+        summary: resource.summary,
+        readLength: resource.readLength
       })
     }
   }
