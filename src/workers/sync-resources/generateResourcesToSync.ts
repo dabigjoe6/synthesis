@@ -15,7 +15,6 @@ const syncResources = async () => {
   console.log("Syncing resources");
 
   // Get authors whose resources needs to be synced
-  // TODO: Determine whats the best time for last synced (24 hours?)
   // Authors resources that need to be synced are authros with a last sync time of > 4 hours
 
   const hours: number = process.env.SYNC_HOURS ? Number(process.env.SYNC_HOURS) : 4; // the number of hours

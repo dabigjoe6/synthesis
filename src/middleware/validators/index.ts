@@ -10,7 +10,7 @@ const login = Joi.object({
   password: Joi.string().min(8).required(),
 });
 
-//TODO: CREATE STRICT VALIDATION
+
 const register = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(8).required(),
@@ -75,7 +75,9 @@ const details = Joi.object({
 
 const setDigestFrequency = Joi.object({
   frequencyType: Joi.string().valid(...(Object.values(FrequencyType).filter(value => typeof value === 'string'))).required(),
-  time: Joi.array().required(), // TODO: Make this validation more strict
+  time: Joi.array().items(Joi.string().pattern(/^([01]\d|2[0-3]):([0-5]\d)$/).messages({
+    'string.pattern.base': 'The time must be in the format "HH:mm", where HH is between 00 and 24 and mm is between 00 and 59'
+  })).required(),
   days: Joi.array().items(Joi.string().valid(...(Object.values(WeekDays).filter(value => typeof value === 'string'))))
     .when('frequencyType', { is: 'weekly', then: Joi.required() }),
   timeZone: Joi.string().required()

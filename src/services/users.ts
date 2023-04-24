@@ -102,8 +102,8 @@ export default class User {
 
   async generateResetPasswordToken(email: string) {
     const resetPasswordToken = generateResetTokenHelper();
-    // TODO: Add expiry to reset password token
-    await this.UserModel.updateOne({ email }, { resetPasswordToken });
+    const resetPasswordTokenCreatedAt = Date.now;
+    await this.UserModel.updateOne({ email }, { resetPasswordToken, resetPasswordTokenCreatedAt });
     return resetPasswordToken;
   }
 

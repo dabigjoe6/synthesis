@@ -146,7 +146,6 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
       html: MESSAGE,
     };
 
-    // TODO: Add this to messaging queue
     const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || "";
     Sendgrid.setApiKey(SENDGRID_API_KEY);
     await Sendgrid.send(payload);
@@ -193,11 +192,15 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
       });
     }
 
-    if (resetPasswordToken !== user.resetPasswordToken) {
-      return res.status(400).json({
-        message: "Reset password token incorrect",
-        status: 400,
-      });
+    const oneHourAgo = Date.now() - 60 * 60 * 1000; // Calculate a number representing one hour ago
+
+    if (user.resetPasswordToken && user.resetPasswordTokenCreatedAt) {
+      if (resetPasswordToken !== user.resetPasswordToken && user.resetPasswordTokenCreatedAt < oneHourAgo) {
+        return res.status(400).json({
+          message: "Reset password token incorrect/expired",
+          status: 400,
+        });
+      }
     }
 
     await userService.changePassword(email, newPassword);

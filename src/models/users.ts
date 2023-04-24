@@ -46,6 +46,7 @@ export interface UserI extends mongoose.Document {
   email: string;
   password?: string;
   resetPasswordToken?: string;
+  resetPasswordTokenCreatedAt?: number;
   subscriptions: Array<mongoose.Schema.Types.ObjectId>;
   seenResources: Array<mongoose.Schema.Types.ObjectId>;
   settings?: SettingsI
@@ -55,6 +56,7 @@ const userSchema = new mongoose.Schema<UserI>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: false },
   resetPasswordToken: { type: String, required: false },
+  resetPasswordTokenCreatedAt: { type: Date, required: false },
   subscriptions: { type: [mongoose.Schema.Types.ObjectId], required: false, unique: false },
   seenResources: { type: [mongoose.Schema.Types.ObjectId], required: false, unique: false },
   settings: { type: settingsSchema, required: false }
