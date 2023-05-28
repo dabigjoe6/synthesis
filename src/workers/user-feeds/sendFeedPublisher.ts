@@ -16,9 +16,9 @@ const getPostsDigestData = (resources: Array<ResourceI>) => {
       summary: resource?.summary,
       title: resource.title,
       description: resource.description,
-      readLength: resource.readLength,
-      authorsName: resource.authorsName,
-      datePublished: resource.datePublished
+      readLength: resource?.readLength,
+      authorsName: resource?.authorsName,
+      datePublished: resource?.datePublished
     }
   })
 }
