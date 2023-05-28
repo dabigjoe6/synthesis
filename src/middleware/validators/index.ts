@@ -51,7 +51,7 @@ const markSeenResources = Joi.object({
   seenResources: Joi.array().items(joiObjectId()).required(),
 })
 
-const updateResourceSummaryAndReadLength = Joi.object({
+const updateResources = Joi.object({
   resources: Joi.array().required(),
 })
 
@@ -103,7 +103,7 @@ interface ValidatorsI {
   "unsubscribe": Joi.ObjectSchema,
   "saveAuthorsPosts": Joi.ObjectSchema,
   "markSeenResources": Joi.ObjectSchema,
-  "updateResourceSummaryAndReadLength": Joi.ObjectSchema,
+  "updateResources": Joi.ObjectSchema,
   "syncResources": Joi.ObjectSchema,
   "pauseDigest": Joi.ObjectSchema,
   "resumeDigest": Joi.ObjectSchema,
@@ -122,7 +122,7 @@ const Validators: ValidatorsI = {
   unsubscribe,
   saveAuthorsPosts,
   markSeenResources,
-  updateResourceSummaryAndReadLength,
+  updateResources,
   syncResources,
   pauseDigest,
   resumeDigest,

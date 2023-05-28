@@ -104,12 +104,27 @@ export default class ResourceService {
     }
   };
 
-  updateResourceSummary = async (resources: Array<{ id: string, summary: string, readLength: string }>) => {
+  updateResources = async (resources: Array<{ id: string, summary?: string, readLength?: string; authorsName?: string; datePublished?: Date }>) => {
     for (const resource of resources) {
-      await this.ResourceModel.findOneAndUpdate({ _id: resource.id }, {
-        summary: resource.summary,
-        readLength: resource.readLength
-      })
+      const updateObject: { summary?: string; readLength?: string; authorsName?: string; datePublished?: Date } = {};
+
+      if (resource.summary) {
+        updateObject['summary'] = resource.summary;
+      }
+
+      if (resource.readLength) {
+        updateObject['readLength'] = resource.readLength;
+      }
+
+      if (resource.authorsName) {
+        updateObject['authorsName'] = resource.authorsName;
+      }
+
+      if (resource.datePublished) {
+        updateObject['datePublished'] = resource.datePublished;
+      }
+
+      await this.ResourceModel.findOneAndUpdate({ _id: resource.id }, updateObject)
     }
   }
 }

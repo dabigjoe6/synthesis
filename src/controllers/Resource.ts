@@ -40,11 +40,11 @@ export const saveAuthorsPosts = async (req: Request, res: Response, next: NextFu
   }
 }
 
-export const updateResourceSummaryAndReadLength = async (req: Request, res: Response, next: NextFunction) => {
+export const updateResources = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { resources } = req.body;
     const serviceInstance = new ResourceService(Sources.MEDIUM);
-    await serviceInstance.updateResourceSummary(resources);
+    await serviceInstance.updateResources(resources);
 
     return res.status(200).json({
       status: 200,
