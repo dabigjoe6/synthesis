@@ -64,6 +64,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     user = user.toObject();
     delete user["password"];
 
+    await userService.sendWelcomeEmail(email);
+
     res.status(201).json({
       status: 201,
       token,
@@ -90,6 +92,8 @@ export const oAuthLogin = async (req: Request, res: Response, next: NextFunction
 
       user = user.toObject();
       delete user["password"];
+
+      await userService.sendWelcomeEmail(email);
 
       return res.status(201).json({
         status: 201,
