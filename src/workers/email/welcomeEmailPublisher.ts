@@ -10,7 +10,7 @@ dotenv.config({ path: "../../../.env" });
 
 const welcomeEmailPublisher = async (email: string) => {
   try {
-    const message = "welcomeemailsynthesismessage" + email + "synthesismessage";
+    const message = "welcomeemailsynthesismessage" + email;
     console.log("welcomeEmailPublisher sending message: " + message);
     const params = {
       QueueUrl: QUEUE,
