@@ -2,6 +2,7 @@ import UserModel, { FrequencyType, UserI, WeekDays } from "../models/users.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../middleware/auth.js";
 import generateResetTokenHelper from "../utils/generateResetToken.js";
+import welcomeEmailPublisher from '../workers/email/welcomeEmailPublisher.js';
 import mongoose from "mongoose";
 
 export default class User {
@@ -116,5 +117,13 @@ export default class User {
       }
     );
     return true;
+  }
+
+  async sendWelcomeEmail(email: string) {
+    try {
+      await welcomeEmailPublisher(email);
+    } catch (err) {
+      console.error("Could not send welcome email, something went wrong: ", err);
+    }
   }
 }
