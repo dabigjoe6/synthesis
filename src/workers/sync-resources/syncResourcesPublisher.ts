@@ -7,26 +7,17 @@ import dotenv from "dotenv";
 import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs'
 import { Sources, QUEUE } from "../../utils/constants.js";
 import mongoose from "mongoose";
-import ResourceService from "../../services/resource.js";
 
 dotenv.config({ path: "../../../.env" });
 
-const syncResourcesPublisher = async ({ authorId, url, service }: {
+const syncResourcesPublisher = async ({ authorId, url, service, recentUrls }: {
   authorId: mongoose.ObjectId;
   url: string;
   service: Sources;
+  recentUrls: Array<string>
 }) => {
   try {
-    const resourceService = new ResourceService(service);
-    const mostRecentPostsInDb = (await resourceService.getMostRecentPosts(
-      (authorId as unknown) as string
-    )).map(resource => {
-      return {
-        url: resource.url
-      }
-    })
-
-    const message = "syncfeedsynthesismessage" + authorId + "synthesismessage" + url + "synthesismessage" + service + "synthesismessage" + JSON.stringify(mostRecentPostsInDb);
+    const message = "syncfeedsynthesismessage" + authorId + "synthesismessage" + url + "synthesismessage" + service + "synthesismessage" + JSON.stringify(recentUrls);
     console.log("syncResourcePublisher sending message: " + message);
     const params = {
       QueueUrl: QUEUE,
