@@ -73,9 +73,18 @@ export default class ResourceService {
   };
 
   saveAuthorsPosts = async (posts: ResourceI, authorId?: mongoose.ObjectId) => {
-    await this.ResourceModel.create(posts);
-    if (authorId) {
-      await this.AuthorModel.updateOne({ _id: authorId }, { lastSynced: Date.now() });
+    try {
+      await this.ResourceModel.insertMany(posts, { ordered: false });
+
+      if (authorId) {
+        await this.AuthorModel.updateOne({ _id: authorId }, { lastSynced: Date.now() });
+      }
+    } catch (err) {
+      if (err.message.includes("E11000 duplicate key error collectio")) {
+        console.warn("Duplicate urls detected", err.message)
+      } else {
+        throw err
+      }
     }
   }
 
