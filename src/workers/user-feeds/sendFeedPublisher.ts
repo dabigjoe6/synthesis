@@ -7,12 +7,14 @@ import { SendMessageCommand, SQSClient } from "@aws-sdk/client-sqs";
 dotenv.config({ path: "../../../.env" });
 
 const getPostsDigestData = (resources: Array<ResourceI>) => {
+  const MAX_CHARACTERS = 5000;
+
   return resources.map(resource => {
     return {
       id: resource._id,
       url: resource.url,
       source: resource.source,
-      content: resource?.content,
+      content: resource.content && (resource.content.length > MAX_CHARACTERS) ? resource?.content?.substring(0, MAX_CHARACTERS) : resource.content,
       summary: resource?.summary,
       title: resource.title,
       description: resource.description,
