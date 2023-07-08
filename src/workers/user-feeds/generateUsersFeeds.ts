@@ -134,41 +134,46 @@ const generateUsersFeeds = async () => {
         email: 1,
         digest: 1,
         latest: 1,
-        at_least_one_digest: {
-          $or: [
-            { $gt: [{ $size: "$digest" }, 0] },
-            { $gt: [{ $size: "$latest" }, 0] },
-          ],
-        },
+        at_least_one_digest: { $gt: [{ $size: "$digest" }, 0] },
+        at_least_one_latest_digest: { $gt: [{ $size: "$latest" }, 0] }
       },
     },
     {
       $match: {
-        at_least_one_digest: true,
+        $or: [
+          { at_least_one_digest: true },
+          { at_least_one_latest_digest: true },
+        ]
       },
     },
     // Pick a digest at random
     // TODO: Use slice to get a number of random digest for the user
     {
       $project: {
-        digest: [
-          {
-            $arrayElemAt: [
-              "$digest",
+        digest: {
+          $cond: {
+            if: { $gt: [{ $size: "$digest" }, 0] },
+            then: [
               {
-                $mod: [
+                $arrayElemAt: [
+                  "$digest",
                   {
-                    $toLong: "$$NOW",
-                  },
-                  {
-                    $size: "$digest",
+                    $mod: [
+                      {
+                        $toLong: "$$NOW",
+                      },
+                      {
+                        $size: "$digest",
+                      },
+                    ],
                   },
                 ],
               },
             ],
-          },
-        ],
-        latest: 1,
+            else: "$digest"
+          }
+        },
+        latest: { $slice: ["$latest", { $cond: [{ $gt: [{ $size: "$latest" }, 5] }, 5, { $size: "$latest" }] }] },
         // We assume the job runs every xx:00 hour and users are only allowed to pick times for xx:00
         // If job runs for 06:00, we schedule emails to be sent out using sendgrid for users that have selected 07:00
         timeToSend: process.env.NODE_ENV === "development" ? moment().add(1, 'minute').format(TIME_FORMAT) : moment().startOf('hour').add(TIME_WINDOW_IN_HOURS, 'hour').format(TIME_FORMAT)
@@ -177,7 +182,7 @@ const generateUsersFeeds = async () => {
   ]);
 
   for (const userFeed of allUsersFeeds) {
-    if (userFeed.digest.length > 0) {
+    if (userFeed.digest.length > 0 || userFeed.latest.length > 0) {
       const time = userFeed.timeToSend;
       const timestampInSeconds = moment(time, TIME_FORMAT).unix();
 
