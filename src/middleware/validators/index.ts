@@ -90,7 +90,11 @@ const enableSummary = Joi.object({
 
 const disableSummary = Joi.object({
   userId: joiObjectId().required(),
-})
+});
+
+const numberOfEmailsSent = Joi.object({
+  range: Joi.string().valid('week', 'month', 'three_months').required()
+});
 
 
 interface ValidatorsI {
@@ -110,7 +114,8 @@ interface ValidatorsI {
   "setDigestFrequency": Joi.ObjectSchema,
   "enableSummary": Joi.ObjectSchema,
   "disableSummary": Joi.ObjectSchema,
-  "details": Joi.ObjectSchema
+  "details": Joi.ObjectSchema,
+  "numberOfEmailsSent": Joi.ObjectSchema
 }
 const Validators: ValidatorsI = {
   login,
@@ -129,7 +134,8 @@ const Validators: ValidatorsI = {
   setDigestFrequency,
   enableSummary,
   disableSummary,
-  details
+  details,
+  numberOfEmailsSent
 };
 
 export const validate = (validator: keyof ValidatorsI) => {

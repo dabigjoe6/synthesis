@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { FrequencyI, FrequencyType, WeekDays } from "../models/users.js";
+import { FrequencyType, WeekDays } from "../models/users.js";
 import UserService from '../services/users.js';
 
 export const userDetails = async (req: Request, res: Response, next: NextFunction) => {
