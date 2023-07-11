@@ -10,14 +10,13 @@ import mongoose from "mongoose";
 
 dotenv.config({ path: "../../../.env" });
 
-const syncResourcesPublisher = async ({ authorId, url, service, recentUrls }: {
+const syncResourcesPublisher = async ({ authorId, url, service }: {
   authorId: mongoose.ObjectId;
   url: string;
   service: Sources;
-  recentUrls: Array<string>
 }) => {
   try {
-    const message = "syncfeedsynthesismessage" + authorId + "synthesismessage" + url + "synthesismessage" + service + "synthesismessage" + JSON.stringify(recentUrls);
+    const message = "syncfeedsynthesismessage" + authorId + "synthesismessage" + url + "synthesismessage" + service;
     console.log("syncResourcePublisher sending message: " + message);
     const params = {
       QueueUrl: QUEUE,

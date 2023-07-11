@@ -12,7 +12,7 @@ const app = express();
 dotenv.config();
 
 //start database
-startDb();
+await startDb();
 const urlencodedParser = bodyParser.urlencoded({ extended: false, limit: '50mb' });
 
 const corsOptions = {

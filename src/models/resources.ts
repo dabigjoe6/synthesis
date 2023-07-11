@@ -20,7 +20,7 @@ export interface ResourceI extends mongoose.Document {
 }
 
 const resourceSchema = new mongoose.Schema<ResourceI>({
-  url: { type: String, required: true, unique: false },
+  url: { type: String, required: true, unique: true },
   author: { type: mongoose.Schema.Types.ObjectId, required: true, unique: false },
   title: { type: String, required: false, unique: false },
   source: { type: String, required: false, unique: false },
