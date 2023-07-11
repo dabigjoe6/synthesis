@@ -115,3 +115,54 @@ export const topSubscriptions = async (req: Request, res: Response, next: NextFu
     next(err);
   }
 }
+
+export const allMetrics = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+
+    const { range } = req.body;
+
+    const metricsService = new MetricsService();
+
+    const numberOfUsersPromise = metricsService.getNumberOfUsers();
+    const emailMetricsPromise = metricsService.getEmailMetrics(range || "week");
+    const usersWithSummariesEnabledPromise = metricsService.getNumberOfUsersWithSummariesEnabled();
+    const usersWithPausedDigestPromise = metricsService.getNumberOfUsersWithPausedDigest();
+    const numberOfSubscriptionsPromise = metricsService.getNumberOfSubscriptions();
+    const averageNumberOfSubscriptionsPromise = metricsService.getAverageNumberOfSubscriptions();
+    const topSubscriptionsPromise = metricsService.getTopSubscriptions();
+
+    const [
+      numberOfUsers,
+      { totalDelivered, totalOpened },
+      usersWithSummariesEnabled,
+      usersWithPausedDigest,
+      numberOfSubscriptions,
+      averageNumberOfSubscriptions,
+      topSubscriptions
+    ] = await Promise.all([
+      numberOfUsersPromise,
+      emailMetricsPromise,
+      usersWithSummariesEnabledPromise,
+      usersWithPausedDigestPromise,
+      numberOfSubscriptionsPromise,
+      averageNumberOfSubscriptionsPromise,
+      topSubscriptionsPromise
+    ]);
+
+    return res.status(200).json({
+      status: 200,
+      numberOfUsers,
+      totalDelivered,
+      totalOpened,
+      usersWithSummariesEnabled,
+      usersWithPausedDigest,
+      numberOfSubscriptions,
+      averageNumberOfSubscriptions,
+      topSubscriptions
+    });
+
+  } catch (err) {
+    console.error("Couldn't get total number of emails sent: ", err);
+    next(err);
+  }
+}

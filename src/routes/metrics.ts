@@ -7,7 +7,8 @@ import {
   numberOfPausedDigests,
   numberOfSubscriptions,
   averageNumberOfSubscriptions,
-  topSubscriptions
+  topSubscriptions,
+  allMetrics
 } from '../controllers/Metrics.js';
 
 const router = Router();
@@ -19,5 +20,6 @@ router.get('/no-of-subscriptions', numberOfSubscriptions);
 router.get('/average-no-of-subscriptions', averageNumberOfSubscriptions);
 router.get('/top-subscriptions', topSubscriptions)
 router.get('/no-of-emails-sent', validate("numberOfEmailsSent"), numberOfEmailsSent);
+router.get('', allMetrics);
 
 export default router;
