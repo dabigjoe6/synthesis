@@ -6,7 +6,7 @@ import {
   oAuthLogin,
   register,
   resetPassword,
-} from "../controllers/Auth.js";
+} from "../controllers/Auth/index.js";
 import { verifyGoogleToken } from "../middleware/auth.js";
 
 const router = Router();

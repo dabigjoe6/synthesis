@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import moment from "moment";
 import client from "@sendgrid/client";
-import UserModel, { UserI } from '../models/users.js';
+import UserModel, { UserMongooseI } from '../models/users.js';
 import AuthorModel, { AuthorI } from '../models/authors.js';
 
 enum Range {
@@ -11,7 +11,7 @@ enum Range {
 }
 
 export default class MetricsService {
-  UserModel: mongoose.Model<UserI>;
+  UserModel: mongoose.Model<UserMongooseI>;
   AuthorModel: mongoose.Model<AuthorI>;
 
   constructor() {

@@ -41,8 +41,8 @@ const settingsSchema = new mongoose.Schema<SettingsI>({
   frequency: { type: frequencySchema, required: false }
 });
 
-
-export interface UserI extends mongoose.Document {
+export interface UserI {
+  _id: string;
   email: string;
   password?: string;
   resetPasswordToken?: string;
@@ -52,7 +52,10 @@ export interface UserI extends mongoose.Document {
   settings?: SettingsI
 }
 
-const userSchema = new mongoose.Schema<UserI>({
+
+export type UserMongooseI = UserI & mongoose.Document;
+
+const userSchema = new mongoose.Schema<UserMongooseI>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: false },
   resetPasswordToken: { type: String, required: false },
@@ -66,4 +69,4 @@ const userSchema = new mongoose.Schema<UserI>({
 
 
 
-export default mongoose.model<UserI>("User", userSchema);
+export default mongoose.model<UserMongooseI>("User", userSchema);

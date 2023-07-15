@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import AuthorModel, { AuthorI } from "../models/authors.js";
-import UserModel, { UserI } from "../models/users.js";
+import UserModel, { UserMongooseI } from "../models/users.js";
 
 export default class SubscriptionService {
-  UserModel: mongoose.Model<UserI>;
+  UserModel: mongoose.Model<UserMongooseI>;
   AuthorModel: mongoose.Model<AuthorI>;
 
   constructor() {

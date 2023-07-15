@@ -1,5 +1,5 @@
 import AuthorModel, { AuthorI } from "../models/authors.js";
-import UserModel, { UserI } from "../models/users.js";
+import UserModel, { UserMongooseI } from "../models/users.js";
 import ResourceModel, { ResourceI } from "../models/resources.js";
 import { Sources } from "../utils/constants.js";
 import {
@@ -12,7 +12,7 @@ import mongoose from "mongoose";
 
 export default class ResourceService {
   AuthorModel: mongoose.Model<AuthorI>;
-  UserModel: mongoose.Model<UserI>;
+  UserModel: mongoose.Model<UserMongooseI>;
   ResourceModel: mongoose.Model<ResourceI>;
 
   source: Sources;
