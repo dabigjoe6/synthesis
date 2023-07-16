@@ -5,7 +5,7 @@ import {
   unsubscribe,
   getSubscriptions,
   saveAuthorsPosts,
-} from "../controllers/Resource.js";
+} from "../controllers/Resource/index.js";
 import { Sources } from "../utils/constants.js";
 import { verifyToken } from "../middleware/auth.js";
 

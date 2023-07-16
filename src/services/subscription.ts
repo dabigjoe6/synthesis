@@ -11,7 +11,7 @@ export default class SubscriptionService {
     this.AuthorModel = AuthorModel;
   }
 
-  getUserSubscriptions = async (email: string) => {
+  async getUserSubscriptions(email: string) {
     try {
       let user = await this.UserModel.findOne({ email }).exec();
 
@@ -49,7 +49,7 @@ export default class SubscriptionService {
     }
   };
 
-  unsubscribe = async (email: string, ids: mongoose.ObjectId[]) => {
+  async unsubscribe(email: string, ids: mongoose.ObjectId[]) {
     try {
       let user = await this.UserModel.findOne({ email }).exec();
 
