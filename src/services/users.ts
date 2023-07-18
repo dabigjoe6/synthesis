@@ -12,7 +12,7 @@ export default class User {
     this.UserModel = UserModel;
   }
 
-  async updateUser(id: mongoose.ObjectId, user: UserMongooseI) {
+  async updateUser(id: mongoose.ObjectId, user: UserMongooseI): Promise<UserI | null> {
     return await this.UserModel.findByIdAndUpdate(id, user).exec();
   }
 
@@ -20,7 +20,7 @@ export default class User {
     return await this.UserModel.findOne({ email }).exec();
   }
 
-  async getUserById(id: mongoose.ObjectId) {
+  async getUserById(id: mongoose.ObjectId): Promise<UserI | null> {
     return await this.UserModel.findById(id).exec();
   }
 

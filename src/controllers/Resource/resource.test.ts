@@ -27,16 +27,16 @@ let req: Request;
 let res: Response;
 let next: NextFunction;
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
-
 beforeEach(() => {
   res = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
   } as any;
   next = jest.fn();
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 
 describe("Resource", () => {
