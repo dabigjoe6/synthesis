@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import AuthorModel, { AuthorI } from "../models/authors.js";
-import UserModel, { UserI } from "../models/users.js";
+import UserModel, { UserMongooseI } from "../models/users.js";
 
 export default class SubscriptionService {
-  UserModel: mongoose.Model<UserI>;
+  UserModel: mongoose.Model<UserMongooseI>;
   AuthorModel: mongoose.Model<AuthorI>;
 
   constructor() {
@@ -11,7 +11,7 @@ export default class SubscriptionService {
     this.AuthorModel = AuthorModel;
   }
 
-  getUserSubscriptions = async (email: string) => {
+  async getUserSubscriptions(email: string) {
     try {
       let user = await this.UserModel.findOne({ email }).exec();
 
@@ -49,7 +49,7 @@ export default class SubscriptionService {
     }
   };
 
-  unsubscribe = async (email: string, ids: mongoose.ObjectId[]) => {
+  async unsubscribe(email: string, ids: mongoose.ObjectId[]) {
     try {
       let user = await this.UserModel.findOne({ email }).exec();
 

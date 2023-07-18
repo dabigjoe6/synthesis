@@ -1,6 +1,14 @@
 import { Router } from "express";
 import { validate } from "../middleware/validators/index.js";
-import { markSeenResources, pauseDigest, resumeDigest, setDigestFrequency, enableSummary, disableSummary, userDetails } from "../controllers/User.js";
+import {
+  markSeenResources,
+  pauseDigest,
+  resumeDigest,
+  setDigestFrequency,
+  enableSummary,
+  disableSummary,
+  userDetails
+} from "../controllers/User/index.js";
 import { verifyToken } from "../middleware/auth.js";
 
 const router = Router();

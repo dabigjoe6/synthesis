@@ -1,5 +1,5 @@
 import AuthorModel, { AuthorI } from "../models/authors.js";
-import UserModel, { UserI } from "../models/users.js";
+import UserModel, { UserMongooseI } from "../models/users.js";
 import ResourceModel, { ResourceI } from "../models/resources.js";
 import { Sources } from "../utils/constants.js";
 import {
@@ -12,7 +12,7 @@ import mongoose from "mongoose";
 
 export default class ResourceService {
   AuthorModel: mongoose.Model<AuthorI>;
-  UserModel: mongoose.Model<UserI>;
+  UserModel: mongoose.Model<UserMongooseI>;
   ResourceModel: mongoose.Model<ResourceI>;
 
   source: Sources;
@@ -24,7 +24,7 @@ export default class ResourceService {
     this.source = source;
   }
 
-  subscribe = async (email: string, url: string) => {
+  async subscribe(email: string, url: string) {
     let user = await this.UserModel.findOne({ email }).exec();
 
     if (!user) {
@@ -72,7 +72,7 @@ export default class ResourceService {
     return (newUser?.subscriptions || []);
   };
 
-  saveAuthorsPosts = async (posts: ResourceI, authorId?: mongoose.ObjectId) => {
+  async saveAuthorsPosts(posts: ResourceI, authorId?: mongoose.ObjectId) {
     try {
       await this.ResourceModel.insertMany(posts, { ordered: false });
 
@@ -88,7 +88,7 @@ export default class ResourceService {
     }
   }
 
-  getMostRecentPosts = async (authorId: string) => {
+  async getMostRecentPosts(authorId: string) {
     const author = await this.AuthorModel.findById(authorId).exec();
 
     if (!author) {
@@ -102,7 +102,7 @@ export default class ResourceService {
     return mostRecentPosts;
   };
 
-  getNameBasedOnSource = (url: string) => {
+  getNameBasedOnSource(url: string) {
     switch (this.source) {
       case Sources.MEDIUM:
         return extractMediumAuthorNameFromURL(url);
@@ -113,7 +113,7 @@ export default class ResourceService {
     }
   };
 
-  updateResources = async (resources: Array<{ id: string, summary?: string, readLength?: string; authorsName?: string; datePublished?: Date }>) => {
+  async updateResources(resources: Array<{ id: string, summary?: string, readLength?: string; authorsName?: string; datePublished?: Date }>) {
     for (const resource of resources) {
       const updateObject: { summary?: string; readLength?: string; authorsName?: string; datePublished?: Date } = {};
 

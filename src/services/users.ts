@@ -1,4 +1,4 @@
-import UserModel, { FrequencyType, UserI, WeekDays } from "../models/users.js";
+import UserModel, { FrequencyType, UserI, UserMongooseI, WeekDays } from "../models/users.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../middleware/auth.js";
 import generateResetTokenHelper from "../utils/generateResetToken.js";
@@ -6,25 +6,25 @@ import welcomeEmailPublisher from '../workers/email/welcomeEmailPublisher.js';
 import mongoose from "mongoose";
 
 export default class User {
-  UserModel: mongoose.Model<UserI>;
+  UserModel: mongoose.Model<UserMongooseI>;
 
   constructor() {
     this.UserModel = UserModel;
   }
 
-  async updateUser(id: mongoose.ObjectId, user: UserI) {
+  async updateUser(id: mongoose.ObjectId, user: UserMongooseI): Promise<UserI | null> {
     return await this.UserModel.findByIdAndUpdate(id, user).exec();
   }
 
-  async getUserByEmail(email: string) {
+  async getUserByEmail(email: string): Promise<UserI | null> {
     return await this.UserModel.findOne({ email }).exec();
   }
 
-  async getUserById(id: mongoose.ObjectId) {
+  async getUserById(id: mongoose.ObjectId): Promise<UserI | null> {
     return await this.UserModel.findById(id).exec();
   }
 
-  async createUser(user: { email: string, password?: string }) {
+  async createUser(user: { email: string, password?: string }): Promise<UserI> {
     return await this.UserModel.create(user);
   }
 

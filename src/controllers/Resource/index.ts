@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import SubscriptionService from "../services/subscription.js";
-import ResourceService from "../services/resource.js";
-import { Sources } from "../utils/constants.js";
+import SubscriptionService from "../../services/subscription.js";
+import ResourceService from "../../services/resource.js";
+import { Sources } from "../../utils/constants.js";
 
 export const subscribe = (source: Sources) => async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -29,11 +29,12 @@ export const saveAuthorsPosts = async (req: Request, res: Response, next: NextFu
     const { posts, source } = req.body;
 
     const serviceInstance = new ResourceService(source);
+    console.log("posts", posts);
     await serviceInstance.saveAuthorsPosts(posts);
 
     return res.status(200).json({
       status: 200,
-      message: "Saved authors posts succesfully",
+      message: "Saved authors posts successfully",
     });
   } catch (err) {
     next(err);

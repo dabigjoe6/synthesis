@@ -1,8 +1,8 @@
 import Sendgrid from "@sendgrid/mail";
 import { Request, Response, NextFunction } from 'express';
-import UserService from "../services/users.js";
-import generateResetPasswordTemplate from "../utils/generateResetPasswordTemplate.js";
-import { generateToken } from "../middleware/auth.js";
+import UserService from "../../services/users.js";
+import generateResetPasswordTemplate from "../../utils/generateResetPasswordTemplate.js";
+import { generateToken } from "../../middleware/auth.js";
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -27,7 +27,6 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
     const token = userService.generateToken(user);
 
-    user = user.toObject();
     delete user["password"];
 
     return res.status(200).json({
@@ -45,6 +44,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     const { email, password } = req.body;
 
     const userService = new UserService();
+
     let _user = await userService.getUserByEmail(email);
 
     if (_user) {
@@ -54,6 +54,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       });
     }
 
+
     let user = await userService.createUser({
       email,
       password: password && userService.hashPassword(password),
@@ -61,7 +62,6 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 
     const token = userService.generateToken(user);
 
-    user = user.toObject();
     delete user["password"];
 
     await userService.sendWelcomeEmail(email);
@@ -90,7 +90,6 @@ export const oAuthLogin = async (req: Request, res: Response, next: NextFunction
 
       const token = userService.generateToken(user);
 
-      user = user.toObject();
       delete user["password"];
 
       await userService.sendWelcomeEmail(email);
@@ -103,7 +102,6 @@ export const oAuthLogin = async (req: Request, res: Response, next: NextFunction
     } else {
       const token = userService.generateToken(user);
 
-      user = user.toObject();
       delete user["password"];
 
       return res.status(200).json({
@@ -181,12 +179,12 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
       const result = userService.comparePassword(password, user?.password || "");
       if (!result) {
         return res.status(400).json({
-          message: "wrong password",
+          message: "Wrong password",
           status: 400,
         });
       }
 
-      const token = generateToken(user);
+      const token = userService.generateToken(user);
       await userService.changePassword(email, newPassword);
 
       return res.status(200).json({
@@ -199,20 +197,27 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
     const oneHourAgo = Date.now() - 60 * 60 * 1000; // Calculate a number representing one hour ago
 
     if (user.resetPasswordToken && user.resetPasswordTokenCreatedAt) {
-      if (resetPasswordToken !== user.resetPasswordToken && user.resetPasswordTokenCreatedAt < oneHourAgo) {
+      if (resetPasswordToken !== user.resetPasswordToken || oneHourAgo > user.resetPasswordTokenCreatedAt) {
         return res.status(400).json({
           message: "Reset password token incorrect/expired",
           status: 400,
         });
+      } else {
+        await userService.changePassword(email, newPassword);
+
+        res.status(200).json({
+          message: "User password reset",
+          status: 200,
+        });
       }
+    } else {
+      return res.status(400).json({
+        message: "Reset password token incorrect/expired",
+        status: 400,
+      });
     }
 
-    await userService.changePassword(email, newPassword);
 
-    res.status(200).json({
-      message: "User password reset",
-      status: 200,
-    });
   } catch (err) {
     next(err);
   }
