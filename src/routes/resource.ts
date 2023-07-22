@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validate } from "../middleware/validators/index.js";
-import { updateResources, syncAuthorsResources } from "../controllers/Resource.js";
+import { updateResources, syncAuthorsResources } from "../controllers/Resource/index.js";
 
 const router = Router();
 
