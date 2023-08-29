@@ -15,8 +15,10 @@ As I explored the Netflixtechblog on Medium, I was captivated by the wealth of k
 ![Synthesis - Overview](https://user-images.githubusercontent.com/20970329/218279048-324427b5-2342-4d63-b3c5-9412b99e89cc.png)
 
 ## Web Client
-
 https://github.com/dabigjoe6/synthesis-client
+
+## Lambda functions
+https://github.com/dabigjoe6/synthesis-functions
 
 ## Prerequisite
 
