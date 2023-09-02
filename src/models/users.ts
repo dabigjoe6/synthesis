@@ -62,7 +62,15 @@ const userSchema = new mongoose.Schema<UserMongooseI>({
   resetPasswordTokenCreatedAt: { type: Date, required: false },
   subscriptions: { type: [mongoose.Schema.Types.ObjectId], required: false, unique: false },
   seenResources: { type: [mongoose.Schema.Types.ObjectId], required: false, unique: false },
-  settings: { type: settingsSchema, required: false }
+  settings: {
+    type: settingsSchema, required: false, default: {
+      frequency: {
+        frequencyType: "daily",
+        time: ["08:00"],
+        default: "Europe/London"
+      }
+    }
+  }
 }, {
   timestamps: true
 });
