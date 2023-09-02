@@ -2,7 +2,6 @@ import Sendgrid from "@sendgrid/mail";
 import { Request, Response, NextFunction } from 'express';
 import UserService from "../../services/users.js";
 import generateResetPasswordTemplate from "../../utils/generateResetPasswordTemplate.js";
-import { generateToken } from "../../middleware/auth.js";
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -41,7 +40,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, time, timeZone } = req.body;
 
     const userService = new UserService();
 
@@ -57,6 +56,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 
     let user = await userService.createUser({
       email,
+      time,
+      timeZone,
       password: password && userService.hashPassword(password),
     });
 
@@ -78,7 +79,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 
 export const oAuthLogin = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email } = req.body;
+    const { email, time, timeZone } = req.body;
 
     const userService = new UserService();
     let user = await userService.getUserByEmail(email);
@@ -86,6 +87,8 @@ export const oAuthLogin = async (req: Request, res: Response, next: NextFunction
     if (!user) {
       user = await userService.createUser({
         email,
+        time,
+        timeZone
       });
 
       const token = userService.generateToken(user);
