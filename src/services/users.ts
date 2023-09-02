@@ -24,8 +24,15 @@ export default class User {
     return await this.UserModel.findById(id).exec();
   }
 
-  async createUser(user: { email: string, password?: string }): Promise<UserI> {
-    return await this.UserModel.create(user);
+  async createUser(user: { email: string, password?: string, time: string[], timeZone: string }): Promise<UserI> {
+    return await this.UserModel.create({
+      email: user.email, password: user.password, settings: {
+        frequency: {
+          time: user.time,
+          timeZone: user.timeZone
+        }
+      }
+    });
   }
 
   async deleteUser(id: mongoose.ObjectId) {

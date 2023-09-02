@@ -14,6 +14,8 @@ const login = Joi.object({
 const register = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(8).required(),
+  time: Joi.array().items(Joi.string()).required(),
+  timeZone: Joi.string().required()
 });
 
 const resetPassword = Joi.object({
